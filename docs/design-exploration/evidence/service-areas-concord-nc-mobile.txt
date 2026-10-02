@@ -1,0 +1,183 @@
+- link "Skip to main content":
+  - /url: "#main-content"
+- banner:
+  - link "P1 Land & Property Management":
+    - /url: /
+    - img "P1 Land & Property Management"
+  - button "Open navigation":
+    - generic: Open navigation
+- main:
+  - img "Land Clearing & Property Management in Concord, NC"
+  - generic: Service Area · NC
+  - heading "Land Clearing & Property Management In Concord, NC" [level=1]:
+    - text: Land Clearing & Property Management In
+    - emphasis: Concord, NC
+  - paragraph: We provide commercial landscaping and grounds maintenance across Concord and Cabarrus County, along with clearing, grading, drainage, turf, tree, and pond care for large properties.
+  - heading "Concord NC Services" [level=2]
+  - list:
+    - generic: Commercial landscaping and grounds maintenance programs
+    - generic: Agricultural and rural land maintenance
+    - generic: Land clearing and site preparation for commercial development
+    - generic: Fine grading and drainage installation
+    - generic: Turf installation and seeding
+    - generic: Tree services
+    - generic: Pond and waterway management
+  - paragraph:
+    - text: Call
+    - link "+1 (704) 221-8928":
+      - /url: tel:7042218928
+    - text: or
+    - link "request a free estimate online":
+      - /url: /contact
+    - text: to discuss your property.
+  - heading "Large-Site Work in Concord and Cabarrus County" [level=2]
+  - paragraph: Around Concord, a busy commercial site needs room for deliveries and staff access. Farmland may need better field drainage or equipment routes. We plan the work around the way your land is used.
+  - paragraph: Clearing, grading, drainage, and turf work often depend on one another. We'll explain the order that makes sense for your property before the crew starts.
+  - heading "What to Prepare for an Assessment" [level=2]
+  - paragraph: Bring any site plans and notes about utilities, drainage, and access. We'll use them to work out what's needed and prepare your estimate.
+  - paragraph: If the job needs engineering, permits, surveys, or another specialist, we'll identify that early. You'll know what our crew will handle and what needs separate arrangements.
+  - paragraph: A washed-out road or blocked drain may need fixing before the ground can be seeded or maintained. On occupied properties, we'll plan those stages around vehicles, staff, tenants, and public access. Your written estimate will explain the work and what needs to be ready before we arrive.
+  - paragraph: Before the visit, mark priority areas and collect photos showing how conditions change after rain or during normal operations. That context helps connect a visible symptom to the surrounding site.
+  - heading "Concord, NC Land & Property Management FAQs" [level=2]
+  - generic "What areas around Concord does P1 serve?":
+    - generic: What areas around Concord does P1 serve?
+    - generic: +
+  - generic "Does P1 handle site preparation for commercial development in Concord?":
+    - generic: Does P1 handle site preparation for commercial development in Concord?
+    - generic: +
+  - generic "Can P1 maintain agricultural and rural land in Cabarrus County?":
+    - generic: Can P1 maintain agricultural and rural land in Cabarrus County?
+    - generic: +
+  - generic "What size properties does P1 work on in Concord?":
+    - generic: What size properties does P1 work on in Concord?
+    - generic: +
+  - complementary:
+    - paragraph:
+      - link "Compare land management services":
+        - /url: /services
+      - text: or
+      - link "tell us about your property":
+        - /url: /contact
+      - text: to talk through the work and available dates.
+  - region "Related Concord Services and Areas":
+    - paragraph: Explore More With P1
+    - heading "Related Concord Services and Areas" [level=2]
+    - paragraph: Explore grounds care, site preparation, and nearby communities.
+    - navigation "Related Services and Resources":
+      - list:
+        - link "Commercial Landscaping Regular mowing, seasonal grounds care, and maintenance around your operations.":
+          - /url: /services/commercial-landscaping
+          - generic: Commercial Landscaping
+          - generic: Regular mowing, seasonal grounds care, and maintenance around your operations.
+        - link "Grading and Site Preparation Shape grades, improve access, and prepare ground for its next use.":
+          - /url: /services/grading-site-preparation
+          - generic: Grading and Site Preparation
+          - generic: Shape grades, improve access, and prepare ground for its next use.
+    - navigation "Explore Service Areas":
+      - heading "Explore Service Areas" [level=3]
+      - paragraph: Local coverage across the Carolinas.
+      - list:
+        - link "Charlotte, NC":
+          - /url: /service-areas/charlotte-north-carolina
+          - text: Charlotte, NC
+        - link "Mooresville and Lake Norman, NC":
+          - /url: /service-areas/mooresville-lake-norman-nc
+          - text: Mooresville and Lake Norman, NC
+        - link "Kannapolis, NC":
+          - /url: /service-areas/kannapolis-nc
+          - text: Kannapolis, NC
+  - generic: P1 Land & Property Management
+  - heading "Let's Walk Your Property" [level=2]
+  - paragraph: Tell us where it is and what's going on. The site visit and written estimate are free.
+  - link "Request a Site Visit":
+    - /url: /contact
+    - text: Request a Site Visit
+  - link "Call (704) 221-8928":
+    - /url: tel:7042218928
+    - text: Call (704) 221-8928
+- contentinfo:
+  - link "P1 Land & Property Management":
+    - /url: /
+    - img "P1 Land & Property Management"
+  - paragraph: P1 Land & Property Management clears, grades, drains, seeds and maintains commercial, industrial and farm property of an acre or more across Upstate South Carolina and the Charlotte region. Licensed and insured in North and South Carolina.
+  - link "(704) 221-8928":
+    - /url: tel:+17042218928
+    - text: (704) 221-8928
+  - link "Find us on Google":
+    - /url: https://www.google.com/maps/place/P1+Land+Management/@34.8311425,-80.622017,17z/data=!3m1!4b1!4m6!3m5!1s0x8855cd2b88976525:0x49c378cdfdecac9a!8m2!3d34.8311381!4d-80.6194367!16s%2Fg%2F11nw0vxpb_?entry=ttu&g_ep=EgoyMDI2MDkxMy4wIKXMDSoASAFQAw%3D%3D
+  - link "Send a secure inquiry":
+    - /url: /contact
+  - heading "Services" [level=4]
+  - list:
+    - link "Commercial Landscaping":
+      - /url: /services/commercial-landscaping
+    - link "Commercial Snow & Ice":
+      - /url: /services/commercial-snow-ice-management
+    - link "Industrial & Agricultural":
+      - /url: /services/industrial-agricultural
+    - link "Land Clearing":
+      - /url: /services/land-clearing
+    - link "Grading & Site Prep":
+      - /url: /services/grading-site-preparation
+    - link "Drainage Solutions":
+      - /url: /services/drainage
+    - link "Turf & Seeding":
+      - /url: /services/turf-installation-seeding
+    - link "Tree Services":
+      - /url: /services/tree-services
+    - link "Pond & Waterway":
+      - /url: /services/pond-waterway-management
+    - link "Property Reconstruction":
+      - /url: /services/property-reconstruction
+    - link "All Services →":
+      - /url: /services
+  - heading "Service Areas" [level=4]
+  - list:
+    - listitem: Upstate South Carolina
+    - link "Greenville":
+      - /url: /service-areas/greenville-sc
+    - link "Spartanburg":
+      - /url: /service-areas/spartanburg-sc
+    - link "Anderson":
+      - /url: /service-areas/anderson-sc
+    - link "Lancaster County":
+      - /url: /service-areas/lancaster-county-sc
+    - link "York County":
+      - /url: /service-areas/york-county-sc
+    - listitem: Greater Charlotte NC
+    - link "Charlotte, NC":
+      - /url: /service-areas/charlotte-north-carolina
+    - link "Concord":
+      - /url: /service-areas/concord-nc
+    - link "Mooresville & Lake Norman":
+      - /url: /service-areas/mooresville-lake-norman-nc
+    - link "Gastonia":
+      - /url: /service-areas/gastonia-nc
+    - link "Union County":
+      - /url: /service-areas/union-county-nc
+    - link "All Areas →":
+      - /url: /service-areas
+  - heading "Company" [level=4]
+  - list:
+    - link "About Us":
+      - /url: /about
+    - link "Service Gallery":
+      - /url: /gallery
+    - link "Blog & Resources":
+      - /url: /blog
+    - link "Contact / Site Assessment":
+      - /url: /contact
+  - heading "Hours" [level=4]
+  - list:
+    - listitem: "Mon – Fri: 7 AM – 6 PM"
+    - listitem: "Saturday: By Appointment"
+    - listitem: "Sunday: Closed"
+    - link "Request a Site Visit":
+      - /url: /contact
+  - generic: © 2026 P1 Land & Property Management. Serving Upstate South Carolina & the Charlotte, NC region. All rights reserved.
+- navigation "Quick contact":
+  - link "Call P1 at (704) 221-8928":
+    - /url: tel:+17042218928
+    - generic: Call P1
+  - link "Request a Site Visit":
+    - /url: /contact

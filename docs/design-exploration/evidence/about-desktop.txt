@@ -1,0 +1,162 @@
+- link "Skip to main content":
+  - /url: "#main-content"
+- banner:
+  - link "P1 Land & Property Management":
+    - /url: /
+    - img "P1 Land & Property Management"
+  - navigation "Main navigation":
+    - link "Home":
+      - /url: /
+    - link "About":
+      - /url: /about
+    - button "Services":
+      - text: Services
+    - link "Contact":
+      - /url: /contact
+  - link "(704) 221-8928":
+    - /url: tel:+17042218928
+    - text: (704) 221-8928
+  - link "Request a Site Visit":
+    - /url: /contact
+- main:
+  - img "Commercial property"
+  - generic: About P1
+  - heading "Land and Grounds Care With Nearly 30 Years of Experience" [level=1]:
+    - text: Land and Grounds Care With
+    - emphasis: Nearly 30 Years of Experience
+  - paragraph: We help owners and managers look after large, working properties. From the first clearing job to regular grounds care, you have one team to call when something needs attention.
+  - heading "Who We Are" [level=2]
+  - paragraph: P1 Land & Property Management brings land preparation and ongoing care together. We clear and grade land, repair drainage, establish turf, and maintain the grounds as your property changes.
+  - paragraph: Our name is new, but our experience spans nearly 30 years. We work across Upstate South Carolina and the greater Charlotte area, on everything from busy commercial grounds to open farmland.
+  - paragraph: We work with property managers, farm operators, industrial facilities, municipalities, and institutions. We take time to understand how you use the land before recommending the work.
+  - paragraph: We serve properties 1 acre and larger and do not provide residential services. Our equipment and crews are set up for large-acreage work.
+  - img "Experienced P1 land management crew with heavy equipment"
+  - heading "Help with What Comes Next" [level=2]
+  - paragraph: Whether you're clearing land, fixing drainage, or keeping the grounds in shape, we can help. Start with the work you need now, and we'll help you plan what comes next.
+  - generic: Weekly and seasonal property maintenance contracts
+  - generic: Land clearing and forestry mulching
+  - generic: Fine grading and site preparation
+  - generic: Drainage planning, installation, and repairs
+  - generic: Sod and seed installation for large acreage
+  - generic: Tree management, trimming, and removal
+  - generic: Pond and waterway care and management
+  - generic: Full property reconstruction — from drainage overhaul to complete regrading and reseeding
+  - heading "Where We Work" [level=2]
+  - paragraph: P1 serves commercial, industrial, agricultural, municipal, and institutional properties throughout Upstate South Carolina — including Greenville, Spartanburg, Anderson, Gaffney, Greer, Simpsonville, and surrounding counties — and the greater Charlotte, North Carolina region, including Concord, Mooresville, Lake Norman, Gastonia, Huntersville, Matthews, Waxhaw, Kannapolis, Indian Trail, Monroe, Belmont, Mount Holly, Cornelius, and the Mecklenburg County area. Our South Carolina border coverage includes Fort Mill, Rock Hill, and Indian Land, with large-acreage service throughout York County, Lancaster County, and Union County.
+  - heading "What to Expect From P1" [level=2]
+  - list:
+    - listitem: A written plan and clear pricing before work begins
+    - listitem: Commercial and agricultural property experience
+    - listitem: Equipped for large-scale earthwork and fine maintenance
+    - listitem: Serving both Upstate SC and Charlotte NC markets
+    - listitem: A site visit scheduled around your needs and our availability
+  - region "Explore P1's Work":
+    - paragraph: Explore More With P1
+    - heading "Explore P1's Work" [level=2]
+    - paragraph: Learn about our services and where we work.
+    - navigation "Related Services and Resources":
+      - list:
+        - link "Commercial Landscaping Regular mowing, seasonal grounds care, and maintenance around your operations.":
+          - /url: /services/commercial-landscaping
+          - generic: Commercial Landscaping
+          - generic: Regular mowing, seasonal grounds care, and maintenance around your operations.
+        - link "Property Reconstruction Repair drainage, reshape damaged ground, and restore turf.":
+          - /url: /services/property-reconstruction
+          - generic: Property Reconstruction
+          - generic: Repair drainage, reshape damaged ground, and restore turf.
+    - navigation "Explore Service Areas":
+      - heading "Explore Service Areas" [level=3]
+      - paragraph: Local coverage across the Carolinas.
+      - list:
+        - link "All P1 Service Areas":
+          - /url: /service-areas
+          - text: All P1 Service Areas
+  - generic: P1 Land & Property Management
+  - heading "Let's Walk Your Property" [level=2]
+  - paragraph: Tell us where it is and what's going on. The site visit and written estimate are free.
+  - link "Request a Site Visit":
+    - /url: /contact
+    - text: Request a Site Visit
+  - link "Call (704) 221-8928":
+    - /url: tel:7042218928
+    - text: Call (704) 221-8928
+- contentinfo:
+  - link "P1 Land & Property Management":
+    - /url: /
+    - img "P1 Land & Property Management"
+  - paragraph: P1 Land & Property Management clears, grades, drains, seeds and maintains commercial, industrial and farm property of an acre or more across Upstate South Carolina and the Charlotte region. Licensed and insured in North and South Carolina.
+  - link "(704) 221-8928":
+    - /url: tel:+17042218928
+    - text: (704) 221-8928
+  - link "Find us on Google":
+    - /url: https://www.google.com/maps/place/P1+Land+Management/@34.8311425,-80.622017,17z/data=!3m1!4b1!4m6!3m5!1s0x8855cd2b88976525:0x49c378cdfdecac9a!8m2!3d34.8311381!4d-80.6194367!16s%2Fg%2F11nw0vxpb_?entry=ttu&g_ep=EgoyMDI2MDkxMy4wIKXMDSoASAFQAw%3D%3D
+  - link "Send a secure inquiry":
+    - /url: /contact
+  - heading "Services" [level=4]
+  - list:
+    - link "Commercial Landscaping":
+      - /url: /services/commercial-landscaping
+    - link "Commercial Snow & Ice":
+      - /url: /services/commercial-snow-ice-management
+    - link "Industrial & Agricultural":
+      - /url: /services/industrial-agricultural
+    - link "Land Clearing":
+      - /url: /services/land-clearing
+    - link "Grading & Site Prep":
+      - /url: /services/grading-site-preparation
+    - link "Drainage Solutions":
+      - /url: /services/drainage
+    - link "Turf & Seeding":
+      - /url: /services/turf-installation-seeding
+    - link "Tree Services":
+      - /url: /services/tree-services
+    - link "Pond & Waterway":
+      - /url: /services/pond-waterway-management
+    - link "Property Reconstruction":
+      - /url: /services/property-reconstruction
+    - link "All Services →":
+      - /url: /services
+  - heading "Service Areas" [level=4]
+  - list:
+    - listitem: Upstate South Carolina
+    - link "Greenville":
+      - /url: /service-areas/greenville-sc
+    - link "Spartanburg":
+      - /url: /service-areas/spartanburg-sc
+    - link "Anderson":
+      - /url: /service-areas/anderson-sc
+    - link "Lancaster County":
+      - /url: /service-areas/lancaster-county-sc
+    - link "York County":
+      - /url: /service-areas/york-county-sc
+    - listitem: Greater Charlotte NC
+    - link "Charlotte, NC":
+      - /url: /service-areas/charlotte-north-carolina
+    - link "Concord":
+      - /url: /service-areas/concord-nc
+    - link "Mooresville & Lake Norman":
+      - /url: /service-areas/mooresville-lake-norman-nc
+    - link "Gastonia":
+      - /url: /service-areas/gastonia-nc
+    - link "Union County":
+      - /url: /service-areas/union-county-nc
+    - link "All Areas →":
+      - /url: /service-areas
+  - heading "Company" [level=4]
+  - list:
+    - link "About Us":
+      - /url: /about
+    - link "Service Gallery":
+      - /url: /gallery
+    - link "Blog & Resources":
+      - /url: /blog
+    - link "Contact / Site Assessment":
+      - /url: /contact
+  - heading "Hours" [level=4]
+  - list:
+    - listitem: "Mon – Fri: 7 AM – 6 PM"
+    - listitem: "Saturday: By Appointment"
+    - listitem: "Sunday: Closed"
+    - link "Request a Site Visit":
+      - /url: /contact
+  - generic: © 2026 P1 Land & Property Management. Serving Upstate South Carolina & the Charlotte, NC region. All rights reserved.

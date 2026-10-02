@@ -1,0 +1,195 @@
+- link "Skip to main content":
+  - /url: "#main-content"
+- banner:
+  - link "P1 Land & Property Management":
+    - /url: /
+    - img "P1 Land & Property Management"
+  - button "Open navigation":
+    - generic: Open navigation
+- main:
+  - img "Heavy equipment on a large property"
+  - generic: What We Do
+  - heading "Everything Your Property Needs" [level=1]:
+    - text: Everything
+    - emphasis: Your Property Needs
+  - paragraph: Commercial landscaping, grounds care, clearing, grading, and property restoration across the Carolinas. Start with the work you need, and we'll help you plan what comes next.
+  - heading "One Property Plan, From Rough Ground to Ongoing Care" [level=2]
+  - paragraph: Clearing opens access. Grading shapes drainage. Both affect how well roads and turf hold up. We'll help you put the work in the right order, whether you need one job or ongoing care.
+  - link "Commercial Landscaping Commercial Landscaping Regular mowing and seasonal care for large commercial grounds. Learn more":
+    - /url: /services/commercial-landscaping
+    - img "Commercial Landscaping"
+    - heading "Commercial Landscaping" [level=3]
+    - paragraph: Regular mowing and seasonal care for large commercial grounds.
+    - text: Learn more
+  - link "Commercial Snow & Ice Commercial Snow & Ice Seasonal plowing, anti-icing, and documented storm response for large commercial sites. Learn more":
+    - /url: /services/commercial-snow-ice-management
+    - img "Commercial Snow & Ice"
+    - heading "Commercial Snow & Ice" [level=3]
+    - paragraph: Seasonal plowing, anti-icing, and documented storm response for large commercial sites.
+    - text: Learn more
+  - link "Industrial & Agricultural Land Industrial & Agricultural Land Pasture, fence-line, and grounds care for farms and industrial sites. Learn more":
+    - /url: /services/industrial-agricultural
+    - img "Industrial & Agricultural Land"
+    - heading "Industrial & Agricultural Land" [level=3]
+    - paragraph: Pasture, fence-line, and grounds care for farms and industrial sites.
+    - text: Learn more
+  - link "Land Clearing & Mulching Land Clearing & Mulching Selective clearing and forestry mulching that opens up acreage responsibly. Learn more":
+    - /url: /services/land-clearing
+    - img "Land Clearing & Mulching"
+    - heading "Land Clearing & Mulching" [level=3]
+    - paragraph: Selective clearing and forestry mulching that opens up acreage responsibly.
+    - text: Learn more
+  - link "Fine Grading & Site Prep Fine Grading & Site Prep Shape the ground for construction, access, and drainage. Learn more":
+    - /url: /services/grading-site-preparation
+    - img "Fine Grading & Site Prep"
+    - heading "Fine Grading & Site Prep" [level=3]
+    - paragraph: Shape the ground for construction, access, and drainage.
+    - text: Learn more
+  - link "Drainage Solutions Drainage Solutions French drains, swales, and pond work to manage water on your property. Learn more":
+    - /url: /services/drainage
+    - img "Drainage Solutions"
+    - heading "Drainage Solutions" [level=3]
+    - paragraph: French drains, swales, and pond work to manage water on your property.
+    - text: Learn more
+  - link "Turf Installation & Seeding Turf Installation & Seeding Sod and seeding for commercial grounds, pastures, and other large sites. Learn more":
+    - /url: /services/turf-installation-seeding
+    - img "Turf Installation & Seeding"
+    - heading "Turf Installation & Seeding" [level=3]
+    - paragraph: Sod and seeding for commercial grounds, pastures, and other large sites.
+    - text: Learn more
+  - link "Tree & Brush Management Tree & Brush Management Tree trimming, removal, selective clearing, and stump grinding. Learn more":
+    - /url: /services/tree-services
+    - img "Tree & Brush Management"
+    - heading "Tree & Brush Management" [level=3]
+    - paragraph: Tree trimming, removal, selective clearing, and stump grinding.
+    - text: Learn more
+  - link "Pond & Waterway Management Pond & Waterway Management Design, excavation and long-term care of ponds and working waterways. Learn more":
+    - /url: /services/pond-waterway-management
+    - img "Pond & Waterway Management"
+    - heading "Pond & Waterway Management" [level=3]
+    - paragraph: Design, excavation and long-term care of ponds and working waterways.
+    - text: Learn more
+  - link "Property Reconstruction Property Reconstruction Restore damaged ground with clearing, grading, drainage, and new turf. Learn more":
+    - /url: /services/property-reconstruction
+    - img "Property Reconstruction"
+    - heading "Property Reconstruction" [level=3]
+    - paragraph: Restore damaged ground with clearing, grading, drainage, and new turf.
+    - text: Learn more
+  - heading "Properties We Serve" [level=2]
+  - paragraph: We serve commercial, industrial, agricultural, municipal, and institutional properties 1 acre and larger. We do not provide residential services.
+  - heading "A Plan Before Work Starts" [level=2]
+  - paragraph: Before we start, you'll know what's included, how we'll access the site, and whether any specialist work is needed.
+  - heading "Across Two Regions" [level=2]
+  - paragraph: We serve Upstate South Carolina and greater Charlotte. Contact us to confirm coverage and available dates for your property.
+  - region "Find Service Coverage":
+    - paragraph: Explore More With P1
+    - heading "Find Service Coverage" [level=2]
+    - paragraph: Find the services you need across Upstate SC and greater Charlotte.
+    - navigation "Explore Service Areas":
+      - heading "Explore Service Areas" [level=3]
+      - paragraph: Local coverage across the Carolinas.
+      - list:
+        - link "Upstate South Carolina":
+          - /url: /service-areas/upstate-south-carolina
+          - text: Upstate South Carolina
+        - link "Charlotte, NC":
+          - /url: /service-areas/charlotte-north-carolina
+          - text: Charlotte, NC
+        - link "All P1 Service Areas":
+          - /url: /service-areas
+          - text: All P1 Service Areas
+  - generic: P1 Land & Property Management
+  - heading "Let's Walk Your Property" [level=2]
+  - paragraph: Tell us where it is and what's going on. The site visit and written estimate are free.
+  - link "Request a Site Visit":
+    - /url: /contact
+    - text: Request a Site Visit
+  - link "Call (704) 221-8928":
+    - /url: tel:7042218928
+    - text: Call (704) 221-8928
+- contentinfo:
+  - link "P1 Land & Property Management":
+    - /url: /
+    - img "P1 Land & Property Management"
+  - paragraph: P1 Land & Property Management clears, grades, drains, seeds and maintains commercial, industrial and farm property of an acre or more across Upstate South Carolina and the Charlotte region. Licensed and insured in North and South Carolina.
+  - link "(704) 221-8928":
+    - /url: tel:+17042218928
+    - text: (704) 221-8928
+  - link "Find us on Google":
+    - /url: https://www.google.com/maps/place/P1+Land+Management/@34.8311425,-80.622017,17z/data=!3m1!4b1!4m6!3m5!1s0x8855cd2b88976525:0x49c378cdfdecac9a!8m2!3d34.8311381!4d-80.6194367!16s%2Fg%2F11nw0vxpb_?entry=ttu&g_ep=EgoyMDI2MDkxMy4wIKXMDSoASAFQAw%3D%3D
+  - link "Send a secure inquiry":
+    - /url: /contact
+  - heading "Services" [level=4]
+  - list:
+    - link "Commercial Landscaping":
+      - /url: /services/commercial-landscaping
+    - link "Commercial Snow & Ice":
+      - /url: /services/commercial-snow-ice-management
+    - link "Industrial & Agricultural":
+      - /url: /services/industrial-agricultural
+    - link "Land Clearing":
+      - /url: /services/land-clearing
+    - link "Grading & Site Prep":
+      - /url: /services/grading-site-preparation
+    - link "Drainage Solutions":
+      - /url: /services/drainage
+    - link "Turf & Seeding":
+      - /url: /services/turf-installation-seeding
+    - link "Tree Services":
+      - /url: /services/tree-services
+    - link "Pond & Waterway":
+      - /url: /services/pond-waterway-management
+    - link "Property Reconstruction":
+      - /url: /services/property-reconstruction
+    - link "All Services →":
+      - /url: /services
+  - heading "Service Areas" [level=4]
+  - list:
+    - listitem: Upstate South Carolina
+    - link "Greenville":
+      - /url: /service-areas/greenville-sc
+    - link "Spartanburg":
+      - /url: /service-areas/spartanburg-sc
+    - link "Anderson":
+      - /url: /service-areas/anderson-sc
+    - link "Lancaster County":
+      - /url: /service-areas/lancaster-county-sc
+    - link "York County":
+      - /url: /service-areas/york-county-sc
+    - listitem: Greater Charlotte NC
+    - link "Charlotte, NC":
+      - /url: /service-areas/charlotte-north-carolina
+    - link "Concord":
+      - /url: /service-areas/concord-nc
+    - link "Mooresville & Lake Norman":
+      - /url: /service-areas/mooresville-lake-norman-nc
+    - link "Gastonia":
+      - /url: /service-areas/gastonia-nc
+    - link "Union County":
+      - /url: /service-areas/union-county-nc
+    - link "All Areas →":
+      - /url: /service-areas
+  - heading "Company" [level=4]
+  - list:
+    - link "About Us":
+      - /url: /about
+    - link "Service Gallery":
+      - /url: /gallery
+    - link "Blog & Resources":
+      - /url: /blog
+    - link "Contact / Site Assessment":
+      - /url: /contact
+  - heading "Hours" [level=4]
+  - list:
+    - listitem: "Mon – Fri: 7 AM – 6 PM"
+    - listitem: "Saturday: By Appointment"
+    - listitem: "Sunday: Closed"
+    - link "Request a Site Visit":
+      - /url: /contact
+  - generic: © 2026 P1 Land & Property Management. Serving Upstate South Carolina & the Charlotte, NC region. All rights reserved.
+- navigation "Quick contact":
+  - link "Call P1 at (704) 221-8928":
+    - /url: tel:+17042218928
+    - generic: Call P1
+  - link "Request a Site Visit":
+    - /url: /contact

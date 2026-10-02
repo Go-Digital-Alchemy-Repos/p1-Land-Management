@@ -1,0 +1,209 @@
+- link "Skip to main content":
+  - /url: "#main-content"
+- banner:
+  - link "P1 Land & Property Management":
+    - /url: /
+    - img "P1 Land & Property Management"
+  - navigation "Main navigation":
+    - link "Home":
+      - /url: /
+    - link "About":
+      - /url: /about
+    - button "Services":
+      - text: Services
+    - link "Contact":
+      - /url: /contact
+  - link "(704) 221-8928":
+    - /url: tel:+17042218928
+    - text: (704) 221-8928
+  - link "Request a Site Visit":
+    - /url: /contact
+- main:
+  - img "Compact equipment restoring drainage and grade on a smaller rural property"
+  - generic: Property Reconstruction
+  - heading "Full Property Reconstruction — From Overgrown to Operational" [level=1]:
+    - text: Full Property Reconstruction —
+    - emphasis: From Overgrown to Operational
+  - paragraph: When routine maintenance isn't enough, we help restore the land. Clearing, regrading, drainage repairs, and new turf can be planned together around what your property needs.
+  - generic: Index of Work
+  - link "01 Reconstruction":
+    - /url: /services/property-reconstruction
+    - generic: "01"
+    - generic: Reconstruction
+  - link "02 Commercial Landscaping":
+    - /url: /services/commercial-landscaping
+    - generic: "02"
+    - generic: Commercial Landscaping
+  - link "03 Commercial Snow & Ice":
+    - /url: /services/commercial-snow-ice-management
+    - generic: "03"
+    - generic: Commercial Snow & Ice
+  - link "04 Grading & Site Preparation":
+    - /url: /services/grading-site-preparation
+    - generic: "04"
+    - generic: Grading & Site Preparation
+  - link "05 Drainage Solutions":
+    - /url: /services/drainage
+    - generic: "05"
+    - generic: Drainage Solutions
+  - heading "When Maintenance Isn't Enough" [level=2]
+  - paragraph: Overgrowth, washed-out slopes, blocked drainage, and silted ponds can build up over time. If several parts of the property need attention, it helps to look at the underlying problems together.
+  - paragraph: We'll walk the site with you and recommend a sequence for repairs, from restoring access and drainage to preparing soil and planting turf.
+  - img "Compact excavator restoring a smaller property edge with drainage rock and fresh grading"
+  - heading "What Full Property Reconstruction Includes" [level=2]
+  - paragraph: "The work depends on your property. A reconstruction project may include:"
+  - list:
+    - generic: Complete land clearing — removal of all unwanted vegetation, trees, stumps, and debris
+    - generic: Rough grading — reshaping the topography to proper drainage slope
+    - generic: Drainage system installation — French drains, swales, ditches, and retention systems
+    - generic: Erosion control — slope stabilization, rip-rap, silt fencing, and matting
+    - generic: Fine grading — precision finish grade for turf, drainage, and structural stability
+    - generic: Pond restoration or reconstruction — dredging, embankment repair, inlet/outlet work
+    - generic: Waterway clearing and bank stabilization
+    - generic: Soil amendment — lime, fertilizer, and soil conditioning for turf establishment
+    - generic: Seeding or sod installation — large-acreage turf establishment appropriate to use
+    - generic: Transition to ongoing maintenance program
+  - heading "Who Needs Property Reconstruction" [level=2]
+  - list:
+    - listitem: New landowners who acquired neglected or overgrown property
+    - listitem: Agricultural operators reclaiming land that hasn't been actively managed
+    - listitem: Commercial developers preparing a site that requires significant earthwork beyond basic clearing
+    - listitem: Property owners recovering from major storm, flood, or erosion damage
+    - listitem: Owners dealing with persistent drainage or erosion problems
+  - heading "One Contractor for the Whole Project" [level=2]
+  - paragraph: Clearing, grading, drainage, and planting need to happen in the right order. We plan those stages together so the crew preparing the ground understands what needs to follow.
+  - paragraph: You'll have one point of contact and a written plan for the work. We'll explain what's included, when each stage can happen, and where specialist help is needed.
+  - heading "Service Area" [level=3]
+  - paragraph: P1 provides property reconstruction services throughout Upstate South Carolina (Greenville, Spartanburg, Anderson, and surrounding counties) and the greater Charlotte, NC region (Charlotte, Concord, Mooresville, Gastonia, Lake Norman, and Mecklenburg County).
+  - heading "Property Reconstruction FAQs" [level=2]
+  - generic "What is full property reconstruction?":
+    - generic: What is full property reconstruction?
+    - generic: +
+  - generic "How do I know if my property needs reconstruction instead of maintenance?":
+    - generic: How do I know if my property needs reconstruction instead of maintenance?
+    - generic: +
+  - generic "Do I need separate contractors for clearing, grading, drainage, and turf?":
+    - generic: Do I need separate contractors for clearing, grading, drainage, and turf?
+    - generic: +
+  - generic "Who typically needs property reconstruction?":
+    - generic: Who typically needs property reconstruction?
+    - generic: +
+  - paragraph:
+    - text: Call
+    - link "+1 (704) 221-8928":
+      - /url: tel:7042218928
+    - text: or
+    - link "request a free estimate online":
+      - /url: /contact
+    - text: to discuss your reconstruction project.
+  - region "Services Connected to Property Reconstruction":
+    - paragraph: Explore More With P1
+    - heading "Services Connected to Property Reconstruction" [level=2]
+    - paragraph: Clearing, drainage repairs, and planting can be part of restoring your property.
+    - navigation "Related Services and Resources":
+      - list:
+        - link "Land Clearing Selective clearing, forestry mulching, and site access preparation.":
+          - /url: /services/land-clearing
+          - generic: Land Clearing
+          - generic: Selective clearing, forestry mulching, and site access preparation.
+        - link "Grading and Site Preparation Shape grades, improve access, and prepare ground for its next use.":
+          - /url: /services/grading-site-preparation
+          - generic: Grading and Site Preparation
+          - generic: Shape grades, improve access, and prepare ground for its next use.
+        - link "Drainage Solutions Find the cause of standing water, runoff, and erosion.":
+          - /url: /services/drainage
+          - generic: Drainage Solutions
+          - generic: Find the cause of standing water, runoff, and erosion.
+        - link "Turf Installation and Seeding Plant sod or seed on properly prepared ground.":
+          - /url: /services/turf-installation-seeding
+          - generic: Turf Installation and Seeding
+          - generic: Plant sod or seed on properly prepared ground.
+  - generic: P1 Land & Property Management
+  - heading "Let's Walk Your Property" [level=2]
+  - paragraph: Tell us where it is and what's going on. The site visit and written estimate are free.
+  - link "Request a Site Visit":
+    - /url: /contact
+    - text: Request a Site Visit
+  - link "Call (704) 221-8928":
+    - /url: tel:7042218928
+    - text: Call (704) 221-8928
+- contentinfo:
+  - link "P1 Land & Property Management":
+    - /url: /
+    - img "P1 Land & Property Management"
+  - paragraph: P1 Land & Property Management clears, grades, drains, seeds and maintains commercial, industrial and farm property of an acre or more across Upstate South Carolina and the Charlotte region. Licensed and insured in North and South Carolina.
+  - link "(704) 221-8928":
+    - /url: tel:+17042218928
+    - text: (704) 221-8928
+  - link "Find us on Google":
+    - /url: https://www.google.com/maps/place/P1+Land+Management/@34.8311425,-80.622017,17z/data=!3m1!4b1!4m6!3m5!1s0x8855cd2b88976525:0x49c378cdfdecac9a!8m2!3d34.8311381!4d-80.6194367!16s%2Fg%2F11nw0vxpb_?entry=ttu&g_ep=EgoyMDI2MDkxMy4wIKXMDSoASAFQAw%3D%3D
+  - link "Send a secure inquiry":
+    - /url: /contact
+  - heading "Services" [level=4]
+  - list:
+    - link "Commercial Landscaping":
+      - /url: /services/commercial-landscaping
+    - link "Commercial Snow & Ice":
+      - /url: /services/commercial-snow-ice-management
+    - link "Industrial & Agricultural":
+      - /url: /services/industrial-agricultural
+    - link "Land Clearing":
+      - /url: /services/land-clearing
+    - link "Grading & Site Prep":
+      - /url: /services/grading-site-preparation
+    - link "Drainage Solutions":
+      - /url: /services/drainage
+    - link "Turf & Seeding":
+      - /url: /services/turf-installation-seeding
+    - link "Tree Services":
+      - /url: /services/tree-services
+    - link "Pond & Waterway":
+      - /url: /services/pond-waterway-management
+    - link "Property Reconstruction":
+      - /url: /services/property-reconstruction
+    - link "All Services →":
+      - /url: /services
+  - heading "Service Areas" [level=4]
+  - list:
+    - listitem: Upstate South Carolina
+    - link "Greenville":
+      - /url: /service-areas/greenville-sc
+    - link "Spartanburg":
+      - /url: /service-areas/spartanburg-sc
+    - link "Anderson":
+      - /url: /service-areas/anderson-sc
+    - link "Lancaster County":
+      - /url: /service-areas/lancaster-county-sc
+    - link "York County":
+      - /url: /service-areas/york-county-sc
+    - listitem: Greater Charlotte NC
+    - link "Charlotte, NC":
+      - /url: /service-areas/charlotte-north-carolina
+    - link "Concord":
+      - /url: /service-areas/concord-nc
+    - link "Mooresville & Lake Norman":
+      - /url: /service-areas/mooresville-lake-norman-nc
+    - link "Gastonia":
+      - /url: /service-areas/gastonia-nc
+    - link "Union County":
+      - /url: /service-areas/union-county-nc
+    - link "All Areas →":
+      - /url: /service-areas
+  - heading "Company" [level=4]
+  - list:
+    - link "About Us":
+      - /url: /about
+    - link "Service Gallery":
+      - /url: /gallery
+    - link "Blog & Resources":
+      - /url: /blog
+    - link "Contact / Site Assessment":
+      - /url: /contact
+  - heading "Hours" [level=4]
+  - list:
+    - listitem: "Mon – Fri: 7 AM – 6 PM"
+    - listitem: "Saturday: By Appointment"
+    - listitem: "Sunday: Closed"
+    - link "Request a Site Visit":
+      - /url: /contact
+  - generic: © 2026 P1 Land & Property Management. Serving Upstate South Carolina & the Charlotte, NC region. All rights reserved.

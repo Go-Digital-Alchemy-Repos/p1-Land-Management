@@ -1,0 +1,207 @@
+- link "Skip to main content":
+  - /url: "#main-content"
+- banner:
+  - link "P1 Land & Property Management":
+    - /url: /
+    - img "P1 Land & Property Management"
+  - button "Open navigation":
+    - generic: Open navigation
+- main:
+  - img "Drainage swale in grassy field"
+  - generic: Drainage Solutions
+  - heading "Drainage Solutions For Large Properties — Greenville, Spartanburg & Charlotte" [level=1]:
+    - text: Drainage Solutions For
+    - emphasis: Large Properties
+    - text: — Greenville, Spartanburg & Charlotte
+  - paragraph: Standing water, soggy fields, and washouts make property care harder. We look for the cause and plan drainage work around the way your land is used.
+  - heading "Start with Where the Water Goes" [level=2]
+  - paragraph: Poor drainage is one of the most common — and most costly — problems facing large property owners in the Carolinas. Heavy clay soils, compacted ground, improper grading, and flat topography create conditions where water sits, roots suffocate, structures erode, and maintenance costs multiply.
+  - paragraph: We'll trace where water enters, where it collects, and where it needs to drain. Then we'll explain the work we recommend and any engineering, permits, or specialist help needed before installation.
+  - img "Drainage system being installed to move water off a property"
+  - heading "Drainage Services" [level=2]
+  - list:
+    - generic: French drain installation — perforated pipe and gravel systems to intercept and redirect subsurface water
+    - generic: Surface drainage swales — graded channels to carry surface runoff away from structures and fields
+    - generic: Retention and detention pond planning and construction
+    - generic: Catch basin and inlet installation
+    - generic: Underground drainage pipe installation
+    - generic: Agricultural drainage — tile drainage for fields and pastures
+    - generic: Ditch clearing, shaping, and lining
+    - generic: Regrading for drainage correction
+    - generic: Erosion control and slope stabilization in drainage zones
+    - generic: Stormwater maintenance and service records
+  - heading "Common Drainage Problems We Solve" [level=2]
+  - list:
+    - listitem: Standing water in fields, commercial grounds, or near structures after rain
+    - listitem: Soggy, compacted soil that won't grow healthy turf
+    - listitem: Erosion on slopes, embankments, or around ponds
+    - listitem: Flooded access roads or driveways
+    - listitem: Drainage ditches that are silted, blocked, or undersized
+    - listitem: Retention ponds overflowing or failing to drain properly
+    - listitem: Wet basements or foundations on large rural properties
+  - heading "Agricultural Drainage" [level=2]
+  - paragraph: For farm and agricultural properties, drainage is directly tied to productivity. Saturated fields can't be worked, can't support healthy root systems, and lose topsoil to runoff. P1 installs agricultural drainage systems — including field tile drainage and perimeter ditching — that improve field trafficability and long-term productivity.
+  - heading "Drainage FAQs" [level=2]
+  - generic "Why does my property have standing water after rain?":
+    - generic: Why does my property have standing water after rain?
+    - generic: +
+  - generic "What drainage systems does P1 install?":
+    - generic: What drainage systems does P1 install?
+    - generic: +
+  - generic "Can P1 fix drainage on farm fields and pastures?":
+    - generic: Can P1 fix drainage on farm fields and pastures?
+    - generic: +
+  - generic "Does P1 handle stormwater compliance for commercial properties?":
+    - generic: Does P1 handle stormwater compliance for commercial properties?
+    - generic: +
+  - paragraph:
+    - text: Call
+    - link "+1 (704) 221-8928":
+      - /url: tel:7042218928
+    - text: or
+    - link "request a free estimate online":
+      - /url: /contact
+    - text: to discuss your drainage problem.
+  - heading "Drainage Is One Part of the Campus Exterior." [level=2]
+  - paragraph: Plan drainage repairs alongside pond care, vegetation, and access around your facility.
+  - link "Explore secure facility exterior management":
+    - /url: /commercial/data-centers-secure-facilities
+  - region "Services Connected to Drainage":
+    - paragraph: Explore More With P1
+    - heading "Services Connected to Drainage" [level=2]
+    - paragraph: Find help with the slopes, ponds, and damaged ground around a drainage problem.
+    - navigation "Related Services and Resources":
+      - list:
+        - link "Grading and Site Preparation Shape grades, improve access, and prepare ground for its next use.":
+          - /url: /services/grading-site-preparation
+          - generic: Grading and Site Preparation
+          - generic: Shape grades, improve access, and prepare ground for its next use.
+        - link "Pond and Waterway Management Maintain pond edges, waterways, shoreline areas, and visible water flow.":
+          - /url: /services/pond-waterway-management
+          - generic: Pond and Waterway Management
+          - generic: Maintain pond edges, waterways, shoreline areas, and visible water flow.
+        - link "Property Reconstruction Repair drainage, reshape damaged ground, and restore turf.":
+          - /url: /services/property-reconstruction
+          - generic: Property Reconstruction
+          - generic: Repair drainage, reshape damaged ground, and restore turf.
+        - link "Signs of a Property Drainage Problem Learn what standing water, washouts, and bare patches can tell you.":
+          - /url: /blog/signs-property-drainage-problem
+          - generic: Signs of a Property Drainage Problem
+          - generic: Learn what standing water, washouts, and bare patches can tell you.
+    - navigation "Explore Service Areas":
+      - heading "Explore Service Areas" [level=3]
+      - paragraph: Local coverage across the Carolinas.
+      - list:
+        - link "Duncan, SC":
+          - /url: /service-areas/duncan-sc
+          - text: Duncan, SC
+        - link "Boiling Springs, SC":
+          - /url: /service-areas/boiling-springs-sc
+          - text: Boiling Springs, SC
+        - link "Matthews, NC":
+          - /url: /service-areas/matthews-nc
+          - text: Matthews, NC
+        - link "Rock Hill, SC":
+          - /url: /service-areas/rock-hill-sc
+          - text: Rock Hill, SC
+        - link "Belmont, NC":
+          - /url: /service-areas/belmont-nc
+          - text: Belmont, NC
+        - link "Mount Holly, NC":
+          - /url: /service-areas/mount-holly-nc
+          - text: Mount Holly, NC
+  - generic: P1 Land & Property Management
+  - heading "Let's Walk Your Property" [level=2]
+  - paragraph: Tell us where it is and what's going on. The site visit and written estimate are free.
+  - link "Request a Site Visit":
+    - /url: /contact
+    - text: Request a Site Visit
+  - link "Call (704) 221-8928":
+    - /url: tel:7042218928
+    - text: Call (704) 221-8928
+- contentinfo:
+  - link "P1 Land & Property Management":
+    - /url: /
+    - img "P1 Land & Property Management"
+  - paragraph: P1 Land & Property Management clears, grades, drains, seeds and maintains commercial, industrial and farm property of an acre or more across Upstate South Carolina and the Charlotte region. Licensed and insured in North and South Carolina.
+  - link "(704) 221-8928":
+    - /url: tel:+17042218928
+    - text: (704) 221-8928
+  - link "Find us on Google":
+    - /url: https://www.google.com/maps/place/P1+Land+Management/@34.8311425,-80.622017,17z/data=!3m1!4b1!4m6!3m5!1s0x8855cd2b88976525:0x49c378cdfdecac9a!8m2!3d34.8311381!4d-80.6194367!16s%2Fg%2F11nw0vxpb_?entry=ttu&g_ep=EgoyMDI2MDkxMy4wIKXMDSoASAFQAw%3D%3D
+  - link "Send a secure inquiry":
+    - /url: /contact
+  - heading "Services" [level=4]
+  - list:
+    - link "Commercial Landscaping":
+      - /url: /services/commercial-landscaping
+    - link "Commercial Snow & Ice":
+      - /url: /services/commercial-snow-ice-management
+    - link "Industrial & Agricultural":
+      - /url: /services/industrial-agricultural
+    - link "Land Clearing":
+      - /url: /services/land-clearing
+    - link "Grading & Site Prep":
+      - /url: /services/grading-site-preparation
+    - link "Drainage Solutions":
+      - /url: /services/drainage
+    - link "Turf & Seeding":
+      - /url: /services/turf-installation-seeding
+    - link "Tree Services":
+      - /url: /services/tree-services
+    - link "Pond & Waterway":
+      - /url: /services/pond-waterway-management
+    - link "Property Reconstruction":
+      - /url: /services/property-reconstruction
+    - link "All Services →":
+      - /url: /services
+  - heading "Service Areas" [level=4]
+  - list:
+    - listitem: Upstate South Carolina
+    - link "Greenville":
+      - /url: /service-areas/greenville-sc
+    - link "Spartanburg":
+      - /url: /service-areas/spartanburg-sc
+    - link "Anderson":
+      - /url: /service-areas/anderson-sc
+    - link "Lancaster County":
+      - /url: /service-areas/lancaster-county-sc
+    - link "York County":
+      - /url: /service-areas/york-county-sc
+    - listitem: Greater Charlotte NC
+    - link "Charlotte, NC":
+      - /url: /service-areas/charlotte-north-carolina
+    - link "Concord":
+      - /url: /service-areas/concord-nc
+    - link "Mooresville & Lake Norman":
+      - /url: /service-areas/mooresville-lake-norman-nc
+    - link "Gastonia":
+      - /url: /service-areas/gastonia-nc
+    - link "Union County":
+      - /url: /service-areas/union-county-nc
+    - link "All Areas →":
+      - /url: /service-areas
+  - heading "Company" [level=4]
+  - list:
+    - link "About Us":
+      - /url: /about
+    - link "Service Gallery":
+      - /url: /gallery
+    - link "Blog & Resources":
+      - /url: /blog
+    - link "Contact / Site Assessment":
+      - /url: /contact
+  - heading "Hours" [level=4]
+  - list:
+    - listitem: "Mon – Fri: 7 AM – 6 PM"
+    - listitem: "Saturday: By Appointment"
+    - listitem: "Sunday: Closed"
+    - link "Request a Site Visit":
+      - /url: /contact
+  - generic: © 2026 P1 Land & Property Management. Serving Upstate South Carolina & the Charlotte, NC region. All rights reserved.
+- navigation "Quick contact":
+  - link "Call P1 at (704) 221-8928":
+    - /url: tel:+17042218928
+    - generic: Call P1
+  - link "Request a Site Visit":
+    - /url: /contact

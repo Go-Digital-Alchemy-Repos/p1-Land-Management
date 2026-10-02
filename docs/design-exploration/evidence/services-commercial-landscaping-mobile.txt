@@ -1,0 +1,204 @@
+- link "Skip to main content":
+  - /url: "#main-content"
+- banner:
+  - link "P1 Land & Property Management":
+    - /url: /
+    - img "P1 Land & Property Management"
+  - button "Open navigation":
+    - generic: Open navigation
+- main:
+  - img "Manicured commercial property landscape"
+  - generic: Commercial Landscaping
+  - heading "Commercial Landscaping & Grounds Management For Large-Acreage Properties" [level=1]:
+    - text: Commercial Landscaping & Grounds Management For
+    - emphasis: Large-Acreage Properties
+  - paragraph: We look after the grounds around offices, industrial sites, and other large properties across Upstate South Carolina and greater Charlotte. Regular mowing, seasonal care, and repairs planned around your site.
+  - heading "Your Commercial Property. Our Full Attention." [level=2]
+  - paragraph: Your grounds need to look good and work well for the people using them. We handle mowing, tree and brush care, ponds, drainage, and more with a schedule built around your property.
+  - paragraph: We'll talk through regular upkeep, seasonal work, and any repairs that need separate attention, so you know what's included.
+  - img "Crew maintaining a large commercial property's grounds"
+  - heading "What's Included in Our Commercial Programs" [level=2]
+  - paragraph: "We'll build the plan around your site. Services can include:"
+  - list:
+    - generic: Regular turf mowing, edging, and cleanup for large-acreage grounds
+    - generic: Tree trimming, selective removal, and canopy management
+    - generic: Pond, lake, and stormwater retention management
+    - generic: Drainage maintenance and inspection
+    - generic: Erosion control monitoring and repair
+    - generic: Seasonal seeding, fertilization, and turf health programs
+    - generic: Land clearing and brush management for undeveloped portions of your property
+    - generic: Site grading corrections and drainage improvements as needed
+    - generic: Waterway and ditch clearing and maintenance
+  - heading "Maintenance Schedules That Work for Your Operation" [level=2]
+  - paragraph: We plan visits around deliveries, employees, visitors, and seasonal growth. Entrances, turf, planting beds, and perimeter vegetation each get the attention they need.
+  - paragraph: You'll know which jobs are part of regular upkeep and which are seasonal. Larger repairs get a separate price and your approval before we start.
+  - img "Operator on a commercial maintenance schedule"
+  - heading "Why Commercial Clients Choose P1" [level=2]
+  - list:
+    - listitem: Crews and equipment for properties 1 acre and larger
+    - listitem: Nearly 30 years of experience in land and property care
+    - listitem: Commercial grounds management across Upstate SC and greater Charlotte
+    - listitem: Regular visits planned around your operating hours
+    - listitem: A free site assessment and a maintenance plan in writing
+  - heading "Commercial Landscaping FAQs" [level=2]
+  - generic "What's included in a P1 commercial landscaping program?":
+    - generic: What's included in a P1 commercial landscaping program?
+    - generic: +
+  - generic "How is a commercial maintenance schedule established?":
+    - generic: How is a commercial maintenance schedule established?
+    - generic: +
+  - generic "Is there a minimum property size for commercial programs?":
+    - generic: Is there a minimum property size for commercial programs?
+    - generic: +
+  - generic "How are insurance, licensing and procurement documents handled?":
+    - generic: How are insurance, licensing and procurement documents handled?
+    - generic: +
+  - paragraph:
+    - text: Call
+    - link "+1 (704) 221-8928":
+      - /url: tel:7042218928
+    - text: or
+    - link "request a free estimate online":
+      - /url: /contact
+    - text: to discuss your commercial property.
+  - region "Related Commercial Property Services":
+    - paragraph: Explore More With P1
+    - heading "Related Commercial Property Services" [level=2]
+    - paragraph: Plan tree care and winter work alongside regular grounds maintenance.
+    - navigation "Related Services and Resources":
+      - list:
+        - link "Commercial Snow and Ice Management Plan snow clearing and ice treatment for your commercial site.":
+          - /url: /services/commercial-snow-ice-management
+          - generic: Commercial Snow and Ice Management
+          - generic: Plan snow clearing and ice treatment for your commercial site.
+        - link "Tree Services Manage trees, overgrowth, and selective clearing across large properties.":
+          - /url: /services/tree-services
+          - generic: Tree Services
+          - generic: Manage trees, overgrowth, and selective clearing across large properties.
+        - link "Data Center and Secure Facility Grounds Grounds care planned around facility access and site rules.":
+          - /url: /commercial/data-centers-secure-facilities
+          - generic: Data Center and Secure Facility Grounds
+          - generic: Grounds care planned around facility access and site rules.
+    - navigation "Explore Service Areas":
+      - heading "Explore Service Areas" [level=3]
+      - paragraph: Local coverage across the Carolinas.
+      - list:
+        - link "Charlotte, NC":
+          - /url: /service-areas/charlotte-north-carolina
+          - text: Charlotte, NC
+        - link "Greenville, SC":
+          - /url: /service-areas/greenville-sc
+          - text: Greenville, SC
+        - link "Commercial Landscaping in Greer":
+          - /url: /service-areas/greer-sc
+          - text: Commercial Landscaping in Greer
+        - link "Commercial Landscaping in Simpsonville":
+          - /url: /service-areas/simpsonville-sc
+          - text: Commercial Landscaping in Simpsonville
+        - link "Commercial Landscaping in Huntersville":
+          - /url: /service-areas/huntersville-nc
+          - text: Commercial Landscaping in Huntersville
+        - link "Commercial Landscaping in Fort Mill":
+          - /url: /service-areas/fort-mill-sc
+          - text: Commercial Landscaping in Fort Mill
+        - link "Commercial Landscaping in Rock Hill":
+          - /url: /service-areas/rock-hill-sc
+          - text: Commercial Landscaping in Rock Hill
+        - link "Commercial Landscaping in Indian Land":
+          - /url: /service-areas/indian-land-sc
+          - text: Commercial Landscaping in Indian Land
+  - generic: P1 Land & Property Management
+  - heading "Let's Walk Your Property" [level=2]
+  - paragraph: Tell us where it is and what's going on. The site visit and written estimate are free.
+  - link "Request a Site Visit":
+    - /url: /contact
+    - text: Request a Site Visit
+  - link "Call (704) 221-8928":
+    - /url: tel:7042218928
+    - text: Call (704) 221-8928
+- contentinfo:
+  - link "P1 Land & Property Management":
+    - /url: /
+    - img "P1 Land & Property Management"
+  - paragraph: P1 Land & Property Management clears, grades, drains, seeds and maintains commercial, industrial and farm property of an acre or more across Upstate South Carolina and the Charlotte region. Licensed and insured in North and South Carolina.
+  - link "(704) 221-8928":
+    - /url: tel:+17042218928
+    - text: (704) 221-8928
+  - link "Find us on Google":
+    - /url: https://www.google.com/maps/place/P1+Land+Management/@34.8311425,-80.622017,17z/data=!3m1!4b1!4m6!3m5!1s0x8855cd2b88976525:0x49c378cdfdecac9a!8m2!3d34.8311381!4d-80.6194367!16s%2Fg%2F11nw0vxpb_?entry=ttu&g_ep=EgoyMDI2MDkxMy4wIKXMDSoASAFQAw%3D%3D
+  - link "Send a secure inquiry":
+    - /url: /contact
+  - heading "Services" [level=4]
+  - list:
+    - link "Commercial Landscaping":
+      - /url: /services/commercial-landscaping
+    - link "Commercial Snow & Ice":
+      - /url: /services/commercial-snow-ice-management
+    - link "Industrial & Agricultural":
+      - /url: /services/industrial-agricultural
+    - link "Land Clearing":
+      - /url: /services/land-clearing
+    - link "Grading & Site Prep":
+      - /url: /services/grading-site-preparation
+    - link "Drainage Solutions":
+      - /url: /services/drainage
+    - link "Turf & Seeding":
+      - /url: /services/turf-installation-seeding
+    - link "Tree Services":
+      - /url: /services/tree-services
+    - link "Pond & Waterway":
+      - /url: /services/pond-waterway-management
+    - link "Property Reconstruction":
+      - /url: /services/property-reconstruction
+    - link "All Services →":
+      - /url: /services
+  - heading "Service Areas" [level=4]
+  - list:
+    - listitem: Upstate South Carolina
+    - link "Greenville":
+      - /url: /service-areas/greenville-sc
+    - link "Spartanburg":
+      - /url: /service-areas/spartanburg-sc
+    - link "Anderson":
+      - /url: /service-areas/anderson-sc
+    - link "Lancaster County":
+      - /url: /service-areas/lancaster-county-sc
+    - link "York County":
+      - /url: /service-areas/york-county-sc
+    - listitem: Greater Charlotte NC
+    - link "Charlotte, NC":
+      - /url: /service-areas/charlotte-north-carolina
+    - link "Concord":
+      - /url: /service-areas/concord-nc
+    - link "Mooresville & Lake Norman":
+      - /url: /service-areas/mooresville-lake-norman-nc
+    - link "Gastonia":
+      - /url: /service-areas/gastonia-nc
+    - link "Union County":
+      - /url: /service-areas/union-county-nc
+    - link "All Areas →":
+      - /url: /service-areas
+  - heading "Company" [level=4]
+  - list:
+    - link "About Us":
+      - /url: /about
+    - link "Service Gallery":
+      - /url: /gallery
+    - link "Blog & Resources":
+      - /url: /blog
+    - link "Contact / Site Assessment":
+      - /url: /contact
+  - heading "Hours" [level=4]
+  - list:
+    - listitem: "Mon – Fri: 7 AM – 6 PM"
+    - listitem: "Saturday: By Appointment"
+    - listitem: "Sunday: Closed"
+    - link "Request a Site Visit":
+      - /url: /contact
+  - generic: © 2026 P1 Land & Property Management. Serving Upstate South Carolina & the Charlotte, NC region. All rights reserved.
+- navigation "Quick contact":
+  - link "Call P1 at (704) 221-8928":
+    - /url: tel:+17042218928
+    - generic: Call P1
+  - link "Request a Site Visit":
+    - /url: /contact

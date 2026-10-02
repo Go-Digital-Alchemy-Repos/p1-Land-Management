@@ -1,0 +1,190 @@
+- link "Skip to main content":
+  - /url: "#main-content"
+- banner:
+  - link "P1 Land & Property Management":
+    - /url: /
+    - img "P1 Land & Property Management"
+  - navigation "Main navigation":
+    - link "Home":
+      - /url: /
+    - link "About":
+      - /url: /about
+    - button "Services":
+      - text: Services
+    - link "Contact":
+      - /url: /contact
+  - link "(704) 221-8928":
+    - /url: tel:+17042218928
+    - text: (704) 221-8928
+  - link "Request a Site Visit":
+    - /url: /contact
+- main:
+  - img "Land Clearing & Property Management in Anderson, SC"
+  - generic: Service Area · SC
+  - heading "Land Clearing & Property Management In Anderson, SC" [level=1]:
+    - text: Land Clearing & Property Management In
+    - emphasis: Anderson, SC
+  - paragraph: Commercial landscaping, grounds maintenance, and land care throughout Anderson County. We help you look after established grounds, prepare new sites, and keep farm roads, drainage, and ponds in working order.
+  - heading "Anderson SC Services" [level=2]
+  - list:
+    - generic: Commercial landscaping and grounds maintenance
+    - generic: Agricultural land and pasture maintenance
+    - generic: Land clearing and forestry mulching
+    - generic: Grading for fields, access roads, and construction pads
+    - generic: Drainage and waterway management
+    - generic: Turf and pasture establishment
+    - generic: Pond management and pond construction
+    - generic: Property reconstruction
+  - paragraph:
+    - text: Call
+    - link "+1 (704) 221-8928":
+      - /url: tel:7042218928
+    - text: or
+    - link "request a free estimate online":
+      - /url: /contact
+    - text: to discuss your property.
+  - heading "Planning Work Around Anderson County Terrain" [level=2]
+  - paragraph: A busy property near I-85 needs a different plan from a farm near Belton, Pendleton, or Lake Hartwell. We'll look at truck access, slopes, utilities, and where water goes before planning the work.
+  - paragraph: We'll walk the site and talk through what you want to change. Your estimate will explain the work, access needs, and anything that needs separate engineering, permits, or specialist help.
+  - heading "From Working Land to Managed Sites" [level=2]
+  - paragraph: On farms, we plan around animals, field work, and equipment routes. On commercial and public grounds, we consider visitors, deliveries, mowing times, and the way you want the property to look.
+  - paragraph: Photos, site plans, and notes about drainage or access problems help us prepare for the visit. Tell us how you use the property and what you'd like to do next.
+  - paragraph: We'll help you decide what to tackle first. A washed-out access road or blocked ditch may need attention before seeding or regular mowing begins. Breaking the work into sensible stages gives you a clearer picture of costs and timing.
+  - paragraph: Photos of problem areas and notes about when water, access, or vegetation issues appear can make the first conversation more useful and help the site visit focus on the right locations.
+  - heading "Anderson, SC Land & Property Management FAQs" [level=2]
+  - generic "What areas around Anderson does P1 serve?":
+    - generic: What areas around Anderson does P1 serve?
+    - generic: +
+  - generic "Does P1 maintain farms and pasture in Anderson County?":
+    - generic: Does P1 maintain farms and pasture in Anderson County?
+    - generic: +
+  - generic "Can P1 work on properties near Lake Hartwell?":
+    - generic: Can P1 work on properties near Lake Hartwell?
+    - generic: +
+  - generic "What size properties does P1 work on in Anderson?":
+    - generic: What size properties does P1 work on in Anderson?
+    - generic: +
+  - complementary:
+    - paragraph:
+      - link "Compare land management services":
+        - /url: /services
+      - text: or
+      - link "tell us about your property":
+        - /url: /contact
+      - text: to talk through the work and available dates.
+  - region "Related Anderson Services and Areas":
+    - paragraph: Explore More With P1
+    - heading "Related Anderson Services and Areas" [level=2]
+    - paragraph: Explore farm and pond care in Anderson and the surrounding Upstate.
+    - navigation "Related Services and Resources":
+      - list:
+        - link "Industrial and Agricultural Land Care Large-acreage vegetation, access, and property management for working sites.":
+          - /url: /services/industrial-agricultural
+          - generic: Industrial and Agricultural Land Care
+          - generic: Large-acreage vegetation, access, and property management for working sites.
+        - link "Pond and Waterway Management Maintain pond edges, waterways, shoreline areas, and visible water flow.":
+          - /url: /services/pond-waterway-management
+          - generic: Pond and Waterway Management
+          - generic: Maintain pond edges, waterways, shoreline areas, and visible water flow.
+    - navigation "Explore Service Areas":
+      - heading "Explore Service Areas" [level=3]
+      - paragraph: Local coverage across the Carolinas.
+      - list:
+        - link "Upstate South Carolina":
+          - /url: /service-areas/upstate-south-carolina
+          - text: Upstate South Carolina
+        - link "Greenville, SC":
+          - /url: /service-areas/greenville-sc
+          - text: Greenville, SC
+        - link "Easley, SC":
+          - /url: /service-areas/easley-sc
+          - text: Easley, SC
+  - generic: P1 Land & Property Management
+  - heading "Let's Walk Your Property" [level=2]
+  - paragraph: Tell us where it is and what's going on. The site visit and written estimate are free.
+  - link "Request a Site Visit":
+    - /url: /contact
+    - text: Request a Site Visit
+  - link "Call (704) 221-8928":
+    - /url: tel:7042218928
+    - text: Call (704) 221-8928
+- contentinfo:
+  - link "P1 Land & Property Management":
+    - /url: /
+    - img "P1 Land & Property Management"
+  - paragraph: P1 Land & Property Management clears, grades, drains, seeds and maintains commercial, industrial and farm property of an acre or more across Upstate South Carolina and the Charlotte region. Licensed and insured in North and South Carolina.
+  - link "(704) 221-8928":
+    - /url: tel:+17042218928
+    - text: (704) 221-8928
+  - link "Find us on Google":
+    - /url: https://www.google.com/maps/place/P1+Land+Management/@34.8311425,-80.622017,17z/data=!3m1!4b1!4m6!3m5!1s0x8855cd2b88976525:0x49c378cdfdecac9a!8m2!3d34.8311381!4d-80.6194367!16s%2Fg%2F11nw0vxpb_?entry=ttu&g_ep=EgoyMDI2MDkxMy4wIKXMDSoASAFQAw%3D%3D
+  - link "Send a secure inquiry":
+    - /url: /contact
+  - heading "Services" [level=4]
+  - list:
+    - link "Commercial Landscaping":
+      - /url: /services/commercial-landscaping
+    - link "Commercial Snow & Ice":
+      - /url: /services/commercial-snow-ice-management
+    - link "Industrial & Agricultural":
+      - /url: /services/industrial-agricultural
+    - link "Land Clearing":
+      - /url: /services/land-clearing
+    - link "Grading & Site Prep":
+      - /url: /services/grading-site-preparation
+    - link "Drainage Solutions":
+      - /url: /services/drainage
+    - link "Turf & Seeding":
+      - /url: /services/turf-installation-seeding
+    - link "Tree Services":
+      - /url: /services/tree-services
+    - link "Pond & Waterway":
+      - /url: /services/pond-waterway-management
+    - link "Property Reconstruction":
+      - /url: /services/property-reconstruction
+    - link "All Services →":
+      - /url: /services
+  - heading "Service Areas" [level=4]
+  - list:
+    - listitem: Upstate South Carolina
+    - link "Greenville":
+      - /url: /service-areas/greenville-sc
+    - link "Spartanburg":
+      - /url: /service-areas/spartanburg-sc
+    - link "Anderson":
+      - /url: /service-areas/anderson-sc
+    - link "Lancaster County":
+      - /url: /service-areas/lancaster-county-sc
+    - link "York County":
+      - /url: /service-areas/york-county-sc
+    - listitem: Greater Charlotte NC
+    - link "Charlotte, NC":
+      - /url: /service-areas/charlotte-north-carolina
+    - link "Concord":
+      - /url: /service-areas/concord-nc
+    - link "Mooresville & Lake Norman":
+      - /url: /service-areas/mooresville-lake-norman-nc
+    - link "Gastonia":
+      - /url: /service-areas/gastonia-nc
+    - link "Union County":
+      - /url: /service-areas/union-county-nc
+    - link "All Areas →":
+      - /url: /service-areas
+  - heading "Company" [level=4]
+  - list:
+    - link "About Us":
+      - /url: /about
+    - link "Service Gallery":
+      - /url: /gallery
+    - link "Blog & Resources":
+      - /url: /blog
+    - link "Contact / Site Assessment":
+      - /url: /contact
+  - heading "Hours" [level=4]
+  - list:
+    - listitem: "Mon – Fri: 7 AM – 6 PM"
+    - listitem: "Saturday: By Appointment"
+    - listitem: "Sunday: Closed"
+    - link "Request a Site Visit":
+      - /url: /contact
+  - generic: © 2026 P1 Land & Property Management. Serving Upstate South Carolina & the Charlotte, NC region. All rights reserved.

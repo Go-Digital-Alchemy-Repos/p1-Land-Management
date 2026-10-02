@@ -1,0 +1,210 @@
+- link "Skip to main content":
+  - /url: "#main-content"
+- banner:
+  - link "P1 Land & Property Management":
+    - /url: /
+    - img "P1 Land & Property Management"
+  - button "Open navigation":
+    - generic: Open navigation
+- main:
+  - img "Land Clearing & Property Management in Lancaster County, SC"
+  - generic: Service Area · SC
+  - heading "Land Clearing & Property Management In Lancaster County, SC" [level=1]:
+    - text: Land Clearing & Property Management In
+    - emphasis: Lancaster County, SC
+  - paragraph: Commercial landscaping and grounds maintenance across Lancaster County, from Indian Land and Van Wyck to Kershaw and Heath Springs. We also help with farm upkeep, clearing, grading, drainage, and larger property repairs.
+  - heading "Your Lancaster County Property Partner" [level=2]
+  - paragraph: Lancaster County is one of the fastest-growing counties in the Charlotte region. Its northern panhandle around Indian Land and Van Wyck has seen major commercial, industrial, and institutional development — while the central and southern reaches around Lancaster, Kershaw, and Heath Springs remain defined by working farmland, pasture, and timber.
+  - paragraph: We work on commercial grounds in Indian Land, development tracts along U.S. 521, and farmland outside Kershaw. Each job starts with how you use the property and what needs attention.
+  - img "Large-acreage property management in Lancaster County, SC"
+  - heading "Land & Property Management Services Throughout Lancaster County" [level=2]
+  - list:
+    - generic: Commercial landscaping and exterior grounds maintenance contracts
+    - generic: Agricultural property maintenance — pastures, fields, fence lines, and access roads
+    - generic: Land clearing and forestry mulching — lot clearing, right-of-way, and rural acreage
+    - generic: Fine grading and site preparation for commercial, industrial, municipal, and institutional development
+    - generic: Drainage work — French drains, ponds, ditches, and erosion repairs
+    - generic: Turf installation — sod and large-acreage seeding for Piedmont soils
+    - generic: Tree services — trimming, removal, and selective clearing
+    - generic: Pond and waterway management — construction, restoration, and water quality
+    - generic: Full property reconstruction
+  - heading "Communities We Serve in Lancaster County" [level=2]
+  - paragraph: "P1 provides commercial landscaping, grounds maintenance, land clearing, grading, drainage, turf, and property management services throughout Lancaster County, SC, including:"
+  - list:
+    - link "Indian Land":
+      - /url: /service-areas/indian-land-sc
+    - text: — the county's fastest-growing community
+    - listitem: Van Wyck and the panhandle
+    - listitem: Lancaster — the county seat
+    - listitem: Kershaw and Heath Springs
+    - listitem: Pleasant Hill and Elgin
+    - listitem: Rich Hill and Taxahaw
+    - listitem: The U.S. 521 and Catawba River corridors
+    - listitem: Surrounding rural and unincorporated areas of Lancaster County
+  - heading "Agricultural Property Management in Lancaster County" [level=2]
+  - paragraph: Agriculture remains a genuine part of Lancaster County's identity, from Van Wyck and the northern panhandle south toward Kershaw and Heath Springs. Working farms and large agricultural properties need commercial-scale care, including pasture management and reseeding, drainage across large tracts, access-road grading, selective clearing along fence lines, and pond maintenance for livestock and irrigation.
+  - paragraph: We help farm owners restore pasture, clear overgrowth, grade access roads, and look after ponds. We'll walk the land with you and plan work around animals, equipment, and seasonal use.
+  - heading "Commercial & Development Site Work in Lancaster County" [level=2]
+  - paragraph: New sites along U.S. 521 through Indian Land and Van Wyck need careful preparation. We handle clearing, grading, drainage, and turf establishment, working with your project team and approved plans.
+  - paragraph: After the site is established, we can keep the grounds maintained on a regular schedule.
+  - heading "Why Lancaster County Property Teams Choose P1" [level=2]
+  - paragraph: Local soil and terrain shape the work. We consider the Piedmont's clay, rolling slopes, and bottomland near the Catawba when planning drainage, grading, and seasonal care.
+  - paragraph: From clearing and drainage repairs to regular grounds care, you'll have one team to call about your Lancaster County property.
+  - heading "Lancaster County, SC Land & Property Management FAQs" [level=2]
+  - generic "What areas of Lancaster County does P1 serve?":
+    - generic: What areas of Lancaster County does P1 serve?
+    - generic: +
+  - generic "Does P1 handle land clearing for new construction in Lancaster County?":
+    - generic: Does P1 handle land clearing for new construction in Lancaster County?
+    - generic: +
+  - generic "Can P1 maintain working farms and agricultural properties?":
+    - generic: Can P1 maintain working farms and agricultural properties?
+    - generic: +
+  - generic "What size properties does P1 work on?":
+    - generic: What size properties does P1 work on?
+    - generic: +
+  - paragraph:
+    - text: Call
+    - link "+1 (704) 221-8928":
+      - /url: tel:7042218928
+    - text: or
+    - link "request a free estimate online":
+      - /url: /contact
+    - text: to discuss your property.
+  - complementary:
+    - paragraph:
+      - text: Explore
+      - link "commercial landscaping":
+        - /url: /services/commercial-landscaping
+      - text: ", review"
+      - link "commercial snow and ice management":
+        - /url: /services/commercial-snow-ice-management
+      - text: ", compare"
+      - link "all land management services":
+        - /url: /services
+      - text: ", or"
+      - link "tell us about your property":
+        - /url: /contact
+      - text: .
+  - region "Related Lancaster County Services and Areas":
+    - paragraph: Explore More With P1
+    - heading "Related Lancaster County Services and Areas" [level=2]
+    - paragraph: Find services and nearby communities along the Charlotte and Upstate corridor.
+    - navigation "Related Services and Resources":
+      - list:
+        - link "Land Clearing Selective clearing, forestry mulching, and site access preparation.":
+          - /url: /services/land-clearing
+          - generic: Land Clearing
+          - generic: Selective clearing, forestry mulching, and site access preparation.
+        - link "Commercial Landscaping Regular mowing, seasonal grounds care, and maintenance around your operations.":
+          - /url: /services/commercial-landscaping
+          - generic: Commercial Landscaping
+          - generic: Regular mowing, seasonal grounds care, and maintenance around your operations.
+    - navigation "Explore Service Areas":
+      - heading "Explore Service Areas" [level=3]
+      - paragraph: Local coverage across the Carolinas.
+      - list:
+        - link "Charlotte, NC":
+          - /url: /service-areas/charlotte-north-carolina
+          - text: Charlotte, NC
+        - link "York County, SC":
+          - /url: /service-areas/york-county-sc
+          - text: York County, SC
+        - link "Indian Land, SC":
+          - /url: /service-areas/indian-land-sc
+          - text: Indian Land, SC
+  - generic: P1 Land & Property Management
+  - heading "Let's Walk Your Property" [level=2]
+  - paragraph: Tell us where it is and what's going on. The site visit and written estimate are free.
+  - link "Request a Site Visit":
+    - /url: /contact
+    - text: Request a Site Visit
+  - link "Call (704) 221-8928":
+    - /url: tel:7042218928
+    - text: Call (704) 221-8928
+- contentinfo:
+  - link "P1 Land & Property Management":
+    - /url: /
+    - img "P1 Land & Property Management"
+  - paragraph: P1 Land & Property Management clears, grades, drains, seeds and maintains commercial, industrial and farm property of an acre or more across Upstate South Carolina and the Charlotte region. Licensed and insured in North and South Carolina.
+  - link "(704) 221-8928":
+    - /url: tel:+17042218928
+    - text: (704) 221-8928
+  - link "Find us on Google":
+    - /url: https://www.google.com/maps/place/P1+Land+Management/@34.8311425,-80.622017,17z/data=!3m1!4b1!4m6!3m5!1s0x8855cd2b88976525:0x49c378cdfdecac9a!8m2!3d34.8311381!4d-80.6194367!16s%2Fg%2F11nw0vxpb_?entry=ttu&g_ep=EgoyMDI2MDkxMy4wIKXMDSoASAFQAw%3D%3D
+  - link "Send a secure inquiry":
+    - /url: /contact
+  - heading "Services" [level=4]
+  - list:
+    - link "Commercial Landscaping":
+      - /url: /services/commercial-landscaping
+    - link "Commercial Snow & Ice":
+      - /url: /services/commercial-snow-ice-management
+    - link "Industrial & Agricultural":
+      - /url: /services/industrial-agricultural
+    - link "Land Clearing":
+      - /url: /services/land-clearing
+    - link "Grading & Site Prep":
+      - /url: /services/grading-site-preparation
+    - link "Drainage Solutions":
+      - /url: /services/drainage
+    - link "Turf & Seeding":
+      - /url: /services/turf-installation-seeding
+    - link "Tree Services":
+      - /url: /services/tree-services
+    - link "Pond & Waterway":
+      - /url: /services/pond-waterway-management
+    - link "Property Reconstruction":
+      - /url: /services/property-reconstruction
+    - link "All Services →":
+      - /url: /services
+  - heading "Service Areas" [level=4]
+  - list:
+    - listitem: Upstate South Carolina
+    - link "Greenville":
+      - /url: /service-areas/greenville-sc
+    - link "Spartanburg":
+      - /url: /service-areas/spartanburg-sc
+    - link "Anderson":
+      - /url: /service-areas/anderson-sc
+    - link "Lancaster County":
+      - /url: /service-areas/lancaster-county-sc
+    - link "York County":
+      - /url: /service-areas/york-county-sc
+    - listitem: Greater Charlotte NC
+    - link "Charlotte, NC":
+      - /url: /service-areas/charlotte-north-carolina
+    - link "Concord":
+      - /url: /service-areas/concord-nc
+    - link "Mooresville & Lake Norman":
+      - /url: /service-areas/mooresville-lake-norman-nc
+    - link "Gastonia":
+      - /url: /service-areas/gastonia-nc
+    - link "Union County":
+      - /url: /service-areas/union-county-nc
+    - link "All Areas →":
+      - /url: /service-areas
+  - heading "Company" [level=4]
+  - list:
+    - link "About Us":
+      - /url: /about
+    - link "Service Gallery":
+      - /url: /gallery
+    - link "Blog & Resources":
+      - /url: /blog
+    - link "Contact / Site Assessment":
+      - /url: /contact
+  - heading "Hours" [level=4]
+  - list:
+    - listitem: "Mon – Fri: 7 AM – 6 PM"
+    - listitem: "Saturday: By Appointment"
+    - listitem: "Sunday: Closed"
+    - link "Request a Site Visit":
+      - /url: /contact
+  - generic: © 2026 P1 Land & Property Management. Serving Upstate South Carolina & the Charlotte, NC region. All rights reserved.
+- navigation "Quick contact":
+  - link "Call P1 at (704) 221-8928":
+    - /url: tel:+17042218928
+    - generic: Call P1
+  - link "Request a Site Visit":
+    - /url: /contact

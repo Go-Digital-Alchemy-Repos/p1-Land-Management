@@ -1,0 +1,227 @@
+- link "Skip to main content":
+  - /url: "#main-content"
+- banner:
+  - link "P1 Land & Property Management":
+    - /url: /
+    - img "P1 Land & Property Management"
+  - navigation "Main navigation":
+    - link "Home":
+      - /url: /
+    - link "About":
+      - /url: /about
+    - button "Services":
+      - text: Services
+    - link "Contact":
+      - /url: /contact
+  - link "(704) 221-8928":
+    - /url: tel:+17042218928
+    - text: (704) 221-8928
+  - link "Request a Site Visit":
+    - /url: /contact
+- main:
+  - img "Land Clearing & Property Management in York County, SC"
+  - generic: Service Area · SC
+  - heading "Land Clearing & Property Management In York County, SC" [level=1]:
+    - text: Land Clearing & Property Management In
+    - emphasis: York County, SC
+  - paragraph: Commercial landscaping and grounds maintenance across York County, from Rock Hill and Fort Mill to Lake Wylie, Clover, and York. We also handle farm care, clearing, grading, drainage, and property restoration.
+  - heading "Your York County Property Partner" [level=2]
+  - paragraph: York County includes commercial and industrial grounds along I-77, waterfront properties around Lake Wylie, and farmland near York, Clover, and Sharon. Those different settings call for different plans for drainage, access, and ongoing care.
+  - paragraph: We help care for commercial sites, development tracts, waterfront grounds, and working farms. We'll walk your property and talk through the work that would make the biggest difference.
+  - img "Illustrative commercial marina grounds with an orange Kubota zero-turn mower beside the lake"
+  - heading "Land & Property Management Services Throughout York County" [level=2]
+  - list:
+    - generic: Commercial landscaping and exterior grounds maintenance contracts
+    - generic: Agricultural property maintenance — pastures, fields, fence lines, and access roads
+    - generic: Land clearing and forestry mulching — lot clearing, right-of-way, and rural acreage
+    - generic: Fine grading and site preparation for commercial, industrial, municipal, and institutional development
+    - generic: Drainage work — French drains, ponds, ditches, and erosion repairs
+    - generic: Turf installation — sod and large-acreage seeding for Piedmont soils
+    - generic: Tree services — trimming, removal, and selective clearing
+    - generic: Pond and waterway management — construction, restoration, and water quality
+    - generic: Full property reconstruction
+  - heading "Communities We Serve in York County" [level=2]
+  - paragraph: "P1 provides commercial landscaping, grounds maintenance, land clearing, grading, drainage, turf, and property management services throughout York County, SC, including:"
+  - list:
+    - link "Rock Hill":
+      - /url: /service-areas/rock-hill-sc
+    - text: — the county's largest city
+    - link "Fort Mill":
+      - /url: /service-areas/fort-mill-sc
+    - text: and Tega Cay
+    - listitem: Lake Wylie and River Hills
+    - listitem: York — the county seat
+    - listitem: Clover and Bethany
+    - listitem: Sharon, Hickory Grove, and Smyrna
+    - listitem: McConnells and the western county
+    - listitem: The I-77 and Catawba River corridors
+    - listitem: Surrounding rural and unincorporated areas of York County
+  - heading "Agricultural Property Management in York County" [level=2]
+  - paragraph: Western York County — around York, Sharon, Hickory Grove, McConnells, and Smyrna — includes extensive fenced pasture and working cattle, poultry, and hay operations across its rolling Piedmont hills. These properties need commercial-scale care, including pasture management and reseeding, drainage across large tracts, access-road grading, selective clearing along fence lines, and pond maintenance for livestock and irrigation.
+  - paragraph: We help farm owners restore pasture, clear fence lines, maintain ponds, and keep access roads usable. We'll plan the work around your animals, equipment, and seasonal needs.
+  - heading "Commercial & Development Site Work in York County" [level=2]
+  - paragraph: For new sites around Fort Mill, Tega Cay, and Rock Hill, we handle clearing, grading, drainage, and turf establishment. We'll work with your project team to prepare the land in the right order.
+  - paragraph: After the site is established, we can keep the grounds maintained on a regular schedule.
+  - heading "Lake Wylie & Waterfront Properties" [level=2]
+  - paragraph: Along Lake Wylie and the Catawba River, drainage and shoreline care often go together. We help commercial, municipal, institutional, and agricultural properties with pond maintenance, erosion, sloped ground, and turf establishment.
+  - heading "Why York County Property Teams Choose P1" [level=2]
+  - paragraph: York County's clay soils, hills, and low ground near the Catawba all affect how water moves. We look at those conditions when planning grading, drainage, and seasonal maintenance.
+  - paragraph: From clearing and drainage repairs to regular grounds care, you'll have one team to call about your York County property.
+  - heading "York County, SC Land & Property Management FAQs" [level=2]
+  - generic "What areas of York County does P1 serve?":
+    - generic: What areas of York County does P1 serve?
+    - generic: +
+  - generic "Does P1 handle land clearing for new construction in York County?":
+    - generic: Does P1 handle land clearing for new construction in York County?
+    - generic: +
+  - generic "Can P1 maintain working farms and agricultural properties?":
+    - generic: Can P1 maintain working farms and agricultural properties?
+    - generic: +
+  - generic "Does P1 work on Lake Wylie waterfront properties?":
+    - generic: Does P1 work on Lake Wylie waterfront properties?
+    - generic: +
+  - generic "What size properties does P1 work on?":
+    - generic: What size properties does P1 work on?
+    - generic: +
+  - paragraph:
+    - text: Call
+    - link "+1 (704) 221-8928":
+      - /url: tel:7042218928
+    - text: or
+    - link "request a free estimate online":
+      - /url: /contact
+    - text: to discuss your property.
+  - complementary:
+    - paragraph:
+      - text: Explore
+      - link "commercial landscaping":
+        - /url: /services/commercial-landscaping
+      - text: ", review"
+      - link "commercial snow and ice management":
+        - /url: /services/commercial-snow-ice-management
+      - text: ", compare"
+      - link "all land management services":
+        - /url: /services
+      - text: ", or"
+      - link "tell us about your property":
+        - /url: /contact
+      - text: .
+  - region "Related York County Services and Areas":
+    - paragraph: Explore More With P1
+    - heading "Related York County Services and Areas" [level=2]
+    - paragraph: Explore grounds care, drainage, and nearby service areas.
+    - navigation "Related Services and Resources":
+      - list:
+        - link "Commercial Landscaping Regular mowing, seasonal grounds care, and maintenance around your operations.":
+          - /url: /services/commercial-landscaping
+          - generic: Commercial Landscaping
+          - generic: Regular mowing, seasonal grounds care, and maintenance around your operations.
+        - link "Drainage Solutions Find the cause of standing water, runoff, and erosion.":
+          - /url: /services/drainage
+          - generic: Drainage Solutions
+          - generic: Find the cause of standing water, runoff, and erosion.
+    - navigation "Explore Service Areas":
+      - heading "Explore Service Areas" [level=3]
+      - paragraph: Local coverage across the Carolinas.
+      - list:
+        - link "Charlotte, NC":
+          - /url: /service-areas/charlotte-north-carolina
+          - text: Charlotte, NC
+        - link "Lancaster County, SC":
+          - /url: /service-areas/lancaster-county-sc
+          - text: Lancaster County, SC
+        - link "Commercial Landscaping in Fort Mill":
+          - /url: /service-areas/fort-mill-sc
+          - text: Commercial Landscaping in Fort Mill
+        - link "Rock Hill, SC":
+          - /url: /service-areas/rock-hill-sc
+          - text: Rock Hill, SC
+  - generic: P1 Land & Property Management
+  - heading "Let's Walk Your Property" [level=2]
+  - paragraph: Tell us where it is and what's going on. The site visit and written estimate are free.
+  - link "Request a Site Visit":
+    - /url: /contact
+    - text: Request a Site Visit
+  - link "Call (704) 221-8928":
+    - /url: tel:7042218928
+    - text: Call (704) 221-8928
+- contentinfo:
+  - link "P1 Land & Property Management":
+    - /url: /
+    - img "P1 Land & Property Management"
+  - paragraph: P1 Land & Property Management clears, grades, drains, seeds and maintains commercial, industrial and farm property of an acre or more across Upstate South Carolina and the Charlotte region. Licensed and insured in North and South Carolina.
+  - link "(704) 221-8928":
+    - /url: tel:+17042218928
+    - text: (704) 221-8928
+  - link "Find us on Google":
+    - /url: https://www.google.com/maps/place/P1+Land+Management/@34.8311425,-80.622017,17z/data=!3m1!4b1!4m6!3m5!1s0x8855cd2b88976525:0x49c378cdfdecac9a!8m2!3d34.8311381!4d-80.6194367!16s%2Fg%2F11nw0vxpb_?entry=ttu&g_ep=EgoyMDI2MDkxMy4wIKXMDSoASAFQAw%3D%3D
+  - link "Send a secure inquiry":
+    - /url: /contact
+  - heading "Services" [level=4]
+  - list:
+    - link "Commercial Landscaping":
+      - /url: /services/commercial-landscaping
+    - link "Commercial Snow & Ice":
+      - /url: /services/commercial-snow-ice-management
+    - link "Industrial & Agricultural":
+      - /url: /services/industrial-agricultural
+    - link "Land Clearing":
+      - /url: /services/land-clearing
+    - link "Grading & Site Prep":
+      - /url: /services/grading-site-preparation
+    - link "Drainage Solutions":
+      - /url: /services/drainage
+    - link "Turf & Seeding":
+      - /url: /services/turf-installation-seeding
+    - link "Tree Services":
+      - /url: /services/tree-services
+    - link "Pond & Waterway":
+      - /url: /services/pond-waterway-management
+    - link "Property Reconstruction":
+      - /url: /services/property-reconstruction
+    - link "All Services →":
+      - /url: /services
+  - heading "Service Areas" [level=4]
+  - list:
+    - listitem: Upstate South Carolina
+    - link "Greenville":
+      - /url: /service-areas/greenville-sc
+    - link "Spartanburg":
+      - /url: /service-areas/spartanburg-sc
+    - link "Anderson":
+      - /url: /service-areas/anderson-sc
+    - link "Lancaster County":
+      - /url: /service-areas/lancaster-county-sc
+    - link "York County":
+      - /url: /service-areas/york-county-sc
+    - listitem: Greater Charlotte NC
+    - link "Charlotte, NC":
+      - /url: /service-areas/charlotte-north-carolina
+    - link "Concord":
+      - /url: /service-areas/concord-nc
+    - link "Mooresville & Lake Norman":
+      - /url: /service-areas/mooresville-lake-norman-nc
+    - link "Gastonia":
+      - /url: /service-areas/gastonia-nc
+    - link "Union County":
+      - /url: /service-areas/union-county-nc
+    - link "All Areas →":
+      - /url: /service-areas
+  - heading "Company" [level=4]
+  - list:
+    - link "About Us":
+      - /url: /about
+    - link "Service Gallery":
+      - /url: /gallery
+    - link "Blog & Resources":
+      - /url: /blog
+    - link "Contact / Site Assessment":
+      - /url: /contact
+  - heading "Hours" [level=4]
+  - list:
+    - listitem: "Mon – Fri: 7 AM – 6 PM"
+    - listitem: "Saturday: By Appointment"
+    - listitem: "Sunday: Closed"
+    - link "Request a Site Visit":
+      - /url: /contact
+  - generic: © 2026 P1 Land & Property Management. Serving Upstate South Carolina & the Charlotte, NC region. All rights reserved.

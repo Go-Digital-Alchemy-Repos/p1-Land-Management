@@ -1,0 +1,251 @@
+- link "Skip to main content":
+  - /url: "#main-content"
+- banner:
+  - link "P1 Land & Property Management":
+    - /url: /
+    - img "P1 Land & Property Management"
+  - button "Open navigation":
+    - generic: Open navigation
+- main:
+  - img "Landscaped commercial campus with maintained lawns and planting beds."
+  - generic: Service Area · SC
+  - heading "Commercial Landscaping & Land Management in Simpsonville, SC" [level=1]
+  - paragraph: Commercial landscaping and grounds maintenance for large properties in Simpsonville and southern Greenville County. From retail entrances to campus lawns and drainage, we help keep the grounds ready for daily use.
+  - navigation "Breadcrumb":
+    - list:
+      - link "Home":
+        - /url: /
+      - text: ›
+      - link "Service Areas":
+        - /url: /service-areas
+      - listitem: ›Simpsonville, SC
+  - paragraph: We serve commercial, industrial, agricultural, municipal, and institutional properties 1 acre and larger in Simpsonville, SC.
+  - heading "Your Simpsonville Property Partner" [level=2]
+  - paragraph: Retail along Fairview Road, medical and business properties near Harrison Bridge Road, and grounds around Five Forks each have different needs. We plan maintenance around visitors, deliveries, and the areas people see and use most.
+  - heading "Land & Property Management Services in Simpsonville" [level=2]
+  - list:
+    - listitem: Commercial landscaping and exterior grounds maintenance contracts
+    - listitem: Land clearing and forestry mulching — lot clearing, right-of-way, and rural acreage
+    - listitem: Fine grading and site preparation for commercial, industrial, municipal, and institutional development
+    - listitem: Drainage work — French drains, ponds, ditches, and erosion repairs
+    - listitem: Turf installation — sod and large-acreage seeding for Piedmont soils
+    - listitem: Tree services — trimming, removal, and selective clearing
+    - listitem: Pond and waterway management — construction, restoration, and water quality
+    - listitem: Agricultural property maintenance — pastures, fields, fence lines, and access roads
+    - listitem: Full property reconstruction
+  - paragraph: We'll plan regular upkeep and larger repairs around the way you use your property.
+  - heading "Commercial & Development Site Work in Simpsonville" [level=2]
+  - paragraph: For new sites around the Golden Strip, we clear land, prepare grades, install drainage, and establish turf. We'll review access and construction timing with your team before scheduling the crew.
+  - heading "Why Simpsonville Property Teams Choose P1" [level=2]
+  - paragraph: Keeping an entrance tidy is only part of the job. We also look at trees, brush, drainage, and seasonal planting needs across the property, with larger repairs priced separately from regular care.
+  - heading "Simpsonville, SC Land & Property Management FAQs" [level=2]
+  - generic "What kinds of properties does P1 serve in Simpsonville?":
+    - generic: What kinds of properties does P1 serve in Simpsonville?
+    - generic: +
+  - generic "Does P1 handle drainage and grading for Simpsonville sites?":
+    - generic: Does P1 handle drainage and grading for Simpsonville sites?
+    - generic: +
+  - generic "Can P1 maintain a retail center or business park?":
+    - generic: Can P1 maintain a retail center or business park?
+    - generic: +
+  - heading "Services and Nearby Communities" [level=2]
+  - list:
+    - link "Commercial Landscaping in Simpsonville, SC":
+      - /url: /services/commercial-landscaping
+    - link "Fine Grading & Site Preparation":
+      - /url: /services/grading-site-preparation
+    - link "Drainage Solutions":
+      - /url: /services/drainage
+    - link "Tree Services":
+      - /url: /services/tree-services
+    - link "Commercial Site Management":
+      - /url: /commercial
+    - link "Greenville, SC":
+      - /url: /service-areas/greenville-sc
+    - link "Nearby Greer, SC":
+      - /url: /service-areas/greer-sc
+  - paragraph:
+    - text: Call
+    - link "(704) 221-8928":
+      - /url: tel:+17042218928
+    - text: or
+    - link "request a free site assessment online":
+      - /url: /contact
+    - text: to discuss your property.
+  - complementary "Site assessment and service locations":
+    - region "A better plan for your land.":
+      - paragraph: Let's walk your property
+      - heading "A better plan for your land." [level=2]
+      - paragraph: Tell us about your property and priorities. Start with a free site assessment.
+      - link "Get a Free Site Assessment":
+        - /url: /contact
+        - text: Get a Free Site Assessment
+      - link "(704) 221-8928":
+        - /url: tel:+17042218928
+        - text: (704) 221-8928
+    - navigation "Where we work":
+      - heading "Where we work" [level=2]
+      - paragraph: Explore all NC & SC service areas.
+      - heading "North Carolina" [level=3]
+      - list:
+        - link "Belmont":
+          - /url: /service-areas/belmont-nc
+        - link "Charlotte":
+          - /url: /service-areas/charlotte-north-carolina
+        - link "Concord":
+          - /url: /service-areas/concord-nc
+        - link "Cornelius":
+          - /url: /service-areas/cornelius-nc
+        - link "Gastonia":
+          - /url: /service-areas/gastonia-nc
+        - link "Huntersville":
+          - /url: /service-areas/huntersville-nc
+        - link "Indian Trail":
+          - /url: /service-areas/indian-trail-nc
+        - link "Kannapolis":
+          - /url: /service-areas/kannapolis-nc
+        - link "Matthews":
+          - /url: /service-areas/matthews-nc
+        - link "Monroe":
+          - /url: /service-areas/monroe-nc
+        - link "Mooresville & Lake Norman":
+          - /url: /service-areas/mooresville-lake-norman-nc
+        - link "Mount Holly":
+          - /url: /service-areas/mount-holly-nc
+        - link "Union County":
+          - /url: /service-areas/union-county-nc
+        - link "Waxhaw":
+          - /url: /service-areas/waxhaw-nc
+      - heading "South Carolina" [level=3]
+      - list:
+        - link "Anderson":
+          - /url: /service-areas/anderson-sc
+        - link "Boiling Springs":
+          - /url: /service-areas/boiling-springs-sc
+        - link "Duncan":
+          - /url: /service-areas/duncan-sc
+        - link "Easley":
+          - /url: /service-areas/easley-sc
+        - link "Fort Mill":
+          - /url: /service-areas/fort-mill-sc
+        - link "Gaffney":
+          - /url: /service-areas/gaffney-sc
+        - link "Greenville":
+          - /url: /service-areas/greenville-sc
+        - link "Greer":
+          - /url: /service-areas/greer-sc
+        - link "Indian Land":
+          - /url: /service-areas/indian-land-sc
+        - link "Inman":
+          - /url: /service-areas/inman-sc
+        - link "Lancaster County":
+          - /url: /service-areas/lancaster-county-sc
+        - link "Rock Hill":
+          - /url: /service-areas/rock-hill-sc
+        - link "Simpsonville":
+          - /url: /service-areas/simpsonville-sc
+          - text: Simpsonville
+        - link "Spartanburg":
+          - /url: /service-areas/spartanburg-sc
+        - link "Upstate South Carolina":
+          - /url: /service-areas/upstate-south-carolina
+        - link "York County":
+          - /url: /service-areas/york-county-sc
+      - link "Service area overview":
+        - /url: /service-areas
+        - text: Service area overview
+  - generic: P1 Land & Property Management
+  - heading "Let's Walk Your Property" [level=2]
+  - paragraph: Tell us where it is and what's going on. The site visit and written estimate are free.
+  - link "Request a Site Visit":
+    - /url: /contact
+    - text: Request a Site Visit
+  - link "Call (704) 221-8928":
+    - /url: tel:7042218928
+    - text: Call (704) 221-8928
+- contentinfo:
+  - link "P1 Land & Property Management":
+    - /url: /
+    - img "P1 Land & Property Management"
+  - paragraph: P1 Land & Property Management clears, grades, drains, seeds and maintains commercial, industrial and farm property of an acre or more across Upstate South Carolina and the Charlotte region. Licensed and insured in North and South Carolina.
+  - link "(704) 221-8928":
+    - /url: tel:+17042218928
+    - text: (704) 221-8928
+  - link "Find us on Google":
+    - /url: https://www.google.com/maps/place/P1+Land+Management/@34.8311425,-80.622017,17z/data=!3m1!4b1!4m6!3m5!1s0x8855cd2b88976525:0x49c378cdfdecac9a!8m2!3d34.8311381!4d-80.6194367!16s%2Fg%2F11nw0vxpb_?entry=ttu&g_ep=EgoyMDI2MDkxMy4wIKXMDSoASAFQAw%3D%3D
+  - link "Send a secure inquiry":
+    - /url: /contact
+  - heading "Services" [level=4]
+  - list:
+    - link "Commercial Landscaping":
+      - /url: /services/commercial-landscaping
+    - link "Commercial Snow & Ice":
+      - /url: /services/commercial-snow-ice-management
+    - link "Industrial & Agricultural":
+      - /url: /services/industrial-agricultural
+    - link "Land Clearing":
+      - /url: /services/land-clearing
+    - link "Grading & Site Prep":
+      - /url: /services/grading-site-preparation
+    - link "Drainage Solutions":
+      - /url: /services/drainage
+    - link "Turf & Seeding":
+      - /url: /services/turf-installation-seeding
+    - link "Tree Services":
+      - /url: /services/tree-services
+    - link "Pond & Waterway":
+      - /url: /services/pond-waterway-management
+    - link "Property Reconstruction":
+      - /url: /services/property-reconstruction
+    - link "All Services →":
+      - /url: /services
+  - heading "Service Areas" [level=4]
+  - list:
+    - listitem: Upstate South Carolina
+    - link "Greenville":
+      - /url: /service-areas/greenville-sc
+    - link "Spartanburg":
+      - /url: /service-areas/spartanburg-sc
+    - link "Anderson":
+      - /url: /service-areas/anderson-sc
+    - link "Lancaster County":
+      - /url: /service-areas/lancaster-county-sc
+    - link "York County":
+      - /url: /service-areas/york-county-sc
+    - listitem: Greater Charlotte NC
+    - link "Charlotte, NC":
+      - /url: /service-areas/charlotte-north-carolina
+    - link "Concord":
+      - /url: /service-areas/concord-nc
+    - link "Mooresville & Lake Norman":
+      - /url: /service-areas/mooresville-lake-norman-nc
+    - link "Gastonia":
+      - /url: /service-areas/gastonia-nc
+    - link "Union County":
+      - /url: /service-areas/union-county-nc
+    - link "All Areas →":
+      - /url: /service-areas
+  - heading "Company" [level=4]
+  - list:
+    - link "About Us":
+      - /url: /about
+    - link "Service Gallery":
+      - /url: /gallery
+    - link "Blog & Resources":
+      - /url: /blog
+    - link "Contact / Site Assessment":
+      - /url: /contact
+  - heading "Hours" [level=4]
+  - list:
+    - listitem: "Mon – Fri: 7 AM – 6 PM"
+    - listitem: "Saturday: By Appointment"
+    - listitem: "Sunday: Closed"
+    - link "Request a Site Visit":
+      - /url: /contact
+  - generic: © 2026 P1 Land & Property Management. Serving Upstate South Carolina & the Charlotte, NC region. All rights reserved.
+- navigation "Quick contact":
+  - link "Call P1 at (704) 221-8928":
+    - /url: tel:+17042218928
+    - generic: Call P1
+  - link "Request a Site Visit":
+    - /url: /contact

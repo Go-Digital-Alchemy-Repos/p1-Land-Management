@@ -1,0 +1,176 @@
+- link "Skip to main content":
+  - /url: "#main-content"
+- banner:
+  - link "P1 Land & Property Management":
+    - /url: /
+    - img "P1 Land & Property Management"
+  - button "Open navigation":
+    - generic: Open navigation
+- main:
+  - article:
+    - img "Heavy equipment clearing land"
+    - generic: Land Clearing
+    - heading "How Much Does Land Clearing Cost Per Acre In South Carolina?" [level=1]:
+      - text: How Much Does Land Clearing Cost
+      - emphasis: Per Acre
+      - text: In South Carolina?
+    - paragraph: "If you own land in Upstate South Carolina and you're getting ready to clear it — for a building project, to open up farm acreage, or to reclaim overgrown property — one of the first questions you'll ask is: how much is this going to cost?"
+    - paragraph: There isn't one per-acre price that fits every job. Trees, brush, access, debris handling, and what you plan to do next all affect the estimate. Knowing those details makes it easier to compare quotes.
+    - paragraph: This post breaks down the cost considerations for land clearing in Upstate SC, what factors move the number up or down, and how to evaluate competing bids when you start talking to contractors.
+    - heading "Why a per-Acre Price Needs a Site Assessment" [level=2]
+    - paragraph: Every clearing estimate depends on the property. Brush density, tree size, access, ground conditions, stump removal, and debris handling all affect the price. A written estimate makes clear what you're paying for.
+    - heading "What Factors Affect Land Clearing Cost?" [level=2]
+    - heading "1. Vegetation Density and Type" [level=3]
+    - paragraph: This is the biggest driver. A field overgrown with brush and saplings clears much faster — and cheaper — than a stand of mature hardwoods with six-inch root systems. The more you're asking equipment to move, the more it costs.
+    - heading "2. Acreage and Site Access" [level=3]
+    - paragraph: Moving equipment to a site is part of the cost. On a larger job, that cost is spread over more acres. Easy access can also reduce setup time.
+    - heading "3. Clearing Method" [level=3]
+    - paragraph: "The method used to clear your land significantly affects both cost and outcome. The two main approaches are:"
+    - list:
+      - strong: "Traditional clearing and grubbing:"
+      - text: Trees are felled, stumps are pulled or ground, and debris is hauled or burned. This method is thorough but generates significant debris volume and is often more expensive.
+      - strong: "Forestry mulching:"
+      - text: A single machine with a drum head grinds all vegetation — trees, brush, stumps — directly into mulch on site. No hauling, no burning, less ground disturbance. Often more cost-effective and environmentally preferable for sites that won't be immediately constructed on.
+    - heading "4. What Happens to the Debris" [level=3]
+    - paragraph: Ask how debris will be handled and which disposal costs are included. Mulching may reduce hauling, but the appropriate approach depends on the vegetation and intended use of the cleared area. Confirm applicable requirements before any burning or disposal.
+    - heading "5. Post-Clearing Needs" [level=3]
+    - paragraph: If grading, drainage, or seeding will follow clearing, plan those stages together. Ask how the schedule and equipment moves affect the total price.
+    - heading "Getting an Accurate Estimate" [level=2]
+    - paragraph: The only way to get an accurate land clearing estimate is to have a contractor walk your property. Photos and acreage numbers give a ballpark — but the actual terrain, slope, soil conditions, vegetation density, and access will be assessed on site. Ask whether an assessment has a fee and what the written bid includes.
+    - paragraph: "When comparing bids, make sure you're comparing apples to apples: Does the bid include stump grinding? Debris hauling? Site cleanup? Will the cleared area be left at rough grade, or is fine grading a separate line item? These questions will surface the real differences between quotes."
+    - heading "Ready to Get Your Land Cleared in Upstate SC or Charlotte NC?" [level=2]
+    - paragraph: P1 Land & Property Management provides land clearing for commercial, industrial, agricultural, municipal, and institutional properties throughout Upstate South Carolina and the Charlotte, NC region. We offer free on-site assessments and transparent, written estimates. P1 does not provide residential services.
+    - paragraph:
+      - text: Call
+      - strong:
+        - link "+1 (704) 221-8928":
+          - /url: tel:7042218928
+      - text: or request a free estimate online — P1 Land & Property Management, serving Upstate SC and Charlotte NC.
+  - complementary:
+    - paragraph:
+      - text: Planning work on your land? Review P1's
+      - link "commercial land clearing services":
+        - /url: /services/land-clearing
+      - text: and
+      - link "request a property estimate":
+        - /url: /contact
+      - text: .
+  - region "Continue Planning a Clearing Project":
+    - paragraph: Explore More With P1
+    - heading "Continue Planning a Clearing Project" [level=2]
+    - paragraph: Learn about the work that may come before or after clearing.
+    - navigation "Related Services and Resources":
+      - list:
+        - link "Land Clearing Selective clearing, forestry mulching, and site access preparation.":
+          - /url: /services/land-clearing
+          - generic: Land Clearing
+          - generic: Selective clearing, forestry mulching, and site access preparation.
+        - link "Grading and Site Preparation Shape grades, improve access, and prepare ground for its next use.":
+          - /url: /services/grading-site-preparation
+          - generic: Grading and Site Preparation
+          - generic: Shape grades, improve access, and prepare ground for its next use.
+    - navigation "Explore Service Areas":
+      - heading "Explore Service Areas" [level=3]
+      - paragraph: Local coverage across the Carolinas.
+      - list:
+        - link "Upstate South Carolina":
+          - /url: /service-areas/upstate-south-carolina
+          - text: Upstate South Carolina
+        - link "Lancaster County, SC":
+          - /url: /service-areas/lancaster-county-sc
+          - text: Lancaster County, SC
+  - generic: P1 Land & Property Management
+  - heading "Let's Walk Your Property" [level=2]
+  - paragraph: Tell us where it is and what's going on. The site visit and written estimate are free.
+  - link "Request a Site Visit":
+    - /url: /contact
+    - text: Request a Site Visit
+  - link "Call (704) 221-8928":
+    - /url: tel:7042218928
+    - text: Call (704) 221-8928
+- contentinfo:
+  - link "P1 Land & Property Management":
+    - /url: /
+    - img "P1 Land & Property Management"
+  - paragraph: P1 Land & Property Management clears, grades, drains, seeds and maintains commercial, industrial and farm property of an acre or more across Upstate South Carolina and the Charlotte region. Licensed and insured in North and South Carolina.
+  - link "(704) 221-8928":
+    - /url: tel:+17042218928
+    - text: (704) 221-8928
+  - link "Find us on Google":
+    - /url: https://www.google.com/maps/place/P1+Land+Management/@34.8311425,-80.622017,17z/data=!3m1!4b1!4m6!3m5!1s0x8855cd2b88976525:0x49c378cdfdecac9a!8m2!3d34.8311381!4d-80.6194367!16s%2Fg%2F11nw0vxpb_?entry=ttu&g_ep=EgoyMDI2MDkxMy4wIKXMDSoASAFQAw%3D%3D
+  - link "Send a secure inquiry":
+    - /url: /contact
+  - heading "Services" [level=4]
+  - list:
+    - link "Commercial Landscaping":
+      - /url: /services/commercial-landscaping
+    - link "Commercial Snow & Ice":
+      - /url: /services/commercial-snow-ice-management
+    - link "Industrial & Agricultural":
+      - /url: /services/industrial-agricultural
+    - link "Land Clearing":
+      - /url: /services/land-clearing
+    - link "Grading & Site Prep":
+      - /url: /services/grading-site-preparation
+    - link "Drainage Solutions":
+      - /url: /services/drainage
+    - link "Turf & Seeding":
+      - /url: /services/turf-installation-seeding
+    - link "Tree Services":
+      - /url: /services/tree-services
+    - link "Pond & Waterway":
+      - /url: /services/pond-waterway-management
+    - link "Property Reconstruction":
+      - /url: /services/property-reconstruction
+    - link "All Services →":
+      - /url: /services
+  - heading "Service Areas" [level=4]
+  - list:
+    - listitem: Upstate South Carolina
+    - link "Greenville":
+      - /url: /service-areas/greenville-sc
+    - link "Spartanburg":
+      - /url: /service-areas/spartanburg-sc
+    - link "Anderson":
+      - /url: /service-areas/anderson-sc
+    - link "Lancaster County":
+      - /url: /service-areas/lancaster-county-sc
+    - link "York County":
+      - /url: /service-areas/york-county-sc
+    - listitem: Greater Charlotte NC
+    - link "Charlotte, NC":
+      - /url: /service-areas/charlotte-north-carolina
+    - link "Concord":
+      - /url: /service-areas/concord-nc
+    - link "Mooresville & Lake Norman":
+      - /url: /service-areas/mooresville-lake-norman-nc
+    - link "Gastonia":
+      - /url: /service-areas/gastonia-nc
+    - link "Union County":
+      - /url: /service-areas/union-county-nc
+    - link "All Areas →":
+      - /url: /service-areas
+  - heading "Company" [level=4]
+  - list:
+    - link "About Us":
+      - /url: /about
+    - link "Service Gallery":
+      - /url: /gallery
+    - link "Blog & Resources":
+      - /url: /blog
+    - link "Contact / Site Assessment":
+      - /url: /contact
+  - heading "Hours" [level=4]
+  - list:
+    - listitem: "Mon – Fri: 7 AM – 6 PM"
+    - listitem: "Saturday: By Appointment"
+    - listitem: "Sunday: Closed"
+    - link "Request a Site Visit":
+      - /url: /contact
+  - generic: © 2026 P1 Land & Property Management. Serving Upstate South Carolina & the Charlotte, NC region. All rights reserved.
+- navigation "Quick contact":
+  - link "Call P1 at (704) 221-8928":
+    - /url: tel:+17042218928
+    - generic: Call P1
+  - link "Request a Site Visit":
+    - /url: /contact

@@ -1,0 +1,96 @@
+- generic: MOCKUP ONLY — NOT IMPLEMENTED · Recommended · Landworks + operational clarity
+- link "Review index":
+  - /url: ../index.html
+- text: ·
+- link "A":
+  - /url: ../a/gallery.html
+- text: ·
+- link "B":
+  - /url: ../b/gallery.html
+- text: ·
+- link "C":
+  - /url: ../c/gallery.html
+- text: ·
+- link "Recommended":
+  - /url: ../r/gallery.html
+- link "Skip to content":
+  - /url: "#main"
+- banner:
+  - link "P1 Land & Property Management":
+    - /url: home.html
+    - img "P1 Land & Property Management"
+  - generic "Menu"
+- main:
+  - generic: Capability illustrations + future project proof
+  - heading "See the work in context." [level=1]
+  - paragraph: Compare service categories. Verified project stories will be a separate collection, with actual scope, location and results.
+  - link "Request a site visit →":
+    - /url: quote.html
+  - link "Explore capabilities →":
+    - /url: services.html
+  - generic: Properties of an acre or more
+  - generic: Upstate South Carolina + Greater Charlotte
+  - generic: Land · Water · Ongoing care
+  - generic: Browse capabilities
+  - heading "Start with the need." [level=2]
+  - generic "Service filters":
+    - button "All"
+    - button "Land & site"
+    - button "Water" [active] [pressed]
+    - button "Ongoing care"
+    - button "Vegetation"
+  - status: 2 illustrations shown
+  - link "Existing service illustration · not a completed P1 project Drainage solutions Scope and next steps →":
+    - /url: drainage.html
+    - figure "Existing service illustration · not a completed P1 project":
+      - img "Existing illustrative service image; not completed P1 work"
+      - generic: Existing service illustration · not a completed P1 project
+    - heading "Drainage solutions" [level=3]
+    - text: Scope and next steps →
+  - link "Existing service illustration · not a completed P1 project Ponds & waterways Scope and next steps →":
+    - /url: pond-waterway-management.html
+    - figure "Existing service illustration · not a completed P1 project":
+      - img "Existing illustrative service image; not completed P1 work"
+      - generic: Existing service illustration · not a completed P1 project
+    - heading "Ponds & waterways" [level=3]
+    - text: Scope and next steps →
+  - generic: Separate proof collection
+  - heading "Project profiles need real evidence." [level=2]
+  - paragraph: Service and property-type filters become meaningful when a verified project collection exists. Do not classify an illustration as a commercial, HOA or agricultural P1 job.
+  - link "Review project profile template →":
+    - /url: project-profile.html
+- generic: Start with the property
+- heading "Let’s walk the ground." [level=2]
+- paragraph: Tell us where it is and what needs attention.
+- link "Request a site visit →":
+  - /url: quote.html
+- link "Call (704) 221-8928":
+  - /url: tel:+17042218928
+- contentinfo:
+  - img "P1"
+  - paragraph: Land, water and grounds care for working Carolina properties of an acre or more.
+  - paragraph: Design proposal. Illustrations do not document completed P1 work.
+  - heading "Explore" [level=3]
+  - link "Capabilities":
+    - /url: services.html
+  - link "Work & illustrations":
+    - /url: gallery.html
+  - link "Where we work":
+    - /url: service-areas.html
+  - link "Field notes":
+    - /url: blog.html
+  - heading "Company" [level=3]
+  - link "About P1":
+    - /url: about.html
+  - link "Customer feedback":
+    - /url: testimonials.html
+  - link "Discuss your property":
+    - /url: quote.html
+  - link "Review user journeys":
+    - /url: journeys.html
+  - link "Review states":
+    - /url: states.html
+- link "Call P1":
+  - /url: tel:+17042218928
+- link "Site visit →":
+  - /url: quote.html

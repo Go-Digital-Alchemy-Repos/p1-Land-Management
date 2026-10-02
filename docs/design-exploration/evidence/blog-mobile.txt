@@ -1,0 +1,183 @@
+- link "Skip to main content":
+  - /url: "#main-content"
+- banner:
+  - link "P1 Land & Property Management":
+    - /url: /
+    - img "P1 Land & Property Management"
+  - button "Open navigation":
+    - generic: Open navigation
+- main:
+  - generic: Insights
+  - heading "Land & Property Insights" [level=1]:
+    - text: Land &
+    - emphasis: Property Insights
+  - paragraph: Expertise, guides, and straight talk on managing large-acreage properties across the Carolinas.
+  - 'link "Two Years After Helene: Dealing with Storm-Damaged Trees on Commercial and Farm Land Hurricane Helene hit the Upstate two years ago this week. On many commercial and farm properties, the damage is still standing. Read Article →"':
+    - /url: /blog/storm-damaged-trees-after-helene-commercial-farm-land
+    - generic: P1 Insights
+    - 'heading "Two Years After Helene: Dealing with Storm-Damaged Trees on Commercial and Farm Land" [level=2]'
+    - paragraph: Hurricane Helene hit the Upstate two years ago this week. On many commercial and farm properties, the damage is still standing.
+    - text: Read Article
+    - generic: →
+  - 'link "Fall Seeding on Large Commercial Sites: Getting Turf Established Before Winter Fall is the best season to establish cool-season turf in the Carolina Piedmont. Here''s how to use the window on a large commercial site. Read Article →"':
+    - /url: /blog/fall-seeding-large-commercial-sites-carolinas
+    - generic: P1 Insights
+    - 'heading "Fall Seeding on Large Commercial Sites: Getting Turf Established Before Winter" [level=2]'
+    - paragraph: Fall is the best season to establish cool-season turf in the Carolina Piedmont. Here's how to use the window on a large commercial site.
+    - text: Read Article
+    - generic: →
+  - link "5 Signs Your Property Has A Drainage Problem — And What to Do About It 5 Signs Your Property Has a Drainage Problem — And What to Do About It Drainage problems don't announce themselves with a clear label. They show up as inconveniences — a soggy corner of the field, a driveway that washes out after every storm, a patch of turf that never seems to dry out. Read Article →":
+    - /url: /blog/signs-property-drainage-problem
+    - img "5 Signs Your Property Has A Drainage Problem — And What to Do About It"
+    - heading "5 Signs Your Property Has a Drainage Problem — And What to Do About It" [level=2]
+    - paragraph: Drainage problems don't announce themselves with a clear label. They show up as inconveniences — a soggy corner of the field, a driveway that washes out after every storm, a patch of turf that never seems to dry out.
+    - text: Read Article
+    - generic: →
+  - link "How to Prepare Raw Land For Agricultural Use In the Carolinas How to Prepare Raw Land for Agricultural Use in the Carolinas Whether you've acquired raw land you want to put into production, reclaimed overgrown acreage that once was farmed, or inherited a neglected property you want to make productive again, the path from raw or overgrown land to working agricultural acreage follows a specific sequence. Read Article →":
+    - /url: /blog/preparing-land-agricultural-use-carolinas
+    - img "How to Prepare Raw Land For Agricultural Use In the Carolinas"
+    - heading "How to Prepare Raw Land for Agricultural Use in the Carolinas" [level=2]
+    - paragraph: Whether you've acquired raw land you want to put into production, reclaimed overgrown acreage that once was farmed, or inherited a neglected property you want to make productive again, the path from raw or overgrown land to working agricultural acreage follows a specific sequence.
+    - text: Read Article
+    - generic: →
+  - 'link "How Much Does Land Clearing Cost Per Acre In South Carolina? How Much Does Land Clearing Cost per Acre in South Carolina? If you own land in Upstate South Carolina and you''re getting ready to clear it — for a building project, to open up farm acreage, or to reclaim overgrown property — one of the first questions you''ll ask is: how much is this going to cost? Read Article →"':
+    - /url: /blog/land-clearing-cost-per-acre-south-carolina
+    - img "How Much Does Land Clearing Cost Per Acre In South Carolina?"
+    - heading "How Much Does Land Clearing Cost per Acre in South Carolina?" [level=2]
+    - paragraph: "If you own land in Upstate South Carolina and you're getting ready to clear it — for a building project, to open up farm acreage, or to reclaim overgrown property — one of the first questions you'll ask is: how much is this going to cost?"
+    - text: Read Article
+    - generic: →
+  - link "How to Manage A Retention Pond On Your Property in South Carolina and North Carolina How to Manage a Retention Pond on Your Property in South Carolina and North Carolina Pond care starts with a few regular checks. Learn what to watch for around the water, banks, and drainage structures, and when to call for help. Read Article →":
+    - /url: /blog/how-to-manage-retention-pond-south-carolina
+    - img "How to Manage A Retention Pond On Your Property in South Carolina and North Carolina"
+    - heading "How to Manage a Retention Pond on Your Property in South Carolina and North Carolina" [level=2]
+    - paragraph: Pond care starts with a few regular checks. Learn what to watch for around the water, banks, and drainage structures, and when to call for help.
+    - text: Read Article
+    - generic: →
+  - link "Best Grass Types For Large-Acreage Properties in the Carolinas Best Grass Types for Large-Acreage Properties in the Carolinas The best grass for your acreage depends on sunlight, soil, traffic, and how much maintenance you want to take on. Here's how the common options compare. Read Article →":
+    - /url: /blog/best-grass-large-acreage-carolinas
+    - img "Best Grass Types For Large-Acreage Properties in the Carolinas"
+    - heading "Best Grass Types for Large-Acreage Properties in the Carolinas" [level=2]
+    - paragraph: The best grass for your acreage depends on sunlight, soil, traffic, and how much maintenance you want to take on. Here's how the common options compare.
+    - text: Read Article
+    - generic: →
+  - region "Connect Guidance to Your Property":
+    - paragraph: Explore More With P1
+    - heading "Connect Guidance to Your Property" [level=2]
+    - paragraph: Explore the services covered in this guide and our nearby service areas.
+    - navigation "Related Services and Resources":
+      - list:
+        - link "Land Clearing Selective clearing, forestry mulching, and site access preparation.":
+          - /url: /services/land-clearing
+          - generic: Land Clearing
+          - generic: Selective clearing, forestry mulching, and site access preparation.
+        - link "Drainage Solutions Find the cause of standing water, runoff, and erosion.":
+          - /url: /services/drainage
+          - generic: Drainage Solutions
+          - generic: Find the cause of standing water, runoff, and erosion.
+        - link "Commercial Landscaping Regular mowing, seasonal grounds care, and maintenance around your operations.":
+          - /url: /services/commercial-landscaping
+          - generic: Commercial Landscaping
+          - generic: Regular mowing, seasonal grounds care, and maintenance around your operations.
+    - navigation "Explore Service Areas":
+      - heading "Explore Service Areas" [level=3]
+      - paragraph: Local coverage across the Carolinas.
+      - list:
+        - link "All P1 Service Areas":
+          - /url: /service-areas
+          - text: All P1 Service Areas
+  - generic: P1 Land & Property Management
+  - heading "Let's Walk Your Property" [level=2]
+  - paragraph: Tell us where it is and what's going on. The site visit and written estimate are free.
+  - link "Request a Site Visit":
+    - /url: /contact
+    - text: Request a Site Visit
+  - link "Call (704) 221-8928":
+    - /url: tel:7042218928
+    - text: Call (704) 221-8928
+- contentinfo:
+  - link "P1 Land & Property Management":
+    - /url: /
+    - img "P1 Land & Property Management"
+  - paragraph: P1 Land & Property Management clears, grades, drains, seeds and maintains commercial, industrial and farm property of an acre or more across Upstate South Carolina and the Charlotte region. Licensed and insured in North and South Carolina.
+  - link "(704) 221-8928":
+    - /url: tel:+17042218928
+    - text: (704) 221-8928
+  - link "Find us on Google":
+    - /url: https://www.google.com/maps/place/P1+Land+Management/@34.8311425,-80.622017,17z/data=!3m1!4b1!4m6!3m5!1s0x8855cd2b88976525:0x49c378cdfdecac9a!8m2!3d34.8311381!4d-80.6194367!16s%2Fg%2F11nw0vxpb_?entry=ttu&g_ep=EgoyMDI2MDkxMy4wIKXMDSoASAFQAw%3D%3D
+  - link "Send a secure inquiry":
+    - /url: /contact
+  - heading "Services" [level=4]
+  - list:
+    - link "Commercial Landscaping":
+      - /url: /services/commercial-landscaping
+    - link "Commercial Snow & Ice":
+      - /url: /services/commercial-snow-ice-management
+    - link "Industrial & Agricultural":
+      - /url: /services/industrial-agricultural
+    - link "Land Clearing":
+      - /url: /services/land-clearing
+    - link "Grading & Site Prep":
+      - /url: /services/grading-site-preparation
+    - link "Drainage Solutions":
+      - /url: /services/drainage
+    - link "Turf & Seeding":
+      - /url: /services/turf-installation-seeding
+    - link "Tree Services":
+      - /url: /services/tree-services
+    - link "Pond & Waterway":
+      - /url: /services/pond-waterway-management
+    - link "Property Reconstruction":
+      - /url: /services/property-reconstruction
+    - link "All Services →":
+      - /url: /services
+  - heading "Service Areas" [level=4]
+  - list:
+    - listitem: Upstate South Carolina
+    - link "Greenville":
+      - /url: /service-areas/greenville-sc
+    - link "Spartanburg":
+      - /url: /service-areas/spartanburg-sc
+    - link "Anderson":
+      - /url: /service-areas/anderson-sc
+    - link "Lancaster County":
+      - /url: /service-areas/lancaster-county-sc
+    - link "York County":
+      - /url: /service-areas/york-county-sc
+    - listitem: Greater Charlotte NC
+    - link "Charlotte, NC":
+      - /url: /service-areas/charlotte-north-carolina
+    - link "Concord":
+      - /url: /service-areas/concord-nc
+    - link "Mooresville & Lake Norman":
+      - /url: /service-areas/mooresville-lake-norman-nc
+    - link "Gastonia":
+      - /url: /service-areas/gastonia-nc
+    - link "Union County":
+      - /url: /service-areas/union-county-nc
+    - link "All Areas →":
+      - /url: /service-areas
+  - heading "Company" [level=4]
+  - list:
+    - link "About Us":
+      - /url: /about
+    - link "Service Gallery":
+      - /url: /gallery
+    - link "Blog & Resources":
+      - /url: /blog
+    - link "Contact / Site Assessment":
+      - /url: /contact
+  - heading "Hours" [level=4]
+  - list:
+    - listitem: "Mon – Fri: 7 AM – 6 PM"
+    - listitem: "Saturday: By Appointment"
+    - listitem: "Sunday: Closed"
+    - link "Request a Site Visit":
+      - /url: /contact
+  - generic: © 2026 P1 Land & Property Management. Serving Upstate South Carolina & the Charlotte, NC region. All rights reserved.
+- navigation "Quick contact":
+  - link "Call P1 at (704) 221-8928":
+    - /url: tel:+17042218928
+    - generic: Call P1
+  - link "Request a Site Visit":
+    - /url: /contact

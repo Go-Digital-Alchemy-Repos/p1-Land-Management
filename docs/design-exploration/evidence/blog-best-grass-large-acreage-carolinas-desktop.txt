@@ -1,0 +1,215 @@
+- link "Skip to main content":
+  - /url: "#main-content"
+- banner:
+  - link "P1 Land & Property Management":
+    - /url: /
+    - img "P1 Land & Property Management"
+  - navigation "Main navigation":
+    - link "Home":
+      - /url: /
+    - link "About":
+      - /url: /about
+    - button "Services":
+      - text: Services
+    - link "Contact":
+      - /url: /contact
+  - link "(704) 221-8928":
+    - /url: tel:+17042218928
+    - text: (704) 221-8928
+  - link "Request a Site Visit":
+    - /url: /contact
+- main:
+  - article:
+    - img "Lush green pasture land"
+    - generic: Turf & Seeding
+    - heading "Best Grass Types For Large-Acreage Properties in the Carolinas" [level=1]:
+      - emphasis: Best Grass Types
+      - text: For Large-Acreage Properties in the Carolinas
+    - paragraph: Grass choice matters when you're planting several acres. A variety that struggles with your soil, shade, or traffic can leave you with bare ground and another seeding bill. Start with how the land will be used.
+    - paragraph: The Carolinas straddle the warm-cool season transition zone, which makes grass selection more complex here than in most of the country. The right species depends on your specific location, soil type, sun exposure, intended use, and maintenance commitment. Use this guide to frame the discussion, then check cultivar suitability for your site.
+    - paragraph:
+      - link "Clemson Extension’s lawn grass selection guide":
+        - /url: https://hgic.clemson.edu/factsheet/selecting-a-lawn-grass/
+      - text: compares site suitability and establishment methods. For grazing land, seek a forage-specific recommendation before selecting a turf variety.
+    - heading "The Transition Zone Challenge" [level=2]
+    - paragraph: Upstate South Carolina and the Charlotte, NC region sit in what turfgrass scientists call the transition zone — a band across the mid-South where neither warm-season nor cool-season grasses perform optimally year-round. Warm-season grasses go dormant and brown in winter. Cool-season grasses suffer in summer heat. Neither is perfect. The goal is to choose the species that performs best for your specific use during the seasons that matter most.
+    - heading "Warm-Season Grasses for Large Acreage" [level=2]
+    - heading "Bermuda Grass" [level=3]
+    - paragraph: The dominant choice for high-traffic commercial turf, athletic fields, and active pastures throughout the region. Bermuda is aggressive, drought-tolerant, and recovers quickly from damage. It goes fully dormant and brown in winter — which is acceptable for most commercial and agricultural applications. It requires full sun and performs poorly in shade.
+    - list:
+      - strong: "Best for:"
+      - text: Commercial grounds, athletic fields, sunny pastures, golf course roughs
+      - strong: "Establishment:"
+      - text: Sprig, sod, or seed (improved varieties via sod/sprig)
+      - strong: "Maintenance:"
+      - text: Moderate to high — requires regular fertilization and mowing during growing season
+    - heading "Zoysia Grass" [level=3]
+    - paragraph: A dense, slow-growing warm-season grass that produces a tight, attractive turf with fewer inputs than Bermuda once established. Shade and cold tolerance vary by cultivar; match the selection to the site. The downside is slow establishment and relatively high cost if sodded.
+    - list:
+      - strong: "Best for:"
+      - text: Commercial properties, institutional campuses, and municipal grounds
+      - strong: "Establishment:"
+      - text: Sod or plugs (slow from seed)
+      - strong: "Maintenance:"
+      - text: Low to moderate once established
+    - heading "Centipede Grass" [level=3]
+    - paragraph: A low-input warm-season option for acidic, lower-fertility soils common in much of the Carolinas Piedmont. Centipede requires minimal fertilization and grows slowly, which means less mowing. It's not suitable for high-traffic or heavy-use areas.
+    - list:
+      - strong: "Best for:"
+      - text: Low-maintenance agricultural acreage, utility areas, and industrial grounds
+      - strong: "Establishment:"
+      - text: Seed or sod
+      - strong: "Maintenance:"
+      - text: Very low
+    - heading "Cool-Season Grasses for Large Acreage" [level=2]
+    - heading "Tall Fescue" [level=3]
+    - paragraph: The most widely used cool-season grass in the Carolinas transition zone. Tall fescue stays green through winter, tolerates moderate shade, and performs well in the cooler temperatures of fall, winter, and spring. It struggles in the intense heat and drought of Carolinas summers — requiring irrigation or overseeding after summer stress.
+    - list:
+      - strong: "Best for:"
+      - text: Commercial and institutional grounds, shaded areas, and cooler Upstate SC elevations
+      - strong: "Establishment:"
+      - text: Seed (fall is ideal)
+      - strong: "Maintenance:"
+      - text: Moderate — annual overseeding often needed after summer stress
+    - heading "Pasture and Agricultural Grasses" [level=2]
+    - paragraph: "For pastures, hay fields, and food plots, forage quality and productivity matter more than appearance. Common choices in the region include:"
+    - list:
+      - strong: Bermuda Grass
+      - text: — The primary hay and pasture grass for the Carolinas. High yield, good quality forage, drought-tolerant.
+      - strong: Tall Fescue
+      - text: — The dominant cool-season pasture grass. Widely grown for beef cattle across the region, though endophyte toxicity in older varieties is a consideration for breeding stock.
+      - strong: Bahia Grass
+      - text: — Drought-tolerant, low-input pasture grass for sandier, lower-fertility soils. Excellent for erosion control on rough terrain.
+      - strong: Mixed species
+      - text: — Many productive pastures use a warm/cool season mix to extend the grazing season and reduce seasonal gaps in forage availability.
+    - heading "The Bottom Line" [level=2]
+    - paragraph: The right grass depends on your soil, sunlight, drainage, and how you use the property. Think about the mowing, watering, and other care you can provide before choosing a variety.
+    - paragraph: P1 evaluates your site before recommending a species — and we handle everything from soil testing and amendment through seeding or sodding and post-establishment care.
+    - paragraph:
+      - text: Call
+      - strong:
+        - link "+1 (704) 221-8928":
+          - /url: tel:7042218928
+      - text: or request a free estimate online — P1 Land & Property Management, serving Upstate SC and Charlotte NC.
+  - complementary:
+    - paragraph:
+      - text: Planning work on your land? Review P1's
+      - link "large-acreage turf installation and seeding":
+        - /url: /services/turf-installation-seeding
+      - text: and
+      - link "request a property estimate":
+        - /url: /contact
+      - text: .
+  - region "Continue Planning Turf Establishment":
+    - paragraph: Explore More With P1
+    - heading "Continue Planning Turf Establishment" [level=2]
+    - paragraph: Successful turf work starts with the condition of the soil, grades, and drainage.
+    - navigation "Related Services and Resources":
+      - list:
+        - link "Turf Installation and Seeding Plant sod or seed on properly prepared ground.":
+          - /url: /services/turf-installation-seeding
+          - generic: Turf Installation and Seeding
+          - generic: Plant sod or seed on properly prepared ground.
+        - link "Grading and Site Preparation Shape grades, improve access, and prepare ground for its next use.":
+          - /url: /services/grading-site-preparation
+          - generic: Grading and Site Preparation
+          - generic: Shape grades, improve access, and prepare ground for its next use.
+    - navigation "Explore Service Areas":
+      - heading "Explore Service Areas" [level=3]
+      - paragraph: Local coverage across the Carolinas.
+      - list:
+        - link "Charlotte, NC":
+          - /url: /service-areas/charlotte-north-carolina
+          - text: Charlotte, NC
+        - link "Upstate South Carolina":
+          - /url: /service-areas/upstate-south-carolina
+          - text: Upstate South Carolina
+  - generic: P1 Land & Property Management
+  - heading "Let's Walk Your Property" [level=2]
+  - paragraph: Tell us where it is and what's going on. The site visit and written estimate are free.
+  - link "Request a Site Visit":
+    - /url: /contact
+    - text: Request a Site Visit
+  - link "Call (704) 221-8928":
+    - /url: tel:7042218928
+    - text: Call (704) 221-8928
+- contentinfo:
+  - link "P1 Land & Property Management":
+    - /url: /
+    - img "P1 Land & Property Management"
+  - paragraph: P1 Land & Property Management clears, grades, drains, seeds and maintains commercial, industrial and farm property of an acre or more across Upstate South Carolina and the Charlotte region. Licensed and insured in North and South Carolina.
+  - link "(704) 221-8928":
+    - /url: tel:+17042218928
+    - text: (704) 221-8928
+  - link "Find us on Google":
+    - /url: https://www.google.com/maps/place/P1+Land+Management/@34.8311425,-80.622017,17z/data=!3m1!4b1!4m6!3m5!1s0x8855cd2b88976525:0x49c378cdfdecac9a!8m2!3d34.8311381!4d-80.6194367!16s%2Fg%2F11nw0vxpb_?entry=ttu&g_ep=EgoyMDI2MDkxMy4wIKXMDSoASAFQAw%3D%3D
+  - link "Send a secure inquiry":
+    - /url: /contact
+  - heading "Services" [level=4]
+  - list:
+    - link "Commercial Landscaping":
+      - /url: /services/commercial-landscaping
+    - link "Commercial Snow & Ice":
+      - /url: /services/commercial-snow-ice-management
+    - link "Industrial & Agricultural":
+      - /url: /services/industrial-agricultural
+    - link "Land Clearing":
+      - /url: /services/land-clearing
+    - link "Grading & Site Prep":
+      - /url: /services/grading-site-preparation
+    - link "Drainage Solutions":
+      - /url: /services/drainage
+    - link "Turf & Seeding":
+      - /url: /services/turf-installation-seeding
+    - link "Tree Services":
+      - /url: /services/tree-services
+    - link "Pond & Waterway":
+      - /url: /services/pond-waterway-management
+    - link "Property Reconstruction":
+      - /url: /services/property-reconstruction
+    - link "All Services →":
+      - /url: /services
+  - heading "Service Areas" [level=4]
+  - list:
+    - listitem: Upstate South Carolina
+    - link "Greenville":
+      - /url: /service-areas/greenville-sc
+    - link "Spartanburg":
+      - /url: /service-areas/spartanburg-sc
+    - link "Anderson":
+      - /url: /service-areas/anderson-sc
+    - link "Lancaster County":
+      - /url: /service-areas/lancaster-county-sc
+    - link "York County":
+      - /url: /service-areas/york-county-sc
+    - listitem: Greater Charlotte NC
+    - link "Charlotte, NC":
+      - /url: /service-areas/charlotte-north-carolina
+    - link "Concord":
+      - /url: /service-areas/concord-nc
+    - link "Mooresville & Lake Norman":
+      - /url: /service-areas/mooresville-lake-norman-nc
+    - link "Gastonia":
+      - /url: /service-areas/gastonia-nc
+    - link "Union County":
+      - /url: /service-areas/union-county-nc
+    - link "All Areas →":
+      - /url: /service-areas
+  - heading "Company" [level=4]
+  - list:
+    - link "About Us":
+      - /url: /about
+    - link "Service Gallery":
+      - /url: /gallery
+    - link "Blog & Resources":
+      - /url: /blog
+    - link "Contact / Site Assessment":
+      - /url: /contact
+  - heading "Hours" [level=4]
+  - list:
+    - listitem: "Mon – Fri: 7 AM – 6 PM"
+    - listitem: "Saturday: By Appointment"
+    - listitem: "Sunday: Closed"
+    - link "Request a Site Visit":
+      - /url: /contact
+  - generic: © 2026 P1 Land & Property Management. Serving Upstate South Carolina & the Charlotte, NC region. All rights reserved.

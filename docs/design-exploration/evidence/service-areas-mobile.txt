@@ -1,0 +1,305 @@
+- link "Skip to main content":
+  - /url: "#main-content"
+- banner:
+  - link "P1 Land & Property Management":
+    - /url: /
+    - img "P1 Land & Property Management"
+  - button "Open navigation":
+    - generic: Open navigation
+- main:
+  - region "Find Your Service Area":
+    - status: Loading service locations…
+    - button "Show all locations" [disabled]:
+      - text: Show all locations
+    - paragraph: Across the Carolinas
+    - heading "Find Your Service Area" [level=1]
+    - paragraph: Select a pin to explore local services. Zoom in for nearby communities.
+    - group "Filter map by state":
+      - button "All locations" [disabled] [pressed]
+      - button "North Carolina" [disabled]
+      - button "South Carolina" [disabled]
+    - paragraph:
+      - text: North Carolina
+      - text: South Carolina
+    - paragraph: Pins mark communities and regional overviews, not office addresses or coverage boundaries.
+    - generic: Find a location
+    - combobox "Find a location" [disabled]:
+      - option "Choose a location" [selected]
+      - option "Anderson, SC"
+      - option "Belmont, NC"
+      - option "Boiling Springs, SC"
+      - option "Charlotte, NC"
+      - option "Concord, NC"
+      - option "Cornelius, NC"
+      - option "Duncan, SC"
+      - option "Easley, SC"
+      - option "Fort Mill, SC"
+      - option "Gaffney, SC"
+      - option "Gastonia, NC"
+      - option "Greenville, SC"
+      - option "Greer, SC"
+      - option "Huntersville, NC"
+      - option "Indian Land, SC"
+      - option "Indian Trail, NC"
+      - option "Inman, SC"
+      - option "Kannapolis, NC"
+      - option "Lancaster County, SC"
+      - option "Matthews, NC"
+      - option "Monroe, NC"
+      - option "Mooresville & Lake Norman, NC"
+      - option "Mount Holly, NC"
+      - option "Rock Hill, SC"
+      - option "Simpsonville, SC"
+      - option "Spartanburg, SC"
+      - option "Union County, NC"
+      - option "Upstate South Carolina, SC"
+      - option "Waxhaw, NC"
+      - option "York County, SC"
+    - generic "Browse all 30 service locations"
+  - heading "Upstate South Carolina" [level=2]
+  - paragraph: Serving commercial, industrial, and agricultural properties throughout the Greenville-Spartanburg corridor and surrounding counties.
+  - link "→ Upstate SC Regional Overview":
+    - /url: /service-areas/upstate-south-carolina
+  - link "Greenville, SC":
+    - /url: /service-areas/greenville-sc
+    - text: Greenville, SC
+  - link "Spartanburg, SC":
+    - /url: /service-areas/spartanburg-sc
+    - text: Spartanburg, SC
+  - link "Anderson, SC":
+    - /url: /service-areas/anderson-sc
+    - text: Anderson, SC
+  - link "Lancaster County, SC":
+    - /url: /service-areas/lancaster-county-sc
+    - text: Lancaster County, SC
+  - link "York County, SC":
+    - /url: /service-areas/york-county-sc
+    - text: York County, SC
+  - heading "Charlotte Region, NC" [level=2]
+  - paragraph: Serving commercial and industrial developments, working farms and agricultural operations, municipalities, and institutions throughout the greater Charlotte metropolitan area.
+  - link "→ Charlotte, NC":
+    - /url: /service-areas/charlotte-north-carolina
+  - link "Concord, NC":
+    - /url: /service-areas/concord-nc
+    - text: Concord, NC
+  - link "Mooresville & Lake Norman, NC":
+    - /url: /service-areas/mooresville-lake-norman-nc
+    - text: Mooresville & Lake Norman, NC
+  - link "Gastonia, NC":
+    - /url: /service-areas/gastonia-nc
+    - text: Gastonia, NC
+  - link "Union County, NC":
+    - /url: /service-areas/union-county-nc
+    - text: Union County, NC
+  - paragraph: County Spotlights
+  - heading "Newest Service Areas" [level=2]
+  - link "Working pasture and fencing on agricultural land in Union County, NC Charlotte Region · NC Union County, NC Working farms, agricultural land, and fast-growing development from Monroe and Indian Trail to Waxhaw, Marvin, and Weddington. Explore Union County":
+    - /url: /service-areas/union-county-nc
+    - img "Working pasture and fencing on agricultural land in Union County, NC"
+    - paragraph: Charlotte Region · NC
+    - heading "Union County, NC" [level=3]
+    - paragraph: Working farms, agricultural land, and fast-growing development from Monroe and Indian Trail to Waxhaw, Marvin, and Weddington.
+    - text: Explore Union County
+  - link "Heavy equipment performing sitework on a development site in Lancaster County, SC Upstate & Midlands · SC Lancaster County, SC Commercial landscaping and grounds care, plus clearing, grading, and full property management from the Indian Land panhandle to Kershaw and Heath Springs. Explore Lancaster County":
+    - /url: /service-areas/lancaster-county-sc
+    - img "Heavy equipment performing sitework on a development site in Lancaster County, SC"
+    - paragraph: Upstate & Midlands · SC
+    - heading "Lancaster County, SC" [level=3]
+    - paragraph: Commercial landscaping and grounds care, plus clearing, grading, and full property management from the Indian Land panhandle to Kershaw and Heath Springs.
+    - text: Explore Lancaster County
+  - link "Illustrative commercial marina grounds with an orange Kubota zero-turn mower beside the lake Charlotte Metro · SC York County, SC Lake Wylie commercial waterfront sites, I-77 corridor development, and western-county working farms from Rock Hill and Fort Mill to Clover and York. Explore York County":
+    - /url: /service-areas/york-county-sc
+    - img "Illustrative commercial marina grounds with an orange Kubota zero-turn mower beside the lake"
+    - paragraph: Charlotte Metro · SC
+    - heading "York County, SC" [level=3]
+    - paragraph: Lake Wylie commercial waterfront sites, I-77 corridor development, and western-county working farms from Rock Hill and Fort Mill to Clover and York.
+    - text: Explore York County
+  - heading "Service Area FAQs" [level=2]
+  - generic "Which regions does P1 Land & Property Management cover?":
+    - generic: Which regions does P1 Land & Property Management cover?
+    - generic: +
+  - generic "Will P1 travel to properties outside the cities listed on this page?":
+    - generic: Will P1 travel to properties outside the cities listed on this page?
+    - generic: +
+  - generic "Are the same services available in every service area?":
+    - generic: Are the same services available in every service area?
+    - generic: +
+  - generic "How do I find out if P1 serves my property?":
+    - generic: How do I find out if P1 serves my property?
+    - generic: +
+  - paragraph:
+    - text: Call
+    - link "+1 (704) 221-8928":
+      - /url: tel:7042218928
+    - text: or
+    - link "request a free estimate online":
+      - /url: /contact
+    - text: to confirm coverage for your property.
+  - complementary:
+    - paragraph:
+      - link "Compare land management services":
+        - /url: /services
+      - text: or
+      - link "tell us about your property":
+        - /url: /contact
+      - text: to talk through the work and available dates.
+  - heading "Local Grounds Management and Land Services" [level=2]
+  - heading "Upstate South Carolina" [level=3]
+  - list:
+    - link "Greer, SC":
+      - /url: /service-areas/greer-sc
+    - link "Simpsonville, SC":
+      - /url: /service-areas/simpsonville-sc
+    - link "Easley, SC":
+      - /url: /service-areas/easley-sc
+    - link "Gaffney, SC":
+      - /url: /service-areas/gaffney-sc
+    - link "Duncan, SC":
+      - /url: /service-areas/duncan-sc
+    - link "Inman, SC":
+      - /url: /service-areas/inman-sc
+    - link "Boiling Springs, SC":
+      - /url: /service-areas/boiling-springs-sc
+  - heading "Greater Charlotte and the South Carolina Border" [level=3]
+  - list:
+    - link "Huntersville, NC":
+      - /url: /service-areas/huntersville-nc
+    - link "Matthews, NC":
+      - /url: /service-areas/matthews-nc
+    - link "Kannapolis, NC":
+      - /url: /service-areas/kannapolis-nc
+    - link "Waxhaw, NC":
+      - /url: /service-areas/waxhaw-nc
+    - link "Fort Mill, SC":
+      - /url: /service-areas/fort-mill-sc
+    - link "Rock Hill, SC":
+      - /url: /service-areas/rock-hill-sc
+    - link "Indian Land, SC":
+      - /url: /service-areas/indian-land-sc
+    - link "Indian Trail, NC":
+      - /url: /service-areas/indian-trail-nc
+    - link "Monroe, NC":
+      - /url: /service-areas/monroe-nc
+    - link "Belmont, NC":
+      - /url: /service-areas/belmont-nc
+    - link "Mount Holly, NC":
+      - /url: /service-areas/mount-holly-nc
+    - link "Cornelius, NC":
+      - /url: /service-areas/cornelius-nc
+  - region "Compare Services Across the Region":
+    - paragraph: Explore More With P1
+    - heading "Compare Services Across the Region" [level=2]
+    - paragraph: Start with the work your property needs.
+    - navigation "Related Services and Resources":
+      - list:
+        - link "Commercial Landscaping Regular mowing, seasonal grounds care, and maintenance around your operations.":
+          - /url: /services/commercial-landscaping
+          - generic: Commercial Landscaping
+          - generic: Regular mowing, seasonal grounds care, and maintenance around your operations.
+        - link "Land Clearing Selective clearing, forestry mulching, and site access preparation.":
+          - /url: /services/land-clearing
+          - generic: Land Clearing
+          - generic: Selective clearing, forestry mulching, and site access preparation.
+        - link "Drainage Solutions Find the cause of standing water, runoff, and erosion.":
+          - /url: /services/drainage
+          - generic: Drainage Solutions
+          - generic: Find the cause of standing water, runoff, and erosion.
+        - link "Property Reconstruction Repair drainage, reshape damaged ground, and restore turf.":
+          - /url: /services/property-reconstruction
+          - generic: Property Reconstruction
+          - generic: Repair drainage, reshape damaged ground, and restore turf.
+  - generic: P1 Land & Property Management
+  - heading "Let's Walk Your Property" [level=2]
+  - paragraph: Tell us where it is and what's going on. The site visit and written estimate are free.
+  - link "Request a Site Visit":
+    - /url: /contact
+    - text: Request a Site Visit
+  - link "Call (704) 221-8928":
+    - /url: tel:7042218928
+    - text: Call (704) 221-8928
+- contentinfo:
+  - link "P1 Land & Property Management":
+    - /url: /
+    - img "P1 Land & Property Management"
+  - paragraph: P1 Land & Property Management clears, grades, drains, seeds and maintains commercial, industrial and farm property of an acre or more across Upstate South Carolina and the Charlotte region. Licensed and insured in North and South Carolina.
+  - link "(704) 221-8928":
+    - /url: tel:+17042218928
+    - text: (704) 221-8928
+  - link "Find us on Google":
+    - /url: https://www.google.com/maps/place/P1+Land+Management/@34.8311425,-80.622017,17z/data=!3m1!4b1!4m6!3m5!1s0x8855cd2b88976525:0x49c378cdfdecac9a!8m2!3d34.8311381!4d-80.6194367!16s%2Fg%2F11nw0vxpb_?entry=ttu&g_ep=EgoyMDI2MDkxMy4wIKXMDSoASAFQAw%3D%3D
+  - link "Send a secure inquiry":
+    - /url: /contact
+  - heading "Services" [level=4]
+  - list:
+    - link "Commercial Landscaping":
+      - /url: /services/commercial-landscaping
+    - link "Commercial Snow & Ice":
+      - /url: /services/commercial-snow-ice-management
+    - link "Industrial & Agricultural":
+      - /url: /services/industrial-agricultural
+    - link "Land Clearing":
+      - /url: /services/land-clearing
+    - link "Grading & Site Prep":
+      - /url: /services/grading-site-preparation
+    - link "Drainage Solutions":
+      - /url: /services/drainage
+    - link "Turf & Seeding":
+      - /url: /services/turf-installation-seeding
+    - link "Tree Services":
+      - /url: /services/tree-services
+    - link "Pond & Waterway":
+      - /url: /services/pond-waterway-management
+    - link "Property Reconstruction":
+      - /url: /services/property-reconstruction
+    - link "All Services →":
+      - /url: /services
+  - heading "Service Areas" [level=4]
+  - list:
+    - listitem: Upstate South Carolina
+    - link "Greenville":
+      - /url: /service-areas/greenville-sc
+    - link "Spartanburg":
+      - /url: /service-areas/spartanburg-sc
+    - link "Anderson":
+      - /url: /service-areas/anderson-sc
+    - link "Lancaster County":
+      - /url: /service-areas/lancaster-county-sc
+    - link "York County":
+      - /url: /service-areas/york-county-sc
+    - listitem: Greater Charlotte NC
+    - link "Charlotte, NC":
+      - /url: /service-areas/charlotte-north-carolina
+    - link "Concord":
+      - /url: /service-areas/concord-nc
+    - link "Mooresville & Lake Norman":
+      - /url: /service-areas/mooresville-lake-norman-nc
+    - link "Gastonia":
+      - /url: /service-areas/gastonia-nc
+    - link "Union County":
+      - /url: /service-areas/union-county-nc
+    - link "All Areas →":
+      - /url: /service-areas
+  - heading "Company" [level=4]
+  - list:
+    - link "About Us":
+      - /url: /about
+    - link "Service Gallery":
+      - /url: /gallery
+    - link "Blog & Resources":
+      - /url: /blog
+    - link "Contact / Site Assessment":
+      - /url: /contact
+  - heading "Hours" [level=4]
+  - list:
+    - listitem: "Mon – Fri: 7 AM – 6 PM"
+    - listitem: "Saturday: By Appointment"
+    - listitem: "Sunday: Closed"
+    - link "Request a Site Visit":
+      - /url: /contact
+  - generic: © 2026 P1 Land & Property Management. Serving Upstate South Carolina & the Charlotte, NC region. All rights reserved.
+- navigation "Quick contact":
+  - link "Call P1 at (704) 221-8928":
+    - /url: tel:+17042218928
+    - generic: Call P1
+  - link "Request a Site Visit":
+    - /url: /contact

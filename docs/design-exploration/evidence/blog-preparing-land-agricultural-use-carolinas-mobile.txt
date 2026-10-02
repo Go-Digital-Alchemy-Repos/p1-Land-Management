@@ -1,0 +1,189 @@
+- link "Skip to main content":
+  - /url: "#main-content"
+- banner:
+  - link "P1 Land & Property Management":
+    - /url: /
+    - img "P1 Land & Property Management"
+  - button "Open navigation":
+    - generic: Open navigation
+- main:
+  - article:
+    - img "Tractor grading agricultural land"
+    - generic: Site Preparation
+    - heading "How to Prepare Raw Land For Agricultural Use In the Carolinas" [level=1]:
+      - text: How to Prepare Raw Land For
+      - emphasis: Agricultural Use
+      - text: In the Carolinas
+    - paragraph: Turning overgrown land into pasture or crop ground takes more than clearing it. Soil, drainage, access, and the next planting all need a place in the plan. Here's how to think through the work.
+    - paragraph: This guide walks through the correct order of operations for converting land to agricultural use in South Carolina and North Carolina, with particular attention to the soil and drainage conditions common in the Upstate SC and Charlotte NC region.
+    - 'heading "Step 1: Soil Testing" [level=2]'
+    - paragraph: Before you clear a single tree or turn a shovel of dirt, collect soil samples and send them to your state's agricultural extension laboratory. In South Carolina, that's the Clemson University Soil Testing Laboratory. In North Carolina, it's the NC Department of Agriculture Agronomic Services.
+    - paragraph:
+      - text: Use representative soil samples to plan amendments for the intended crop or forage. Conditions can vary within a field; follow the laboratory’s sampling instructions and interpret results with a local agricultural adviser. See
+      - link "NC State Extension’s field sampling guidance":
+        - /url: https://content.ces.ncsu.edu/soil-sampling-strategies-for-site-specific-field-management
+      - text: .
+    - 'heading "Step 2: Land Clearing" [level=2]'
+    - paragraph: "Once you have your soil data, clearing comes next. The clearing method depends on what's on the land and what comes after it:"
+    - list:
+      - strong: Forestry mulching
+      - text: is the preferred method for most agricultural land conversion — it grinds all vegetation into mulch in place, preserves topsoil, eliminates hauling costs, and leaves a surface that's ready for grading. The mulch layer decomposes and adds organic matter back to the soil.
+      - strong: Traditional clearing with grubbing
+      - text: is appropriate when you're preparing ground for tillage — mulch left on the surface from forestry mulching can interfere with tillage operations in the first season.
+      - strong: Selective clearing
+      - text: preserves mature trees that serve as windbreaks, shade for livestock, or property boundary markers while removing unwanted vegetation.
+    - 'heading "Step 3: Rough Grading" [level=2]'
+    - paragraph: "After clearing, rough grading shapes the land to the slopes and contours you need. For agricultural land, grading serves two primary purposes: directing water off productive ground and improving access for equipment. Poor grade is one of the leading causes of waterlogged fields, eroded slopes, and equipment access problems — and correcting it after seeding is already done means starting over."
+    - paragraph: Plan ditches, swales, and other drainage features alongside grading. That way, the ground is shaped with a route for water before planting begins.
+    - 'heading "Step 4: Drainage Installation" [level=2]'
+    - paragraph: Drainage affects when you can work a field and how well crops or grass establish. Clay soils and rolling ground deserve a careful look before you invest in planting.
+    - paragraph: Agricultural drainage options include surface grading and swales, perimeter ditching, and subsurface tile drainage for fields that need significant improvement in soil workability. The right approach depends on your soil type, the extent of the drainage problem, and your intended use of the land.
+    - paragraph: Don't skip this step. Fields that drain well can be worked earlier in spring, planted on schedule, and harvested without mud losses. Fields that don't drain well cost you time and yield every season.
+    - 'heading "Step 5: Lime and Soil Amendment Application" [level=2]'
+    - paragraph: With grade and drainage established, apply the amendments identified in your soil test. Lime is usually the most significant — it takes three to six months to fully react in the soil, so earlier is better. Some contractors apply lime pre-clearing when the volume of material being disturbed makes pre-application impractical; fine grading after clearing means you may need to apply a second time.
+    - paragraph: Fertilizer applications at establishment should be based on soil test recommendations, not guesswork. Over-fertilizing at seeding wastes money and can damage seedlings; under-fertilizing reduces establishment success.
+    - 'heading "Step 6: Seeding or Sod Establishment" [level=2]'
+    - paragraph: "The final step is putting the right grass or crop in the ground at the right time. In the Carolinas:"
+    - list:
+      - listitem: Warm-season grasses (Bermuda, Bahia) should be established in late spring to early summer when soil temperatures consistently exceed 65°F
+      - listitem: Cool-season grasses (Tall Fescue) establish best in fall — September and October in Upstate SC and the Charlotte region
+      - listitem: Mixed pasture seedings can be timed to get cool-season species established in fall and overseed with warm-season species the following spring
+    - paragraph: Seeding rate, contact with the soil, and moisture all matter while grass establishes. Choose the method and planting time for your crop or forage, and plan the follow-up care before seeding begins.
+    - heading "Work with a Contractor Who Handles All of It" [level=2]
+    - paragraph: Plan clearing, grading, drainage, soil preparation, and planting as a sequence. Whoever handles each stage needs to understand what the next one requires.
+    - paragraph: P1 Land & Property Management handles the full agricultural land preparation process for properties throughout Upstate South Carolina and the Charlotte, NC region. If you're looking at raw or neglected land and trying to figure out where to start, we'll walk the property with you and give you a clear plan.
+    - paragraph:
+      - text: Call
+      - strong:
+        - link "+1 (704) 221-8928":
+          - /url: tel:7042218928
+      - text: or request a free estimate online — P1 Land & Property Management, serving Upstate SC and Charlotte NC.
+  - complementary:
+    - paragraph:
+      - text: Planning work on your land? Review P1's
+      - link "industrial and agricultural land services":
+        - /url: /services/industrial-agricultural
+      - text: and
+      - link "request a property estimate":
+        - /url: /contact
+      - text: .
+  - region "Continue Planning Working Land":
+    - paragraph: Explore More With P1
+    - heading "Continue Planning Working Land" [level=2]
+    - paragraph: Find help with clearing, grading, drainage, and planting.
+    - navigation "Related Services and Resources":
+      - list:
+        - link "Industrial and Agricultural Land Care Large-acreage vegetation, access, and property management for working sites.":
+          - /url: /services/industrial-agricultural
+          - generic: Industrial and Agricultural Land Care
+          - generic: Large-acreage vegetation, access, and property management for working sites.
+        - link "Land Clearing Selective clearing, forestry mulching, and site access preparation.":
+          - /url: /services/land-clearing
+          - generic: Land Clearing
+          - generic: Selective clearing, forestry mulching, and site access preparation.
+        - link "Grading and Site Preparation Shape grades, improve access, and prepare ground for its next use.":
+          - /url: /services/grading-site-preparation
+          - generic: Grading and Site Preparation
+          - generic: Shape grades, improve access, and prepare ground for its next use.
+    - navigation "Explore Service Areas":
+      - heading "Explore Service Areas" [level=3]
+      - paragraph: Local coverage across the Carolinas.
+      - list:
+        - link "Union County, NC":
+          - /url: /service-areas/union-county-nc
+          - text: Union County, NC
+  - generic: P1 Land & Property Management
+  - heading "Let's Walk Your Property" [level=2]
+  - paragraph: Tell us where it is and what's going on. The site visit and written estimate are free.
+  - link "Request a Site Visit":
+    - /url: /contact
+    - text: Request a Site Visit
+  - link "Call (704) 221-8928":
+    - /url: tel:7042218928
+    - text: Call (704) 221-8928
+- contentinfo:
+  - link "P1 Land & Property Management":
+    - /url: /
+    - img "P1 Land & Property Management"
+  - paragraph: P1 Land & Property Management clears, grades, drains, seeds and maintains commercial, industrial and farm property of an acre or more across Upstate South Carolina and the Charlotte region. Licensed and insured in North and South Carolina.
+  - link "(704) 221-8928":
+    - /url: tel:+17042218928
+    - text: (704) 221-8928
+  - link "Find us on Google":
+    - /url: https://www.google.com/maps/place/P1+Land+Management/@34.8311425,-80.622017,17z/data=!3m1!4b1!4m6!3m5!1s0x8855cd2b88976525:0x49c378cdfdecac9a!8m2!3d34.8311381!4d-80.6194367!16s%2Fg%2F11nw0vxpb_?entry=ttu&g_ep=EgoyMDI2MDkxMy4wIKXMDSoASAFQAw%3D%3D
+  - link "Send a secure inquiry":
+    - /url: /contact
+  - heading "Services" [level=4]
+  - list:
+    - link "Commercial Landscaping":
+      - /url: /services/commercial-landscaping
+    - link "Commercial Snow & Ice":
+      - /url: /services/commercial-snow-ice-management
+    - link "Industrial & Agricultural":
+      - /url: /services/industrial-agricultural
+    - link "Land Clearing":
+      - /url: /services/land-clearing
+    - link "Grading & Site Prep":
+      - /url: /services/grading-site-preparation
+    - link "Drainage Solutions":
+      - /url: /services/drainage
+    - link "Turf & Seeding":
+      - /url: /services/turf-installation-seeding
+    - link "Tree Services":
+      - /url: /services/tree-services
+    - link "Pond & Waterway":
+      - /url: /services/pond-waterway-management
+    - link "Property Reconstruction":
+      - /url: /services/property-reconstruction
+    - link "All Services →":
+      - /url: /services
+  - heading "Service Areas" [level=4]
+  - list:
+    - listitem: Upstate South Carolina
+    - link "Greenville":
+      - /url: /service-areas/greenville-sc
+    - link "Spartanburg":
+      - /url: /service-areas/spartanburg-sc
+    - link "Anderson":
+      - /url: /service-areas/anderson-sc
+    - link "Lancaster County":
+      - /url: /service-areas/lancaster-county-sc
+    - link "York County":
+      - /url: /service-areas/york-county-sc
+    - listitem: Greater Charlotte NC
+    - link "Charlotte, NC":
+      - /url: /service-areas/charlotte-north-carolina
+    - link "Concord":
+      - /url: /service-areas/concord-nc
+    - link "Mooresville & Lake Norman":
+      - /url: /service-areas/mooresville-lake-norman-nc
+    - link "Gastonia":
+      - /url: /service-areas/gastonia-nc
+    - link "Union County":
+      - /url: /service-areas/union-county-nc
+    - link "All Areas →":
+      - /url: /service-areas
+  - heading "Company" [level=4]
+  - list:
+    - link "About Us":
+      - /url: /about
+    - link "Service Gallery":
+      - /url: /gallery
+    - link "Blog & Resources":
+      - /url: /blog
+    - link "Contact / Site Assessment":
+      - /url: /contact
+  - heading "Hours" [level=4]
+  - list:
+    - listitem: "Mon – Fri: 7 AM – 6 PM"
+    - listitem: "Saturday: By Appointment"
+    - listitem: "Sunday: Closed"
+    - link "Request a Site Visit":
+      - /url: /contact
+  - generic: © 2026 P1 Land & Property Management. Serving Upstate South Carolina & the Charlotte, NC region. All rights reserved.
+- navigation "Quick contact":
+  - link "Call P1 at (704) 221-8928":
+    - /url: tel:+17042218928
+    - generic: Call P1
+  - link "Request a Site Visit":
+    - /url: /contact

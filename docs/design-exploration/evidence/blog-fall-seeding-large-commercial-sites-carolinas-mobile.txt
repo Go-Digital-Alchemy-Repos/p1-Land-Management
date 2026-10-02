@@ -1,0 +1,150 @@
+- link "Skip to main content":
+  - /url: "#main-content"
+- banner:
+  - link "P1 Land & Property Management":
+    - /url: /
+    - img "P1 Land & Property Management"
+  - button "Open navigation":
+    - generic: Open navigation
+- main:
+  - article:
+    - link "Blog & Insights":
+      - /url: /blog
+    - 'heading "Fall Seeding on Large Commercial Sites: Getting Turf Established Before Winter" [level=1]'
+    - paragraph:
+      - text: P1 Land Management ·
+      - time: September 24, 2026
+    - paragraph: If you manage a commercial property in Upstate South Carolina or the Charlotte area, the next few weeks matter for your turf. Fall is the most dependable time of year to get cool-season grass established in the Piedmont, and on a large site the difference between seeding now and seeding in November can be a full year of bare ground.
+    - heading "Why fall works" [level=2]
+    - paragraph: "Tall fescue, the most common cool-season grass on commercial lawns in this region, germinates best when soil is still warm and the air has started to cool. Late August through mid-October is the usual window, with September the sweet spot. New seedlings get two growing stretches before summer heat returns: the rest of the fall, and then spring."
+    - paragraph: Seed that goes down in late October or November often sprouts slowly, then sits through a cold winter with shallow roots. The first dry spell next summer thins it out.
+    - heading "Prep matters more on big sites" [level=2]
+    - paragraph: "On a commercial property, the seeding itself is the easy part. What decides whether it takes is what happens before the seed goes down:"
+    - list:
+      - strong: Fix the grade and drainage first.
+      - text: Seed washes out of low spots and off slopes that shed water. If a bare area keeps coming back, water is usually the reason.
+      - strong: Loosen compacted soil.
+      - text: Construction traffic and years of mowing leave the top few inches hard. Seed needs soil contact to root.
+      - strong: Test the soil.
+      - text: Carolina clay often needs lime and fertilizer adjustments. A soil test tells you what to add instead of guessing.
+      - strong: Match the seed to the spot.
+      - text: Full-sun slopes, shady areas under trees and wet ground near ponds may each need a different mix.
+    - heading "Slopes and bare ground" [level=2]
+    - paragraph: Steep banks along parking lots, retention ponds and roads are where seed struggles most. Straw alone can blow or wash away. Erosion-control blankets hold seed and soil in place until the grass roots in, and they are usually worth the cost on anything steeper than a gentle slope.
+    - heading "What if you miss the window?" [level=2]
+    - paragraph: Missing the fall window doesn't have to mean a year of mud. Temporary cover, like annual ryegrass or a winter grain, can hold soil through the cold months, and you can follow with permanent seed at the right time. On new construction sites, that temporary cover can also help you stay in line with your stormwater permit while you wait.
+    - paragraph: Warm-season grasses like bermuda follow a different calendar. They establish best from late spring into summer, when soil temperatures are high.
+    - heading "Keep new grass alive" [level=2]
+    - paragraph: Seed needs steady moisture for the first few weeks. On a commercial site without irrigation, timing seeding ahead of a rainy stretch helps. Hold off on mowing until the new grass is a few inches tall, and keep vehicles and equipment off seeded areas.
+    - paragraph:
+      - text: For more on picking the right grass, see our guide to the
+      - link "best grass types for large-acreage properties":
+        - /url: /blog/best-grass-large-acreage-carolinas
+      - text: ", or learn about our"
+      - link "turf installation and seeding":
+        - /url: /services/turf-installation-seeding
+      - text: work.
+    - heading "Talk to P1" [level=2]
+    - paragraph:
+      - text: P1 Land Management works on commercial, industrial and agricultural properties of an acre or more across Upstate South Carolina and greater Charlotte. Call
+      - link "(704) 221-8928":
+        - /url: tel:7042218928
+      - text: or
+      - link "request a free site assessment":
+        - /url: /contact
+      - text: .
+  - generic: P1 Land & Property Management
+  - heading "Let's Walk Your Property" [level=2]
+  - paragraph: Tell us where it is and what's going on. The site visit and written estimate are free.
+  - link "Request a Site Visit":
+    - /url: /contact
+    - text: Request a Site Visit
+  - link "Call (704) 221-8928":
+    - /url: tel:7042218928
+    - text: Call (704) 221-8928
+- contentinfo:
+  - link "P1 Land & Property Management":
+    - /url: /
+    - img "P1 Land & Property Management"
+  - paragraph: P1 Land & Property Management clears, grades, drains, seeds and maintains commercial, industrial and farm property of an acre or more across Upstate South Carolina and the Charlotte region. Licensed and insured in North and South Carolina.
+  - link "(704) 221-8928":
+    - /url: tel:+17042218928
+    - text: (704) 221-8928
+  - link "Find us on Google":
+    - /url: https://www.google.com/maps/place/P1+Land+Management/@34.8311425,-80.622017,17z/data=!3m1!4b1!4m6!3m5!1s0x8855cd2b88976525:0x49c378cdfdecac9a!8m2!3d34.8311381!4d-80.6194367!16s%2Fg%2F11nw0vxpb_?entry=ttu&g_ep=EgoyMDI2MDkxMy4wIKXMDSoASAFQAw%3D%3D
+  - link "Send a secure inquiry":
+    - /url: /contact
+  - heading "Services" [level=4]
+  - list:
+    - link "Commercial Landscaping":
+      - /url: /services/commercial-landscaping
+    - link "Commercial Snow & Ice":
+      - /url: /services/commercial-snow-ice-management
+    - link "Industrial & Agricultural":
+      - /url: /services/industrial-agricultural
+    - link "Land Clearing":
+      - /url: /services/land-clearing
+    - link "Grading & Site Prep":
+      - /url: /services/grading-site-preparation
+    - link "Drainage Solutions":
+      - /url: /services/drainage
+    - link "Turf & Seeding":
+      - /url: /services/turf-installation-seeding
+    - link "Tree Services":
+      - /url: /services/tree-services
+    - link "Pond & Waterway":
+      - /url: /services/pond-waterway-management
+    - link "Property Reconstruction":
+      - /url: /services/property-reconstruction
+    - link "All Services →":
+      - /url: /services
+  - heading "Service Areas" [level=4]
+  - list:
+    - listitem: Upstate South Carolina
+    - link "Greenville":
+      - /url: /service-areas/greenville-sc
+    - link "Spartanburg":
+      - /url: /service-areas/spartanburg-sc
+    - link "Anderson":
+      - /url: /service-areas/anderson-sc
+    - link "Lancaster County":
+      - /url: /service-areas/lancaster-county-sc
+    - link "York County":
+      - /url: /service-areas/york-county-sc
+    - listitem: Greater Charlotte NC
+    - link "Charlotte, NC":
+      - /url: /service-areas/charlotte-north-carolina
+    - link "Concord":
+      - /url: /service-areas/concord-nc
+    - link "Mooresville & Lake Norman":
+      - /url: /service-areas/mooresville-lake-norman-nc
+    - link "Gastonia":
+      - /url: /service-areas/gastonia-nc
+    - link "Union County":
+      - /url: /service-areas/union-county-nc
+    - link "All Areas →":
+      - /url: /service-areas
+  - heading "Company" [level=4]
+  - list:
+    - link "About Us":
+      - /url: /about
+    - link "Service Gallery":
+      - /url: /gallery
+    - link "Blog & Resources":
+      - /url: /blog
+    - link "Contact / Site Assessment":
+      - /url: /contact
+  - heading "Hours" [level=4]
+  - list:
+    - listitem: "Mon – Fri: 7 AM – 6 PM"
+    - listitem: "Saturday: By Appointment"
+    - listitem: "Sunday: Closed"
+    - link "Request a Site Visit":
+      - /url: /contact
+  - generic: © 2026 P1 Land & Property Management. Serving Upstate South Carolina & the Charlotte, NC region. All rights reserved.
+- navigation "Quick contact":
+  - link "Call P1 at (704) 221-8928":
+    - /url: tel:+17042218928
+    - generic: Call P1
+  - link "Request a Site Visit":
+    - /url: /contact

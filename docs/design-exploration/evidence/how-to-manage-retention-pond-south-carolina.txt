@@ -1,0 +1,191 @@
+- link "Skip to main content":
+  - /url: "#main-content"
+- banner:
+  - link "P1 Land & Property Management":
+    - /url: /
+    - img "P1 Land & Property Management"
+  - navigation "Main navigation":
+    - link "Home":
+      - /url: /
+    - link "About":
+      - /url: /about
+    - button "Services":
+      - text: Services
+    - link "Contact":
+      - /url: /contact
+  - link "(704) 221-8928":
+    - /url: tel:+17042218928
+    - text: (704) 221-8928
+  - link "Request a Site Visit":
+    - /url: /contact
+- main:
+  - article:
+    - img "Well maintained retention pond"
+    - generic: Pond Management
+    - heading "How to Manage A Retention Pond On Your Property in South Carolina and North Carolina" [level=1]:
+      - text: How to Manage A
+      - emphasis: Retention Pond
+      - text: On Your Property in South Carolina and North Carolina
+    - paragraph: Pond care starts with a few regular checks. Learn what to watch for around the water, banks, and drainage structures, and when to call for help.
+    - paragraph: Pond management starts with understanding the purpose of the water feature, its condition, and the maintenance responsibilities for the property. Watch for changes in water quality, sediment, vegetation, and shoreline condition.
+    - paragraph: This guide covers what retention pond management actually involves, what problems to watch for, and when DIY maintenance ends and professional help begins.
+    - heading "What Retention Pond Management Includes" [level=2]
+    - paragraph: "A complete pond management program addresses five key areas:"
+    - heading "1. Water Quality Monitoring" [level=3]
+    - paragraph: Healthy ponds have balanced water chemistry — proper pH, dissolved oxygen levels, and nutrient balance. When chemistry goes wrong, algae and aquatic weeds explode, fish die, and the pond becomes visually and functionally degraded. Regular water quality testing lets you catch problems early, before they become expensive to fix.
+    - heading "2. Aquatic Weed and Algae Control" [level=3]
+    - paragraph: Algae blooms and invasive aquatic weeds are the most visible pond management problem. Left unchecked, they choke out native plants, deplete oxygen, and create foul odors and appearance. Management options include beneficial aeration, biological controls, aquatic herbicide treatments, and mechanical removal — the right approach depends on the species, severity, and pond use.
+    - heading "3. Shoreline Management" [level=3]
+    - paragraph: The shoreline is where pond maintenance meets land management. Erosion along pond banks is a common problem — rain runoff, wave action, and foot or equipment traffic all eat at unprotected banks. Management includes establishing appropriate vegetation buffer zones, installing erosion control materials on vulnerable banks, and removing invasive shoreline plants that destabilize soil.
+    - heading "4. Aeration" [level=3]
+    - paragraph: Aeration and circulation equipment serve different purposes. A fountain is not automatically an effective oxygen-management system for the whole pond. Have the pond’s depth, shape, and water-quality needs assessed before selecting equipment.
+    - heading "5. Sediment Management" [level=3]
+    - paragraph: All ponds accumulate sediment over time as runoff carries soil particles into the water. When sediment buildup reduces pond depth significantly, the pond loses storage capacity, water quality declines, and aquatic habitat degrades. Addressing sediment means either dredging (expensive but thorough) or managing upstream erosion to slow the accumulation rate.
+    - paragraph:
+      - text: For background on equipment selection, see
+      - link "Clemson Extension’s guide to aeration, circulation, and fountains":
+        - /url: https://www.clemson.edu/extension/water/stormwater-ponds/problem-solving/aeration-circulation.html
+      - text: .
+    - heading "Signs Your Pond Needs Attention" [level=2]
+    - list:
+      - listitem: Green or blue-green water — algae bloom in progress
+      - listitem: Aquatic weed growth that interferes with the intended use of the pond
+      - listitem: Fish kills or visible dead fish
+      - listitem: A new or persistent foul odor that warrants investigation
+      - listitem: Visibly eroding banks or muddy water after rain
+      - listitem: Water level that doesn't recover after dry periods — may indicate dam or outlet issue
+      - listitem: Sediment delta visible at inlet points — accelerating siltation
+    - 'heading "Commercial Property Retention Ponds: Compliance Matters" [level=2]'
+    - paragraph: For a stormwater pond, review the approved maintenance plan and contact the relevant local stormwater office about the property’s requirements. Keep inspection and maintenance records with the property documentation.
+    - paragraph: Tell us what your pond needs and which maintenance records you keep. We'll work those details into the plan.
+    - heading "When to Call a Professional" [level=2]
+    - paragraph: DIY pond maintenance has limits. If you're dealing with a serious algae problem, significant erosion, dam integrity concerns, or a commercial pond with regulatory implications, a professional pond management contractor has the equipment, chemicals, and expertise to solve the problem correctly.
+    - paragraph: P1 provides pond and waterway management throughout Upstate South Carolina and the Charlotte, NC region. We work with farm ponds, commercial and industrial retention basins, municipal stormwater ponds, institutional water features, and qualifying waterfront commercial properties.
+    - paragraph:
+      - text: Call
+      - strong:
+        - link "+1 (704) 221-8928":
+          - /url: tel:7042218928
+      - text: or request a free estimate online — P1 Land & Property Management, serving Upstate SC and Charlotte NC.
+  - complementary:
+    - paragraph:
+      - text: Planning work on your land? Review P1's
+      - link "pond and waterway management services":
+        - /url: /services/pond-waterway-management
+      - text: and
+      - link "request a property estimate":
+        - /url: /contact
+      - text: .
+  - region "Continue Planning Pond and Drainage Work":
+    - paragraph: Explore More With P1
+    - heading "Continue Planning Pond and Drainage Work" [level=2]
+    - paragraph: Explore drainage and erosion work that can help protect your pond.
+    - navigation "Related Services and Resources":
+      - list:
+        - link "Pond and Waterway Management Maintain pond edges, waterways, shoreline areas, and visible water flow.":
+          - /url: /services/pond-waterway-management
+          - generic: Pond and Waterway Management
+          - generic: Maintain pond edges, waterways, shoreline areas, and visible water flow.
+        - link "Drainage Solutions Find the cause of standing water, runoff, and erosion.":
+          - /url: /services/drainage
+          - generic: Drainage Solutions
+          - generic: Find the cause of standing water, runoff, and erosion.
+    - navigation "Explore Service Areas":
+      - heading "Explore Service Areas" [level=3]
+      - paragraph: Local coverage across the Carolinas.
+      - list:
+        - link "Upstate South Carolina":
+          - /url: /service-areas/upstate-south-carolina
+          - text: Upstate South Carolina
+        - link "Mooresville and Lake Norman, NC":
+          - /url: /service-areas/mooresville-lake-norman-nc
+          - text: Mooresville and Lake Norman, NC
+  - generic: P1 Land & Property Management
+  - heading "Let's Walk Your Property" [level=2]
+  - paragraph: Tell us where it is and what's going on. The site visit and written estimate are free.
+  - link "Request a Site Visit":
+    - /url: /contact
+    - text: Request a Site Visit
+  - link "Call (704) 221-8928":
+    - /url: tel:7042218928
+    - text: Call (704) 221-8928
+- contentinfo:
+  - link "P1 Land & Property Management":
+    - /url: /
+    - img "P1 Land & Property Management"
+  - paragraph: P1 Land & Property Management clears, grades, drains, seeds and maintains commercial, industrial and farm property of an acre or more across Upstate South Carolina and the Charlotte region. Licensed and insured in North and South Carolina.
+  - link "(704) 221-8928":
+    - /url: tel:+17042218928
+    - text: (704) 221-8928
+  - link "Find us on Google":
+    - /url: https://www.google.com/maps/place/P1+Land+Management/@34.8311425,-80.622017,17z/data=!3m1!4b1!4m6!3m5!1s0x8855cd2b88976525:0x49c378cdfdecac9a!8m2!3d34.8311381!4d-80.6194367!16s%2Fg%2F11nw0vxpb_?entry=ttu&g_ep=EgoyMDI2MDkxMy4wIKXMDSoASAFQAw%3D%3D
+  - link "Send a secure inquiry":
+    - /url: /contact
+  - heading "Services" [level=4]
+  - list:
+    - link "Commercial Landscaping":
+      - /url: /services/commercial-landscaping
+    - link "Commercial Snow & Ice":
+      - /url: /services/commercial-snow-ice-management
+    - link "Industrial & Agricultural":
+      - /url: /services/industrial-agricultural
+    - link "Land Clearing":
+      - /url: /services/land-clearing
+    - link "Grading & Site Prep":
+      - /url: /services/grading-site-preparation
+    - link "Drainage Solutions":
+      - /url: /services/drainage
+    - link "Turf & Seeding":
+      - /url: /services/turf-installation-seeding
+    - link "Tree Services":
+      - /url: /services/tree-services
+    - link "Pond & Waterway":
+      - /url: /services/pond-waterway-management
+    - link "Property Reconstruction":
+      - /url: /services/property-reconstruction
+    - link "All Services →":
+      - /url: /services
+  - heading "Service Areas" [level=4]
+  - list:
+    - listitem: Upstate South Carolina
+    - link "Greenville":
+      - /url: /service-areas/greenville-sc
+    - link "Spartanburg":
+      - /url: /service-areas/spartanburg-sc
+    - link "Anderson":
+      - /url: /service-areas/anderson-sc
+    - link "Lancaster County":
+      - /url: /service-areas/lancaster-county-sc
+    - link "York County":
+      - /url: /service-areas/york-county-sc
+    - listitem: Greater Charlotte NC
+    - link "Charlotte, NC":
+      - /url: /service-areas/charlotte-north-carolina
+    - link "Concord":
+      - /url: /service-areas/concord-nc
+    - link "Mooresville & Lake Norman":
+      - /url: /service-areas/mooresville-lake-norman-nc
+    - link "Gastonia":
+      - /url: /service-areas/gastonia-nc
+    - link "Union County":
+      - /url: /service-areas/union-county-nc
+    - link "All Areas →":
+      - /url: /service-areas
+  - heading "Company" [level=4]
+  - list:
+    - link "About Us":
+      - /url: /about
+    - link "Service Gallery":
+      - /url: /gallery
+    - link "Blog & Resources":
+      - /url: /blog
+    - link "Contact / Site Assessment":
+      - /url: /contact
+  - heading "Hours" [level=4]
+  - list:
+    - listitem: "Mon – Fri: 7 AM – 6 PM"
+    - listitem: "Saturday: By Appointment"
+    - listitem: "Sunday: Closed"
+    - link "Request a Site Visit":
+      - /url: /contact
+  - generic: © 2026 P1 Land & Property Management. Serving Upstate South Carolina & the Charlotte, NC region. All rights reserved.

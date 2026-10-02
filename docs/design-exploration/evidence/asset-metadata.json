@@ -1,0 +1,470 @@
+[
+  {
+    "file": "artifacts/p1-website/src/assets/blog-ag-land.png",
+    "width": 1408,
+    "height": 768,
+    "bytes": 1976889
+  },
+  {
+    "file": "artifacts/p1-website/src/assets/blog-drainage.png",
+    "width": 1408,
+    "height": 768,
+    "bytes": 2004161
+  },
+  {
+    "file": "artifacts/p1-website/src/assets/blog-grass-acreage.png",
+    "width": 1408,
+    "height": 768,
+    "bytes": 1923199
+  },
+  {
+    "file": "artifacts/p1-website/src/assets/blog-land-clearing.png",
+    "width": 1408,
+    "height": 768,
+    "bytes": 2370809
+  },
+  {
+    "file": "artifacts/p1-website/src/assets/blog-retention-pond.png",
+    "width": 1408,
+    "height": 768,
+    "bytes": 1802830
+  },
+  {
+    "file": "artifacts/p1-website/src/assets/commercial-property.png",
+    "width": 1408,
+    "height": 768,
+    "bytes": 1885204
+  },
+  {
+    "file": "artifacts/p1-website/src/assets/data-center-campus.png",
+    "width": 1448,
+    "height": 1086,
+    "bytes": 2541683
+  },
+  {
+    "file": "artifacts/p1-website/src/assets/features/about-who.png",
+    "width": 1280,
+    "height": 896,
+    "bytes": 2064870
+  },
+  {
+    "file": "artifacts/p1-website/src/assets/features/charlotte-region.png",
+    "width": 1280,
+    "height": 896,
+    "bytes": 1961988
+  },
+  {
+    "file": "artifacts/p1-website/src/assets/features/clearing-mulching.png",
+    "width": 1280,
+    "height": 896,
+    "bytes": 2801462
+  },
+  {
+    "file": "artifacts/p1-website/src/assets/features/clearing-prepares.png",
+    "width": 1280,
+    "height": 896,
+    "bytes": 2277334
+  },
+  {
+    "file": "artifacts/p1-website/src/assets/features/commercial-attention.png",
+    "width": 1280,
+    "height": 896,
+    "bytes": 2386787
+  },
+  {
+    "file": "artifacts/p1-website/src/assets/features/commercial-schedule.png",
+    "width": 1280,
+    "height": 896,
+    "bytes": 1708868
+  },
+  {
+    "file": "artifacts/p1-website/src/assets/features/commercial-snow-loading-dock.png",
+    "width": 1672,
+    "height": 941,
+    "bytes": 2501702
+  },
+  {
+    "file": "artifacts/p1-website/src/assets/features/commercial-snow-pretreatment.png",
+    "width": 1672,
+    "height": 941,
+    "bytes": 2353494
+  },
+  {
+    "file": "artifacts/p1-website/src/assets/features/data-center-perimeter-management.png",
+    "width": 1536,
+    "height": 1024,
+    "bytes": 3551873
+  },
+  {
+    "file": "artifacts/p1-website/src/assets/features/data-center-stormwater-maintenance.png",
+    "width": 1448,
+    "height": 1086,
+    "bytes": 2628413
+  },
+  {
+    "file": "artifacts/p1-website/src/assets/features/drainage-fix.png",
+    "width": 1280,
+    "height": 896,
+    "bytes": 2223752
+  },
+  {
+    "file": "artifacts/p1-website/src/assets/features/grading-construction.png",
+    "width": 1280,
+    "height": 896,
+    "bytes": 1859754
+  },
+  {
+    "file": "artifacts/p1-website/src/assets/features/grading-drainage.png",
+    "width": 1280,
+    "height": 896,
+    "bytes": 2306125
+  },
+  {
+    "file": "artifacts/p1-website/src/assets/features/grading-level.png",
+    "width": 1672,
+    "height": 941,
+    "bytes": 2565663
+  },
+  {
+    "file": "artifacts/p1-website/src/assets/features/grading-turf.png",
+    "width": 1280,
+    "height": 896,
+    "bytes": 1888825
+  },
+  {
+    "file": "artifacts/p1-website/src/assets/features/industrial-maintenance.png",
+    "width": 1280,
+    "height": 896,
+    "bytes": 2099917
+  },
+  {
+    "file": "artifacts/p1-website/src/assets/features/lancaster-sitework.png",
+    "width": 1280,
+    "height": 896,
+    "bytes": 2159207
+  },
+  {
+    "file": "artifacts/p1-website/src/assets/features/pond-care.png",
+    "width": 1280,
+    "height": 896,
+    "bytes": 2283621
+  },
+  {
+    "file": "artifacts/p1-website/src/assets/features/pond-construction.png",
+    "width": 1280,
+    "height": 896,
+    "bytes": 2430305
+  },
+  {
+    "file": "artifacts/p1-website/src/assets/features/reconstruction-smaller-scale.png",
+    "width": 1448,
+    "height": 1086,
+    "bytes": 3446296
+  },
+  {
+    "file": "artifacts/p1-website/src/assets/features/reconstruction.png",
+    "width": 1280,
+    "height": 896,
+    "bytes": 2062910
+  },
+  {
+    "file": "artifacts/p1-website/src/assets/features/tree-management.png",
+    "width": 1280,
+    "height": 896,
+    "bytes": 2457972
+  },
+  {
+    "file": "artifacts/p1-website/src/assets/features/turf-prep.png",
+    "width": 1280,
+    "height": 896,
+    "bytes": 2193018
+  },
+  {
+    "file": "artifacts/p1-website/src/assets/features/turf-species.png",
+    "width": 1280,
+    "height": 896,
+    "bytes": 1786394
+  },
+  {
+    "file": "artifacts/p1-website/src/assets/features/union-county-agriculture.png",
+    "width": 1280,
+    "height": 896,
+    "bytes": 2301646
+  },
+  {
+    "file": "artifacts/p1-website/src/assets/features/upstate-partner.png",
+    "width": 1280,
+    "height": 896,
+    "bytes": 2098957
+  },
+  {
+    "file": "artifacts/p1-website/src/assets/features/york-county-lakewylie.png",
+    "width": 1536,
+    "height": 1024,
+    "bytes": 3676097
+  },
+  {
+    "file": "artifacts/p1-website/src/assets/fine-grading.png",
+    "width": 1408,
+    "height": 768,
+    "bytes": 2113394
+  },
+  {
+    "file": "artifacts/p1-website/src/assets/hero-bg.png",
+    "width": 1408,
+    "height": 768,
+    "bytes": 1869494
+  },
+  {
+    "file": "artifacts/p1-website/src/assets/hero-charlotte-metro.png",
+    "width": 1408,
+    "height": 768,
+    "bytes": 1766059
+  },
+  {
+    "file": "artifacts/p1-website/src/assets/hero-charlotte-region.png",
+    "width": 1672,
+    "height": 941,
+    "bytes": 2709215
+  },
+  {
+    "file": "artifacts/p1-website/src/assets/hero-commercial-snow-ice.png",
+    "width": 1672,
+    "height": 941,
+    "bytes": 2253909
+  },
+  {
+    "file": "artifacts/p1-website/src/assets/hero-data-center-secure-facility.png",
+    "width": 1672,
+    "height": 941,
+    "bytes": 2628040
+  },
+  {
+    "file": "artifacts/p1-website/src/assets/hero-lake-norman.png",
+    "width": 1672,
+    "height": 941,
+    "bytes": 2711525
+  },
+  {
+    "file": "artifacts/p1-website/src/assets/hero-lancaster-county.png",
+    "width": 1408,
+    "height": 768,
+    "bytes": 2003590
+  },
+  {
+    "file": "artifacts/p1-website/src/assets/hero-service-areas.png",
+    "width": 1408,
+    "height": 768,
+    "bytes": 1487089
+  },
+  {
+    "file": "artifacts/p1-website/src/assets/hero-union-county.png",
+    "width": 1408,
+    "height": 768,
+    "bytes": 1917849
+  },
+  {
+    "file": "artifacts/p1-website/src/assets/hero-upstate-cities.png",
+    "width": 1408,
+    "height": 768,
+    "bytes": 2114893
+  },
+  {
+    "file": "artifacts/p1-website/src/assets/hero-upstate-sc.png",
+    "width": 1408,
+    "height": 768,
+    "bytes": 1807936
+  },
+  {
+    "file": "artifacts/p1-website/src/assets/hero-york-county.png",
+    "width": 1408,
+    "height": 768,
+    "bytes": 1945577
+  },
+  {
+    "file": "artifacts/p1-website/src/assets/locations/belmont-nc.png",
+    "width": 1536,
+    "height": 1024,
+    "bytes": 3067658
+  },
+  {
+    "file": "artifacts/p1-website/src/assets/locations/boiling-springs-sc.png",
+    "width": 1536,
+    "height": 1024,
+    "bytes": 3084038
+  },
+  {
+    "file": "artifacts/p1-website/src/assets/locations/cornelius-nc.png",
+    "width": 1536,
+    "height": 1024,
+    "bytes": 3166696
+  },
+  {
+    "file": "artifacts/p1-website/src/assets/locations/duncan-sc.png",
+    "width": 1536,
+    "height": 1024,
+    "bytes": 3040276
+  },
+  {
+    "file": "artifacts/p1-website/src/assets/locations/easley-sc.png",
+    "width": 1536,
+    "height": 1024,
+    "bytes": 2844526
+  },
+  {
+    "file": "artifacts/p1-website/src/assets/locations/fort-mill-sc.png",
+    "width": 1536,
+    "height": 1024,
+    "bytes": 3209821
+  },
+  {
+    "file": "artifacts/p1-website/src/assets/locations/gaffney-sc.png",
+    "width": 1536,
+    "height": 1024,
+    "bytes": 2884581
+  },
+  {
+    "file": "artifacts/p1-website/src/assets/locations/greer-sc.png",
+    "width": 1536,
+    "height": 1024,
+    "bytes": 2904971
+  },
+  {
+    "file": "artifacts/p1-website/src/assets/locations/huntersville-nc.png",
+    "width": 1536,
+    "height": 1024,
+    "bytes": 3059086
+  },
+  {
+    "file": "artifacts/p1-website/src/assets/locations/indian-land-sc.png",
+    "width": 1536,
+    "height": 1024,
+    "bytes": 3147306
+  },
+  {
+    "file": "artifacts/p1-website/src/assets/locations/indian-trail-nc.png",
+    "width": 1536,
+    "height": 1024,
+    "bytes": 3228535
+  },
+  {
+    "file": "artifacts/p1-website/src/assets/locations/inman-sc.png",
+    "width": 1536,
+    "height": 1024,
+    "bytes": 3126663
+  },
+  {
+    "file": "artifacts/p1-website/src/assets/locations/kannapolis-nc.png",
+    "width": 1536,
+    "height": 1024,
+    "bytes": 3161252
+  },
+  {
+    "file": "artifacts/p1-website/src/assets/locations/matthews-nc.png",
+    "width": 1536,
+    "height": 1024,
+    "bytes": 3294282
+  },
+  {
+    "file": "artifacts/p1-website/src/assets/locations/monroe-nc.png",
+    "width": 1536,
+    "height": 1024,
+    "bytes": 3040081
+  },
+  {
+    "file": "artifacts/p1-website/src/assets/locations/mount-holly-nc.png",
+    "width": 1536,
+    "height": 1024,
+    "bytes": 3361703
+  },
+  {
+    "file": "artifacts/p1-website/src/assets/locations/rock-hill-sc.png",
+    "width": 1536,
+    "height": 1024,
+    "bytes": 3308079
+  },
+  {
+    "file": "artifacts/p1-website/src/assets/locations/simpsonville-sc.png",
+    "width": 1536,
+    "height": 1024,
+    "bytes": 3121916
+  },
+  {
+    "file": "artifacts/p1-website/src/assets/locations/waxhaw-nc.png",
+    "width": 1536,
+    "height": 1024,
+    "bytes": 3124662
+  },
+  {
+    "file": "artifacts/p1-website/src/assets/pond-management.png",
+    "width": 1408,
+    "height": 768,
+    "bytes": 1878319
+  },
+  {
+    "file": "artifacts/p1-website/src/assets/service-clearing.png",
+    "width": 1408,
+    "height": 768,
+    "bytes": 2449397
+  },
+  {
+    "file": "artifacts/p1-website/src/assets/service-commercial.png",
+    "width": 1408,
+    "height": 768,
+    "bytes": 2264441
+  },
+  {
+    "file": "artifacts/p1-website/src/assets/service-drainage.png",
+    "width": 1408,
+    "height": 768,
+    "bytes": 1713391
+  },
+  {
+    "file": "artifacts/p1-website/src/assets/service-grading.png",
+    "width": 1408,
+    "height": 768,
+    "bytes": 1692124
+  },
+  {
+    "file": "artifacts/p1-website/src/assets/service-industrial.png",
+    "width": 1408,
+    "height": 768,
+    "bytes": 1863077
+  },
+  {
+    "file": "artifacts/p1-website/src/assets/service-pond.png",
+    "width": 1408,
+    "height": 768,
+    "bytes": 1676640
+  },
+  {
+    "file": "artifacts/p1-website/src/assets/service-reconstruction-smaller-scale.png",
+    "width": 1672,
+    "height": 941,
+    "bytes": 2917003
+  },
+  {
+    "file": "artifacts/p1-website/src/assets/service-reconstruction.png",
+    "width": 1408,
+    "height": 768,
+    "bytes": 1883898
+  },
+  {
+    "file": "artifacts/p1-website/src/assets/service-tree.png",
+    "width": 1408,
+    "height": 768,
+    "bytes": 1844733
+  },
+  {
+    "file": "artifacts/p1-website/src/assets/service-turf.png",
+    "width": 1408,
+    "height": 768,
+    "bytes": 2261439
+  },
+  {
+    "file": "artifacts/p1-website/src/assets/services-hero.png",
+    "width": 1408,
+    "height": 768,
+    "bytes": 1662222
+  }
+]

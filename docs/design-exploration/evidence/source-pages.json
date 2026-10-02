@@ -1,0 +1,1332 @@
+[
+  {
+    "file": "artifacts/p1-website/src/pages/about.tsx",
+    "imports": [
+      "@/components/layout/Layout",
+      "@/components/layout/FinalCTA",
+      "@/components/layout/FeatureRow",
+      "@/components/layout/PageHero",
+      "@/components/seo",
+      "@/lib/structured-data",
+      "@/assets/commercial-property.png",
+      "@/assets/features/about-who.png",
+      "lucide-react"
+    ],
+    "headings": [
+      "\n              Full-Service. Full Commitment.\n            ",
+      "\n              Where We Work\n            ",
+      "\n              What to Expect From P1\n            "
+    ],
+    "assets": [
+      "commercial-property.png",
+      "features/about-who.png"
+    ],
+    "characters": 6831,
+    "sha256": "067f798c574cc4f7b8e2f528784f1ffeb9c301a2315c04cdc453c4fa4e41534e"
+  },
+  {
+    "file": "artifacts/p1-website/src/pages/blog/best-grass-large-acreage-carolinas.tsx",
+    "imports": [
+      "wouter",
+      "@/components/layout/Layout",
+      "@/components/layout/FinalCTA",
+      "@/components/layout/PageHero",
+      "@/components/seo",
+      "@/lib/structured-data",
+      "@/assets/blog-grass-acreage.png"
+    ],
+    "headings": [
+      "The Transition Zone Challenge",
+      "Warm-Season Grasses for Large Acreage",
+      "Bermuda Grass",
+      "Zoysia Grass",
+      "Centipede Grass",
+      "Cool-Season Grasses for Large Acreage",
+      "Tall Fescue",
+      "Pasture and Agricultural Grasses",
+      "The Bottom Line"
+    ],
+    "assets": [
+      "blog-grass-acreage.png"
+    ],
+    "characters": 8985,
+    "sha256": "8f605b36a3fe521117691622c1c858969d86d7434c81302394c12a49609dfc06"
+  },
+  {
+    "file": "artifacts/p1-website/src/pages/blog/how-to-manage-retention-pond-south-carolina.tsx",
+    "imports": [
+      "wouter",
+      "@/components/layout/Layout",
+      "@/components/layout/FinalCTA",
+      "@/components/layout/PageHero",
+      "@/components/seo",
+      "@/lib/structured-data",
+      "@/assets/blog-retention-pond.png"
+    ],
+    "headings": [
+      "What Retention Pond Management Includes",
+      "1. Water Quality Monitoring",
+      "2. Aquatic Weed and Algae Control",
+      "3. Shoreline Management",
+      "4. Aeration",
+      "5. Sediment Management",
+      "Signs Your Pond Needs Attention",
+      "Commercial Property Retention Ponds: Compliance Matters",
+      "When to Call a Professional"
+    ],
+    "assets": [
+      "blog-retention-pond.png"
+    ],
+    "characters": 7797,
+    "sha256": "d39d81b1b48a2401ceb213a005016732936954f5b5e8eb142a3fbc4d75c36f1b"
+  },
+  {
+    "file": "artifacts/p1-website/src/pages/blog/index.tsx",
+    "imports": [
+      "@/components/layout/Layout",
+      "@/components/layout/FinalCTA",
+      "@/components/layout/PageHero",
+      "@/components/seo",
+      "wouter",
+      "@/lib/responsive-images",
+      "@/lib/structured-data",
+      "@/assets/blog-land-clearing.png",
+      "@/assets/blog-retention-pond.png",
+      "@/assets/blog-grass-acreage.png",
+      "@/assets/blog-drainage.png",
+      "@/assets/blog-ag-land.png"
+    ],
+    "headings": [
+      "\n                    {post.title}\n                  "
+    ],
+    "assets": [
+      "blog-land-clearing.png",
+      "blog-retention-pond.png",
+      "blog-grass-acreage.png",
+      "blog-drainage.png",
+      "blog-ag-land.png"
+    ],
+    "characters": 5448,
+    "sha256": "81915a38ff5958847def2c11b5304a2259e25b8340c34a0f49db54c5132b74c0"
+  },
+  {
+    "file": "artifacts/p1-website/src/pages/blog/land-clearing-cost-per-acre-south-carolina.tsx",
+    "imports": [
+      "wouter",
+      "@/components/layout/Layout",
+      "@/components/layout/FinalCTA",
+      "@/components/layout/PageHero",
+      "@/components/seo",
+      "@/lib/structured-data",
+      "@/assets/blog-land-clearing.png"
+    ],
+    "headings": [
+      "Why a Per-Acre Price Needs a Site Assessment",
+      "What Factors Affect Land Clearing Cost?",
+      "1. Vegetation Density and Type",
+      "2. Acreage and Site Access",
+      "3. Clearing Method",
+      "4. What Happens to the Debris",
+      "5. Post-Clearing Needs",
+      "Getting an Accurate Estimate",
+      "Ready to Get Your Land Cleared in Upstate SC or Charlotte NC?"
+    ],
+    "assets": [
+      "blog-land-clearing.png"
+    ],
+    "characters": 7266,
+    "sha256": "5fb681520d6e7747cfdcf0d61af86a9b5379e5c7a606317c172a11bab34602b5"
+  },
+  {
+    "file": "artifacts/p1-website/src/pages/blog/preparing-land-agricultural-use-carolinas.tsx",
+    "imports": [
+      "wouter",
+      "@/components/layout/Layout",
+      "@/components/layout/FinalCTA",
+      "@/components/layout/PageHero",
+      "@/components/seo",
+      "@/lib/structured-data",
+      "@/assets/blog-ag-land.png"
+    ],
+    "headings": [
+      "Step 1: Soil Testing",
+      "Step 2: Land Clearing",
+      "Step 3: Rough Grading",
+      "Step 4: Drainage Installation",
+      "Step 5: Lime and Soil Amendment Application",
+      "Step 6: Seeding or Sod Establishment",
+      "Work With a Contractor Who Handles All of It"
+    ],
+    "assets": [
+      "blog-ag-land.png"
+    ],
+    "characters": 9502,
+    "sha256": "3d200257c18ee415d4e988a748fcb8a0bbca1f3874fbe7749560ab5e0c8b698e"
+  },
+  {
+    "file": "artifacts/p1-website/src/pages/blog/signs-property-drainage-problem.tsx",
+    "imports": [
+      "wouter",
+      "@/components/layout/Layout",
+      "@/components/layout/FinalCTA",
+      "@/components/layout/PageHero",
+      "@/components/seo",
+      "@/lib/structured-data",
+      "@/assets/blog-drainage.png"
+    ],
+    "headings": [
+      "Sign 1: Standing Water After Rain",
+      "Sign 2: Erosion on Slopes and Banks",
+      "Sign 3: Turf That Won't Grow or Keeps Dying",
+      "Sign 4: Drainage Ditches That Are Silted, Overgrown, or Undersized",
+      "Sign 5: Water Intrusion Near Structures",
+      "What to Do When You Spot These Signs"
+    ],
+    "assets": [
+      "blog-drainage.png"
+    ],
+    "characters": 8198,
+    "sha256": "2e3d40ec2a7fd44f4cfac8df519b57d366052d9db7cb0470ceafb738bd948d8d"
+  },
+  {
+    "file": "artifacts/p1-website/src/pages/commercial/data-centers-secure-facilities.tsx",
+    "imports": [
+      "@/components/content/FaqAccordion",
+      "@/components/content/ContextualLinks",
+      "@/components/layout/FeatureRow",
+      "@/components/layout/Layout",
+      "@/components/layout/PageHero",
+      "@/components/seo",
+      "@/components/ui/button",
+      "@/assets/hero-data-center-secure-facility.png",
+      "@/assets/features/data-center-stormwater-maintenance.png",
+      "@/assets/features/data-center-perimeter-management.png",
+      "wouter"
+    ],
+    "headings": [
+      "A secure facility ends at the wall. The property doesn't.",
+      "Built for the campuses most crews can't take on",
+      "{title}",
+      "Everything outside the building envelope",
+      "{title}",
+      "Why complex campuses choose P1",
+      "{title}",
+      "Serving complex campuses across Upstate SC and greater Charlotte",
+      "Data center & secure facility grounds \u2014 frequently asked questions",
+      "One partner for everything outside the building envelope"
+    ],
+    "assets": [
+      "hero-data-center-secure-facility.png",
+      "features/data-center-stormwater-maintenance.png",
+      "features/data-center-perimeter-management.png"
+    ],
+    "characters": 19153,
+    "sha256": "42d9fb75342d630b9438873354ca60be1f71f08d9885dfa86056b414b3f4a990"
+  },
+  {
+    "file": "artifacts/p1-website/src/pages/commercial-snow-ice-management.tsx",
+    "imports": [
+      "@/components/content/FaqAccordion",
+      "@/components/content/ContextualLinks",
+      "@/components/layout/FeatureRow",
+      "@/components/layout/Layout",
+      "@/components/layout/PageHero",
+      "@/components/seo",
+      "@/components/ui/button",
+      "@/lib/structured-data",
+      "@/assets/hero-commercial-snow-ice.png",
+      "@/assets/features/commercial-snow-pretreatment.png",
+      "@/assets/features/commercial-snow-loading-dock.png",
+      "wouter"
+    ],
+    "headings": [
+      "Built for large commercial and industrial properties",
+      "{title}",
+      "Complete commercial snow and ice services \u2014 from a single contractor",
+      "{title}",
+      "{title}",
+      "How our seasonal service works",
+      "{title}",
+      "Serving the Charlotte region and Upstate South Carolina",
+      "Managing a data center, secure facility, or distribution campus?",
+      "Commercial snow and ice management \u2014 frequently asked questions",
+      "Protect your property before the first freeze"
+    ],
+    "assets": [
+      "hero-commercial-snow-ice.png",
+      "features/commercial-snow-pretreatment.png",
+      "features/commercial-snow-loading-dock.png"
+    ],
+    "characters": 18863,
+    "sha256": "d43dcd1abd08f46c0c109ce50e6045f6169acc2c8a60615a80ae2d5268afbc25"
+  },
+  {
+    "file": "artifacts/p1-website/src/pages/commercial.tsx",
+    "imports": [
+      "react",
+      "wouter",
+      "@/components/layout/Layout",
+      "@/components/seo",
+      "@/lib/site",
+      "@/lib/acquisition",
+      "@/lib/commercial-inquiry",
+      "@/lib/responsive-images",
+      "@/lib/structured-data",
+      "@/components/content/ContextualLinks",
+      "@/assets/service-commercial.png",
+      "@/assets/data-center-campus.png"
+    ],
+    "headings": [
+      "Your inquiry has been received",
+      "Complete Exterior Site Management for Large Commercial & Industrial Properties",
+      "A connected plan for a complex property.",
+      "Start with the whole site. Define the work precisely.",
+      "{item.title}",
+      "Continuity from development to daily operations.",
+      "{title}",
+      "The land outside a secure facility still needs a clear plan.",
+      "Site management shaped around your property.",
+      "Define what recurring management means for your site.",
+      "A useful starting point before a long-term commitment.",
+      "{title}",
+      "Get a Free Site Assessment"
+    ],
+    "assets": [
+      "service-commercial.png",
+      "data-center-campus.png"
+    ],
+    "characters": 23191,
+    "sha256": "12ce75c4398003a7d7800b51a90a5e867021b54363ca8fe56351f7f2509afb59"
+  },
+  {
+    "file": "artifacts/p1-website/src/pages/contact.tsx",
+    "imports": [
+      "@/lib/acquisition",
+      "react",
+      "@/components/layout/Layout",
+      "@/components/layout/PageHero",
+      "@/components/seo",
+      "@/lib/structured-data",
+      "@/components/content/FaqAccordion",
+      "@/components/ui/button",
+      "@/components/ui/input",
+      "@/components/ui/label",
+      "@/components/ui/textarea",
+      "@/components/ui/select",
+      "lucide-react",
+      "@/lib/site",
+      "@/components/content/CredentialsStrip"
+    ],
+    "headings": [
+      "Tell us about the property",
+      "Got it.",
+      "Contact Details",
+      "What happens next",
+      "\n            FAQ: Contact P1\n          "
+    ],
+    "assets": [],
+    "characters": 16431,
+    "sha256": "01f81f0d1bdc9863ee5d3aa1a9c46e136eaab9371648cc09890a475dcafcafc9"
+  },
+  {
+    "file": "artifacts/p1-website/src/pages/gallery.tsx",
+    "imports": [
+      "react",
+      "@/components/layout/Layout",
+      "@/components/layout/FinalCTA",
+      "@/components/layout/PageHero",
+      "@/components/seo",
+      "@/lib/utils",
+      "@/lib/structured-data",
+      "@/assets/services-hero.png",
+      "@/assets/service-clearing.png",
+      "@/assets/fine-grading.png",
+      "@/assets/service-drainage.png",
+      "@/assets/service-turf.png",
+      "@/assets/pond-management.png",
+      "@/assets/service-reconstruction-smaller-scale.png",
+      "@/assets/commercial-property.png",
+      "@/assets/service-industrial.png",
+      "@/assets/service-tree.png"
+    ],
+    "headings": [
+      "Find the capability your property needs",
+      "{p.title}"
+    ],
+    "assets": [
+      "services-hero.png",
+      "service-clearing.png",
+      "fine-grading.png",
+      "service-drainage.png",
+      "service-turf.png",
+      "pond-management.png",
+      "service-reconstruction-smaller-scale.png",
+      "commercial-property.png",
+      "service-industrial.png",
+      "service-tree.png"
+    ],
+    "characters": 6514,
+    "sha256": "f0d0e4259ea921e4360cac2d6edd18256b6085c404603d77519da04e59fc188d"
+  },
+  {
+    "file": "artifacts/p1-website/src/pages/home.tsx",
+    "imports": [
+      "@/components/layout/Layout",
+      "@/components/layout/FinalCTA",
+      "@/components/layout/ContourField",
+      "@/components/layout/IndexOfWork",
+      "@/components/content/ServicesGrid",
+      "@/components/content/GoogleReviewShowcase",
+      "@/components/seo",
+      "@/lib/structured-data",
+      "@/lib/responsive-images",
+      "wouter",
+      "@/components/ui/button",
+      "@/assets/hero-bg.png",
+      "@/assets/features/grading-construction.png",
+      "@/assets/commercial-property.png",
+      "@/components/content/FaqAccordion"
+    ],
+    "headings": [
+      "\n              Your first impression{\" \"}\n              ",
+      "\n                A full field of capabilities,\n                ",
+      "\n              Grading for New Construction\n            ",
+      "\n                The difference is in the{\" \"}\n                ",
+      "{v.title}",
+      "A coordinated approach to your property",
+      "\n              Two of the Carolinas' fastest-growing markets.\n            ",
+      "Upstate South Carolina",
+      "Greater Charlotte &amp; SC Border",
+      "\n              Frequently asked questions.\n            ",
+      "Managing a commercial or industrial property?"
+    ],
+    "assets": [
+      "hero-bg.png",
+      "features/grading-construction.png",
+      "commercial-property.png"
+    ],
+    "characters": 22811,
+    "sha256": "59152a98040d6faa3c6bc2fefa02d64cc55669e96ded248a2f2f72587bcacf62"
+  },
+  {
+    "file": "artifacts/p1-website/src/pages/not-found.tsx",
+    "imports": [
+      "wouter",
+      "@/components/layout/Layout",
+      "@/components/layout/PageHero",
+      "@/components/seo",
+      "@/components/ui/button",
+      "lucide-react"
+    ],
+    "headings": [
+      "\n              Where Would You Like to Go?\n            ",
+      "\n                      {link.title}\n                      "
+    ],
+    "assets": [],
+    "characters": 4347,
+    "sha256": "e46ef56ec9bcf872006e299a21c9b92a3ee84f261acb5b7a41a390fd06ba759c"
+  },
+  {
+    "file": "artifacts/p1-website/src/pages/service-areas/anderson-sc.tsx",
+    "imports": [
+      "@/components/layout/Layout",
+      "@/components/layout/FinalCTA",
+      "@/components/layout/PageHero",
+      "@/components/seo",
+      "@/lib/structured-data",
+      "wouter",
+      "@/assets/hero-upstate-cities.png",
+      "lucide-react",
+      "@/components/content/FaqAccordion"
+    ],
+    "headings": [
+      "Anderson SC Services",
+      "Planning work around Anderson County terrain",
+      "From working land to managed sites",
+      "Anderson, SC Land & Property Management FAQs"
+    ],
+    "assets": [
+      "hero-upstate-cities.png"
+    ],
+    "characters": 8616,
+    "sha256": "deab4c7ba2e6f622eaf3e866e073914257c3c9c889266d138d9099e04e5a23e6"
+  },
+  {
+    "file": "artifacts/p1-website/src/pages/service-areas/belmont-nc.tsx",
+    "imports": [
+      "@/components/content/LocationPage",
+      "@/lib/location-pages.json",
+      "@/assets/locations/belmont-nc.png"
+    ],
+    "headings": [],
+    "assets": [
+      "locations/belmont-nc.png"
+    ],
+    "characters": 310,
+    "sha256": "a3dfe4713bee15c54bd66e0da85bcd0f720453ca790065d6e091099c89e7ccb3"
+  },
+  {
+    "file": "artifacts/p1-website/src/pages/service-areas/boiling-springs-sc.tsx",
+    "imports": [
+      "@/components/content/LocationPage",
+      "@/lib/location-pages.json",
+      "@/assets/locations/boiling-springs-sc.png"
+    ],
+    "headings": [],
+    "assets": [
+      "locations/boiling-springs-sc.png"
+    ],
+    "characters": 326,
+    "sha256": "9fd4f653a8cfdcbd82e9704e58bfa4709a892cf094a64a1e7f42be8b7d51834d"
+  },
+  {
+    "file": "artifacts/p1-website/src/pages/service-areas/charlotte-north-carolina.tsx",
+    "imports": [
+      "@/components/layout/Layout",
+      "@/components/layout/FinalCTA",
+      "@/components/layout/PageHero",
+      "@/components/seo",
+      "@/lib/structured-data",
+      "wouter",
+      "@/components/layout/FeatureRow",
+      "@/assets/hero-charlotte-region.png",
+      "@/assets/features/charlotte-region.png",
+      "@/assets/features/union-county-agriculture.png",
+      "lucide-react",
+      "@/components/content/FaqAccordion"
+    ],
+    "headings": [
+      "Services Available in Charlotte",
+      "Charlotte and Nearby Communities",
+      "\n              Connected Care for Active Charlotte Properties\n            ",
+      "Built around Charlotte operations",
+      "A regional scope with local constraints",
+      "County Spotlight",
+      "Union County, NC",
+      "Charlotte, NC Land & Property Management FAQs"
+    ],
+    "assets": [
+      "hero-charlotte-region.png",
+      "features/charlotte-region.png",
+      "features/union-county-agriculture.png"
+    ],
+    "characters": 12279,
+    "sha256": "c3a36588c764c9d8fdce8b0a764d8ccd65fe45b3a7f513794deb2585fe886173"
+  },
+  {
+    "file": "artifacts/p1-website/src/pages/service-areas/concord-nc.tsx",
+    "imports": [
+      "@/components/layout/Layout",
+      "@/components/layout/FinalCTA",
+      "@/components/layout/PageHero",
+      "@/components/seo",
+      "@/lib/structured-data",
+      "wouter",
+      "@/assets/hero-charlotte-metro.png",
+      "lucide-react",
+      "@/components/content/FaqAccordion"
+    ],
+    "headings": [
+      "Concord NC Services",
+      "Large-site work in Concord and Cabarrus County",
+      "What to prepare for an assessment",
+      "Concord, NC Land & Property Management FAQs"
+    ],
+    "assets": [
+      "hero-charlotte-metro.png"
+    ],
+    "characters": 8412,
+    "sha256": "ddf3ef65d1db53d53fed5aa2b1191cd390e93af7f9928fb1d4c35d258af29c4f"
+  },
+  {
+    "file": "artifacts/p1-website/src/pages/service-areas/cornelius-nc.tsx",
+    "imports": [
+      "@/components/content/LocationPage",
+      "@/lib/location-pages.json",
+      "@/assets/locations/cornelius-nc.png"
+    ],
+    "headings": [],
+    "assets": [
+      "locations/cornelius-nc.png"
+    ],
+    "characters": 314,
+    "sha256": "2c1c6aef6b46a27a69a04155387727e735d8e36ea7b9423cd4d50fb27c0e9c67"
+  },
+  {
+    "file": "artifacts/p1-website/src/pages/service-areas/duncan-sc.tsx",
+    "imports": [
+      "@/components/content/LocationPage",
+      "@/lib/location-pages.json",
+      "@/assets/locations/duncan-sc.png"
+    ],
+    "headings": [],
+    "assets": [
+      "locations/duncan-sc.png"
+    ],
+    "characters": 308,
+    "sha256": "21eb95491e3255e143d845e46e2bde82c094736c0b30dcb67fb06e65bbc70cfa"
+  },
+  {
+    "file": "artifacts/p1-website/src/pages/service-areas/easley-sc.tsx",
+    "imports": [
+      "@/components/content/LocationPage",
+      "@/lib/location-pages.json",
+      "@/assets/locations/easley-sc.png"
+    ],
+    "headings": [],
+    "assets": [
+      "locations/easley-sc.png"
+    ],
+    "characters": 308,
+    "sha256": "ee3166c15d39c8c5dc6709f64acab3d9d0ba245e94ff4abee1369348bc419ccc"
+  },
+  {
+    "file": "artifacts/p1-website/src/pages/service-areas/fort-mill-sc.tsx",
+    "imports": [
+      "@/components/content/LocationPage",
+      "@/lib/location-pages.json",
+      "@/assets/locations/fort-mill-sc.png"
+    ],
+    "headings": [],
+    "assets": [
+      "locations/fort-mill-sc.png"
+    ],
+    "characters": 314,
+    "sha256": "f9fbaf7ba0b55db2677a768ab86ce5eec73f93f9d1b1bc9e523eea863d3b570f"
+  },
+  {
+    "file": "artifacts/p1-website/src/pages/service-areas/gaffney-sc.tsx",
+    "imports": [
+      "@/components/content/LocationPage",
+      "@/lib/location-pages.json",
+      "@/assets/locations/gaffney-sc.png"
+    ],
+    "headings": [],
+    "assets": [
+      "locations/gaffney-sc.png"
+    ],
+    "characters": 310,
+    "sha256": "2e01d92e23563c38e0c7ab9d451b361fcb78769495671e59421ce34aa6907413"
+  },
+  {
+    "file": "artifacts/p1-website/src/pages/service-areas/gastonia-nc.tsx",
+    "imports": [
+      "@/components/layout/Layout",
+      "@/components/layout/FinalCTA",
+      "@/components/layout/PageHero",
+      "@/components/seo",
+      "@/lib/structured-data",
+      "wouter",
+      "@/assets/hero-charlotte-metro.png",
+      "lucide-react",
+      "@/components/content/FaqAccordion"
+    ],
+    "headings": [
+      "Gastonia NC Services",
+      "Property work shaped by Gaston County ground",
+      "Commercial corridors and working acreage",
+      "Gastonia, NC Land & Property Management FAQs"
+    ],
+    "assets": [
+      "hero-charlotte-metro.png"
+    ],
+    "characters": 8574,
+    "sha256": "249d504548e4746bc7dc719145533c08046e28c1ebf693981051a6eada916138"
+  },
+  {
+    "file": "artifacts/p1-website/src/pages/service-areas/greenville-sc.tsx",
+    "imports": [
+      "@/components/layout/Layout",
+      "@/components/layout/FinalCTA",
+      "@/components/layout/PageHero",
+      "@/components/seo",
+      "@/lib/structured-data",
+      "wouter",
+      "@/assets/hero-upstate-cities.png",
+      "lucide-react",
+      "@/components/content/FaqAccordion"
+    ],
+    "headings": [
+      "Greenville SC Services",
+      "A connected plan for Greenville-area sites",
+      "Plan around operations and water movement",
+      "Greenville, SC Land & Property Management FAQs"
+    ],
+    "assets": [
+      "hero-upstate-cities.png"
+    ],
+    "characters": 8913,
+    "sha256": "6c735516a17c17b423548590d59396d6bd0167b717e3d6bce37d2f768b5feded"
+  },
+  {
+    "file": "artifacts/p1-website/src/pages/service-areas/greer-sc.tsx",
+    "imports": [
+      "@/components/content/LocationPage",
+      "@/lib/location-pages.json",
+      "@/assets/locations/greer-sc.png"
+    ],
+    "headings": [],
+    "assets": [
+      "locations/greer-sc.png"
+    ],
+    "characters": 306,
+    "sha256": "4924cbfddd19aa60ae21718b2a96ee061f2fc5bed1d4b05b009421f8c6916bdb"
+  },
+  {
+    "file": "artifacts/p1-website/src/pages/service-areas/huntersville-nc.tsx",
+    "imports": [
+      "@/components/content/LocationPage",
+      "@/lib/location-pages.json",
+      "@/assets/locations/huntersville-nc.png"
+    ],
+    "headings": [],
+    "assets": [
+      "locations/huntersville-nc.png"
+    ],
+    "characters": 320,
+    "sha256": "2e45ce18f42005cb84ce9fc05b753c870977ff402fb410d0ba329f500296536d"
+  },
+  {
+    "file": "artifacts/p1-website/src/pages/service-areas/index.tsx",
+    "imports": [
+      "@/components/layout/Layout",
+      "@/components/layout/FinalCTA",
+      "@/components/layout/PageHero",
+      "@/components/seo",
+      "@/lib/structured-data",
+      "wouter",
+      "@/assets/hero-service-areas.png",
+      "@/assets/features/union-county-agriculture.png",
+      "@/assets/features/lancaster-sitework.png",
+      "@/assets/features/york-county-lakewylie.png",
+      "lucide-react",
+      "@/components/content/ServiceAreaMap",
+      "@/components/content/FaqAccordion"
+    ],
+    "headings": [
+      "Upstate South Carolina",
+      "Charlotte Region, NC",
+      "Newest Service Areas",
+      "Union County, NC",
+      "Lancaster County, SC",
+      "York County, SC",
+      "Service Area FAQs",
+      "Local grounds management and land services",
+      "Upstate South Carolina",
+      "Greater Charlotte and the South Carolina border"
+    ],
+    "assets": [
+      "hero-service-areas.png",
+      "features/union-county-agriculture.png",
+      "features/lancaster-sitework.png",
+      "features/york-county-lakewylie.png"
+    ],
+    "characters": 17022,
+    "sha256": "fea1e89afde2b05f4be2664373e0a53caf086a635a618201caad2d1d364b11e9"
+  },
+  {
+    "file": "artifacts/p1-website/src/pages/service-areas/indian-land-sc.tsx",
+    "imports": [
+      "@/components/content/LocationPage",
+      "@/lib/location-pages.json",
+      "@/assets/locations/indian-land-sc.png"
+    ],
+    "headings": [],
+    "assets": [
+      "locations/indian-land-sc.png"
+    ],
+    "characters": 318,
+    "sha256": "cac071f89c3a50852e5ff9c38de624366b30bdc518f9f10cfed35e7d9ae4e45d"
+  },
+  {
+    "file": "artifacts/p1-website/src/pages/service-areas/indian-trail-nc.tsx",
+    "imports": [
+      "@/components/content/LocationPage",
+      "@/lib/location-pages.json",
+      "@/assets/locations/indian-trail-nc.png"
+    ],
+    "headings": [],
+    "assets": [
+      "locations/indian-trail-nc.png"
+    ],
+    "characters": 320,
+    "sha256": "5cf8666b48ab4b2d3002e715012f68bba2ad8566b93d74d88fb81b4e52f7d2f7"
+  },
+  {
+    "file": "artifacts/p1-website/src/pages/service-areas/inman-sc.tsx",
+    "imports": [
+      "@/components/content/LocationPage",
+      "@/lib/location-pages.json",
+      "@/assets/locations/inman-sc.png"
+    ],
+    "headings": [],
+    "assets": [
+      "locations/inman-sc.png"
+    ],
+    "characters": 306,
+    "sha256": "867b32c80e5408584a4df3d347c5cd9e64ca86498695c5a055166ee30f5f9333"
+  },
+  {
+    "file": "artifacts/p1-website/src/pages/service-areas/kannapolis-nc.tsx",
+    "imports": [
+      "@/components/content/LocationPage",
+      "@/lib/location-pages.json",
+      "@/assets/locations/kannapolis-nc.png"
+    ],
+    "headings": [],
+    "assets": [
+      "locations/kannapolis-nc.png"
+    ],
+    "characters": 316,
+    "sha256": "dfd0e3e8afefd181c32c7bd732661e2068ff7582f03acc0493d7afeae18e7e96"
+  },
+  {
+    "file": "artifacts/p1-website/src/pages/service-areas/lancaster-county-sc.tsx",
+    "imports": [
+      "@/components/layout/Layout",
+      "@/components/layout/FinalCTA",
+      "@/components/layout/PageHero",
+      "@/components/seo",
+      "@/lib/structured-data",
+      "wouter",
+      "@/components/layout/FeatureRow",
+      "@/assets/hero-lancaster-county.png",
+      "@/assets/features/lancaster-sitework.png",
+      "lucide-react",
+      "@/components/content/FaqAccordion"
+    ],
+    "headings": [
+      "Land & Property Management Services Throughout Lancaster County",
+      "Communities We Serve in Lancaster County",
+      "Agricultural Property Management in Lancaster County",
+      "Commercial & Development Site Work in Lancaster County",
+      "Why Lancaster County Property Teams Choose P1",
+      "Lancaster County, SC Land & Property Management FAQs"
+    ],
+    "assets": [
+      "hero-lancaster-county.png",
+      "features/lancaster-sitework.png"
+    ],
+    "characters": 12615,
+    "sha256": "db3b50d92d6fcc1a5f56adaaf1c09df9d3bf7d10db19688e13e6c37ca7f908ae"
+  },
+  {
+    "file": "artifacts/p1-website/src/pages/service-areas/matthews-nc.tsx",
+    "imports": [
+      "@/components/content/LocationPage",
+      "@/lib/location-pages.json",
+      "@/assets/locations/matthews-nc.png"
+    ],
+    "headings": [],
+    "assets": [
+      "locations/matthews-nc.png"
+    ],
+    "characters": 312,
+    "sha256": "c8869cc4a7c40a584615b99690d145a6aad273abc372b083016cb726a153c198"
+  },
+  {
+    "file": "artifacts/p1-website/src/pages/service-areas/monroe-nc.tsx",
+    "imports": [
+      "@/components/content/LocationPage",
+      "@/lib/location-pages.json",
+      "@/assets/locations/monroe-nc.png"
+    ],
+    "headings": [],
+    "assets": [
+      "locations/monroe-nc.png"
+    ],
+    "characters": 308,
+    "sha256": "f34369d51645f6c7a0c951e906cdb917c3989431eec2078213fd2474c58d0c23"
+  },
+  {
+    "file": "artifacts/p1-website/src/pages/service-areas/mooresville-lake-norman-nc.tsx",
+    "imports": [
+      "@/components/layout/Layout",
+      "@/components/layout/FinalCTA",
+      "@/components/layout/PageHero",
+      "@/components/seo",
+      "@/lib/structured-data",
+      "wouter",
+      "@/assets/hero-lake-norman.png",
+      "lucide-react",
+      "@/components/content/FaqAccordion"
+    ],
+    "headings": [
+      "Mooresville & Lake Norman Services",
+      "Plan for slopes, water, and occupied sites",
+      "Clear boundaries for waterfront work",
+      "Mooresville & Lake Norman Land & Property Management FAQs"
+    ],
+    "assets": [
+      "hero-lake-norman.png"
+    ],
+    "characters": 8798,
+    "sha256": "9176db36546808188a8adbff9355b29ffaf83ff6505aeb970e0bdf30c03cfa27"
+  },
+  {
+    "file": "artifacts/p1-website/src/pages/service-areas/mount-holly-nc.tsx",
+    "imports": [
+      "@/components/content/LocationPage",
+      "@/lib/location-pages.json",
+      "@/assets/locations/mount-holly-nc.png"
+    ],
+    "headings": [],
+    "assets": [
+      "locations/mount-holly-nc.png"
+    ],
+    "characters": 318,
+    "sha256": "6cb8233d768dc5e0e652cba4738e7b6fe794df5b707160a617e881598869450f"
+  },
+  {
+    "file": "artifacts/p1-website/src/pages/service-areas/rock-hill-sc.tsx",
+    "imports": [
+      "@/components/content/LocationPage",
+      "@/lib/location-pages.json",
+      "@/assets/locations/rock-hill-sc.png"
+    ],
+    "headings": [],
+    "assets": [
+      "locations/rock-hill-sc.png"
+    ],
+    "characters": 314,
+    "sha256": "2169cf44b08689e0907ef033ec8c52c379b2a11b1d33aec8be00c2f461d1cb81"
+  },
+  {
+    "file": "artifacts/p1-website/src/pages/service-areas/simpsonville-sc.tsx",
+    "imports": [
+      "@/components/content/LocationPage",
+      "@/lib/location-pages.json",
+      "@/assets/locations/simpsonville-sc.png"
+    ],
+    "headings": [],
+    "assets": [
+      "locations/simpsonville-sc.png"
+    ],
+    "characters": 320,
+    "sha256": "926ddae2d318b20f707abdfcf04a1a61caed39bcacffa22446274a864d05830e"
+  },
+  {
+    "file": "artifacts/p1-website/src/pages/service-areas/spartanburg-sc.tsx",
+    "imports": [
+      "@/components/layout/Layout",
+      "@/components/layout/FinalCTA",
+      "@/components/layout/PageHero",
+      "@/components/seo",
+      "@/lib/structured-data",
+      "wouter",
+      "@/assets/hero-upstate-cities.png",
+      "lucide-react",
+      "@/components/content/FaqAccordion"
+    ],
+    "headings": [
+      "Spartanburg SC Services",
+      "Land management along a working corridor",
+      "Build a scope that can be compared",
+      "Spartanburg, SC Land & Property Management FAQs"
+    ],
+    "assets": [
+      "hero-upstate-cities.png"
+    ],
+    "characters": 8812,
+    "sha256": "4897a1087067a706f8993be8f8943687975a7d0e1746acb53e0e5fbd7cfb0f83"
+  },
+  {
+    "file": "artifacts/p1-website/src/pages/service-areas/union-county-nc.tsx",
+    "imports": [
+      "@/components/layout/Layout",
+      "@/components/layout/FinalCTA",
+      "@/components/layout/PageHero",
+      "@/components/seo",
+      "@/lib/structured-data",
+      "wouter",
+      "@/components/layout/FeatureRow",
+      "@/assets/hero-union-county.png",
+      "@/assets/features/union-county-agriculture.png",
+      "lucide-react",
+      "@/components/content/FaqAccordion"
+    ],
+    "headings": [
+      "Land & Property Management Services Throughout Union County",
+      "Communities We Serve in Union County",
+      "Agricultural Property Management in Union County",
+      "Commercial & Development Site Work in Union County",
+      "Why Union County Property Teams Choose P1",
+      "Union County, NC Land & Property Management FAQs"
+    ],
+    "assets": [
+      "hero-union-county.png",
+      "features/union-county-agriculture.png"
+    ],
+    "characters": 12652,
+    "sha256": "1cca6d1df785b1d35cb006a15c643e714b7c003d088ed006e4cf0f18b703d93f"
+  },
+  {
+    "file": "artifacts/p1-website/src/pages/service-areas/upstate-south-carolina.tsx",
+    "imports": [
+      "@/components/layout/Layout",
+      "@/components/layout/FinalCTA",
+      "@/components/layout/PageHero",
+      "@/components/seo",
+      "@/lib/structured-data",
+      "wouter",
+      "@/components/layout/FeatureRow",
+      "@/assets/hero-upstate-sc.png",
+      "@/assets/features/upstate-partner.png",
+      "@/assets/features/lancaster-sitework.png",
+      "lucide-react",
+      "@/components/content/FaqAccordion"
+    ],
+    "headings": [
+      "Services Available Throughout Upstate SC",
+      "Communities We Serve in Upstate SC",
+      "\n              Why Upstate SC Landowners Choose P1\n            ",
+      "County Spotlight",
+      "Lancaster County, SC",
+      "Upstate South Carolina Land & Property Management FAQs"
+    ],
+    "assets": [
+      "hero-upstate-sc.png",
+      "features/upstate-partner.png",
+      "features/lancaster-sitework.png"
+    ],
+    "characters": 11042,
+    "sha256": "9788022dd2217b9ce3d3da39623be6e72c89e6d44f863afe6c3181e8475c8cdf"
+  },
+  {
+    "file": "artifacts/p1-website/src/pages/service-areas/waxhaw-nc.tsx",
+    "imports": [
+      "@/components/content/LocationPage",
+      "@/lib/location-pages.json",
+      "@/assets/locations/waxhaw-nc.png"
+    ],
+    "headings": [],
+    "assets": [
+      "locations/waxhaw-nc.png"
+    ],
+    "characters": 308,
+    "sha256": "1166bc81bb7afcc1056018f1d0ece9117e673d6968dadb77098ff3e0150512f7"
+  },
+  {
+    "file": "artifacts/p1-website/src/pages/service-areas/york-county-sc.tsx",
+    "imports": [
+      "@/components/layout/Layout",
+      "@/components/layout/FinalCTA",
+      "@/components/layout/PageHero",
+      "@/components/seo",
+      "@/lib/structured-data",
+      "wouter",
+      "@/components/layout/FeatureRow",
+      "@/assets/hero-york-county.png",
+      "@/assets/features/york-county-lakewylie.png",
+      "lucide-react",
+      "@/components/content/FaqAccordion"
+    ],
+    "headings": [
+      "Land & Property Management Services Throughout York County",
+      "Communities We Serve in York County",
+      "Agricultural Property Management in York County",
+      "Commercial & Development Site Work in York County",
+      "Lake Wylie & Waterfront Properties",
+      "Why York County Property Teams Choose P1",
+      "York County, SC Land & Property Management FAQs"
+    ],
+    "assets": [
+      "hero-york-county.png",
+      "features/york-county-lakewylie.png"
+    ],
+    "characters": 14225,
+    "sha256": "2c4c199516b39001b25709812b60f79c9409e327722d93d5137611b769a1cc12"
+  },
+  {
+    "file": "artifacts/p1-website/src/pages/services/commercial-landscaping.tsx",
+    "imports": [
+      "@/components/layout/Layout",
+      "@/components/layout/FinalCTA",
+      "@/components/layout/PageHero",
+      "@/components/seo",
+      "@/lib/structured-data",
+      "@/components/layout/FeatureRow",
+      "lucide-react",
+      "wouter",
+      "@/assets/service-commercial.png",
+      "@/assets/features/commercial-attention.png",
+      "@/assets/features/commercial-schedule.png",
+      "@/components/content/FaqAccordion"
+    ],
+    "headings": [
+      "\n              What's Included in Our Commercial Programs\n            ",
+      "\n              Why Commercial Clients Choose P1\n            ",
+      "Commercial Landscaping FAQs",
+      "Seasonal and specialist grounds care"
+    ],
+    "assets": [
+      "service-commercial.png",
+      "features/commercial-attention.png",
+      "features/commercial-schedule.png"
+    ],
+    "characters": 9283,
+    "sha256": "fff05b0b65b1c1a755b21278deb156a95ad6d46c2814b876d1d08c89a7d51d42"
+  },
+  {
+    "file": "artifacts/p1-website/src/pages/services/drainage.tsx",
+    "imports": [
+      "@/components/layout/Layout",
+      "@/components/layout/FinalCTA",
+      "@/components/layout/PageHero",
+      "@/components/seo",
+      "@/lib/structured-data",
+      "@/components/layout/FeatureRow",
+      "lucide-react",
+      "wouter",
+      "@/assets/service-drainage.png",
+      "@/assets/features/drainage-fix.png",
+      "@/components/content/FaqAccordion"
+    ],
+    "headings": [
+      "\n              Drainage Services\n            ",
+      "\n              Common Drainage Problems We Solve\n            ",
+      "\n              Agricultural Drainage\n            ",
+      "Drainage FAQs",
+      "Drainage is one part of the campus exterior."
+    ],
+    "assets": [
+      "service-drainage.png",
+      "features/drainage-fix.png"
+    ],
+    "characters": 9186,
+    "sha256": "feb95a321dc6b2b130cb566b602562b175f9b452a5677a472e77907f7bf36489"
+  },
+  {
+    "file": "artifacts/p1-website/src/pages/services/grading-site-preparation.tsx",
+    "imports": [
+      "@/components/layout/Layout",
+      "@/components/layout/FinalCTA",
+      "@/components/layout/PageHero",
+      "@/components/layout/FeatureRow",
+      "@/components/seo",
+      "@/lib/structured-data",
+      "lucide-react",
+      "wouter",
+      "@/assets/service-grading.png",
+      "@/assets/features/grading-level.png",
+      "@/assets/features/grading-drainage.png",
+      "@/assets/features/grading-turf.png",
+      "@/assets/features/grading-construction.png",
+      "@/components/content/FaqAccordion"
+    ],
+    "headings": [
+      "\n              Grading Services\n            ",
+      "\n              Equipment & Precision\n            ",
+      "Grading & Site Preparation FAQs"
+    ],
+    "assets": [
+      "service-grading.png",
+      "features/grading-level.png",
+      "features/grading-drainage.png",
+      "features/grading-turf.png",
+      "features/grading-construction.png"
+    ],
+    "characters": 8979,
+    "sha256": "70b5e5c2ddf1a6a6a733a8c5778f5db500a427f28694889701f60f4f59b7e798"
+  },
+  {
+    "file": "artifacts/p1-website/src/pages/services/index.tsx",
+    "imports": [
+      "@/components/layout/Layout",
+      "@/components/layout/FinalCTA",
+      "@/components/layout/PageHero",
+      "@/components/content/ServicesGrid",
+      "@/components/seo",
+      "@/lib/structured-data",
+      "@/assets/services-hero.png"
+    ],
+    "headings": [
+      "One property plan, from rough ground to ongoing care",
+      "For qualifying properties",
+      "Scope before mobilization",
+      "Across two regions"
+    ],
+    "assets": [
+      "services-hero.png"
+    ],
+    "characters": 3325,
+    "sha256": "6640da05870ce6657fc1beb55e6839f7c422e61d2b37e6a1516e073c984fb271"
+  },
+  {
+    "file": "artifacts/p1-website/src/pages/services/industrial-agricultural.tsx",
+    "imports": [
+      "@/components/layout/Layout",
+      "@/components/layout/FinalCTA",
+      "@/components/layout/PageHero",
+      "@/components/seo",
+      "@/lib/structured-data",
+      "@/components/layout/FeatureRow",
+      "lucide-react",
+      "wouter",
+      "@/assets/service-industrial.png",
+      "@/assets/features/industrial-maintenance.png",
+      "@/components/content/FaqAccordion"
+    ],
+    "headings": [
+      "\n              Agricultural Property Services\n            ",
+      "\n              Industrial Site Services\n            ",
+      "\n              Large-Acreage Capability\n            ",
+      "Industrial & Agricultural Land Maintenance FAQs"
+    ],
+    "assets": [
+      "service-industrial.png",
+      "features/industrial-maintenance.png"
+    ],
+    "characters": 8522,
+    "sha256": "4164fb5ec64f4afc490280fb7ec7ee03862866aea6399e6f0006596a1e4a43ff"
+  },
+  {
+    "file": "artifacts/p1-website/src/pages/services/land-clearing.tsx",
+    "imports": [
+      "@/components/layout/Layout",
+      "@/components/layout/FinalCTA",
+      "@/components/layout/PageHero",
+      "@/components/seo",
+      "@/lib/structured-data",
+      "@/components/layout/FeatureRow",
+      "lucide-react",
+      "wouter",
+      "@/assets/service-clearing.png",
+      "@/assets/features/clearing-prepares.png",
+      "@/assets/features/clearing-mulching.png",
+      "@/components/content/FaqAccordion"
+    ],
+    "headings": [
+      "\n              Land Clearing Services\n            ",
+      "\n              What Comes After Clearing\n            ",
+      "\n              Service Area\n            ",
+      "Land Clearing FAQs",
+      "Controlling perimeter acreage around an active facility?"
+    ],
+    "assets": [
+      "service-clearing.png",
+      "features/clearing-prepares.png",
+      "features/clearing-mulching.png"
+    ],
+    "characters": 9324,
+    "sha256": "733f095f419d54682344bf11953b5cdf22f25feb7f4d5db6500b3ec144318a40"
+  },
+  {
+    "file": "artifacts/p1-website/src/pages/services/pond-waterway-management.tsx",
+    "imports": [
+      "@/components/layout/Layout",
+      "@/components/layout/FinalCTA",
+      "@/components/layout/PageHero",
+      "@/components/seo",
+      "@/lib/structured-data",
+      "@/components/layout/FeatureRow",
+      "lucide-react",
+      "wouter",
+      "@/assets/service-pond.png",
+      "@/assets/features/pond-care.png",
+      "@/assets/features/pond-construction.png",
+      "@/components/content/FaqAccordion"
+    ],
+    "headings": [
+      "\n                Pond Management Services\n              ",
+      "\n                Waterway & Drainage Ditch Services\n              ",
+      "\n              Stormwater Retention Compliance\n            ",
+      "Pond & Waterway Management FAQs",
+      "Managing stormwater across a complex campus?"
+    ],
+    "assets": [
+      "service-pond.png",
+      "features/pond-care.png",
+      "features/pond-construction.png"
+    ],
+    "characters": 9599,
+    "sha256": "8b08fa9a515c3d2a42eb982551457e4e28810bf9122a7f5cca407e38aaed92f4"
+  },
+  {
+    "file": "artifacts/p1-website/src/pages/services/property-reconstruction.tsx",
+    "imports": [
+      "@/components/layout/Layout",
+      "@/components/layout/FinalCTA",
+      "@/components/layout/PageHero",
+      "@/components/seo",
+      "@/lib/structured-data",
+      "@/components/layout/FeatureRow",
+      "lucide-react",
+      "wouter",
+      "@/assets/service-reconstruction-smaller-scale.png",
+      "@/assets/features/reconstruction-smaller-scale.png",
+      "@/components/content/FaqAccordion"
+    ],
+    "headings": [
+      "\n              What Full Property Reconstruction Includes\n            ",
+      "\n              Who Needs Property Reconstruction\n            ",
+      "\n              One Contractor for the Whole Project\n            ",
+      "\n              Service Area\n            ",
+      "Property Reconstruction FAQs"
+    ],
+    "assets": [
+      "service-reconstruction-smaller-scale.png",
+      "features/reconstruction-smaller-scale.png"
+    ],
+    "characters": 10022,
+    "sha256": "49af2bd3a3490383ce7f29883418c41fab39caf5904b92dffc1492fc384cf996"
+  },
+  {
+    "file": "artifacts/p1-website/src/pages/services/tree-services.tsx",
+    "imports": [
+      "@/components/layout/Layout",
+      "@/components/layout/FinalCTA",
+      "@/components/layout/PageHero",
+      "@/components/seo",
+      "@/lib/structured-data",
+      "@/components/layout/FeatureRow",
+      "lucide-react",
+      "wouter",
+      "@/assets/service-tree.png",
+      "@/assets/features/tree-management.png",
+      "@/components/content/FaqAccordion"
+    ],
+    "headings": [
+      "\n              Tree Services\n            ",
+      "\n              Tree Clearing at Scale\n            ",
+      "Tree Services FAQs"
+    ],
+    "assets": [
+      "service-tree.png",
+      "features/tree-management.png"
+    ],
+    "characters": 7512,
+    "sha256": "2e3985b78e8ab3bb97ae104294ccfa3909dfab0686a6b6273d3a60c67141a172"
+  },
+  {
+    "file": "artifacts/p1-website/src/pages/services/turf-installation-seeding.tsx",
+    "imports": [
+      "@/components/layout/Layout",
+      "@/components/layout/FinalCTA",
+      "@/components/layout/PageHero",
+      "@/components/seo",
+      "@/lib/structured-data",
+      "@/components/layout/FeatureRow",
+      "lucide-react",
+      "wouter",
+      "@/assets/service-turf.png",
+      "@/assets/features/turf-prep.png",
+      "@/assets/features/turf-species.png",
+      "@/components/content/FaqAccordion"
+    ],
+    "headings": [
+      "\n                Sod Installation\n              ",
+      "\n                Seed Planting & Establishment\n              ",
+      "{item.title}",
+      "\n              From Cleared Ground to Established Turf\n            ",
+      "Turf Installation & Seeding FAQs"
+    ],
+    "assets": [
+      "service-turf.png",
+      "features/turf-prep.png",
+      "features/turf-species.png"
+    ],
+    "characters": 10322,
+    "sha256": "9c40e158f00222e77e88a6a817c7cef8805e0bfdba4889f70cc2da270a964175"
+  }
+]

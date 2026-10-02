@@ -1,0 +1,290 @@
+- link "Skip to main content":
+  - /url: "#main-content"
+- banner:
+  - link "P1 Land & Property Management":
+    - /url: /
+    - img "P1 Land & Property Management"
+  - button "Open navigation":
+    - generic: Open navigation
+- main:
+  - img "Large pickup truck with a front-mounted snowplow clearing a commercial distribution center"
+  - generic: Commercial Snow & Ice Management
+  - heading "Commercial & Industrial Snow and Ice Management for The Carolinas" [level=1]:
+    - text: Commercial & Industrial Snow and Ice Management for The
+    - emphasis: Carolinas
+  - paragraph: Plan ahead for snow and ice around your parking lots, loading areas, and walkways. We serve large commercial and industrial properties across greater Charlotte and Upstate South Carolina.
+  - link "Request a Site Assessment":
+    - /url: /contact
+  - link "Call for Priority Availability":
+    - /url: tel:7042218928
+    - text: Call for Priority Availability
+  - region "Service commitments":
+    - text: Commercial & Industrial Only
+    - text: Large-Site Plow Fleet
+    - text: 24/7 Storm Monitoring
+    - text: Insurance Documentation Available
+    - text: Seasonal Priority Contracts
+  - heading "In the Carolinas, the Risk Isn't the Snowfall — It's the Ice Event No One Saw Coming" [level=2]
+  - paragraph: Because measurable snow is infrequent, many facilities are not prepared when an overnight ice event glazes a large parking lot, loading docks, and walkways before the first employee arrives.
+  - paragraph: For distribution centers, that can interrupt truck staging and dock access. For mission-critical facilities, it can restrict staff and emergency access. For retail and office properties, it creates safety and liability exposure for customers, tenants, and employees.
+  - paragraph: We walk your property before winter, map the areas that need attention first, and put the response plan in writing. When weather approaches, we prepare crews and equipment around that plan.
+  - img "Large pickup truck with a front plow and anti-icing equipment treating an industrial parking lot"
+  - paragraph: Who we serve
+  - heading "Built for Large Commercial and Industrial Properties" [level=2]
+  - paragraph: We serve commercial and industrial properties 1 acre and larger. We do not service residential driveways or small lots.
+  - article:
+    - heading "Distribution & Fulfillment Centers" [level=3]
+    - paragraph: Snow clearing around dock aprons, truck courts, staging lanes, and employee lots, planned around deliveries and shifts.
+  - article:
+    - heading "Data Centers & Mission-Critical Facilities" [level=3]
+    - paragraph: Access for staff, security, and emergency vehicles, with ice management around entrances and generator yards.
+  - article:
+    - heading "Shopping Centers & Retail Complexes" [level=3]
+    - paragraph: Snow and ice treatment for storefront walkways, fire lanes, and busy parking lots.
+  - article:
+    - heading "Corporate & Office Campuses" [level=3]
+    - paragraph: Multi-building sites with parking areas, connector walkways, and main entrances treated for tenants and employees.
+  - article:
+    - heading "Industrial & Manufacturing Plants" [level=3]
+    - paragraph: Large yards, rail sidings, loading zones, and shift-change parking managed around your operations.
+  - article:
+    - heading "Warehouse & Logistics Parks" [level=3]
+    - paragraph: Multi-tenant industrial parks maintained under one coordinated plan.
+  - article:
+    - heading "Medical, Institutional & Large-Format Commercial" [level=3]
+    - paragraph: Medical and institutional properties with important staff, visitor, and emergency-access needs.
+  - paragraph: Tell us how your site operates, which entrances matter most, and when people need access.
+  - paragraph: A Plan for Your Site
+  - heading "Complete Commercial Snow and Ice Services — From a Single Contractor" [level=2]
+  - paragraph: One seasonal agreement sets out the services, priorities, and person to contact for your site.
+  - article:
+    - heading "Snow Plowing & Clearing" [level=3]
+    - paragraph: Large pickup-mounted plowing for parking lots, truck courts, access roads, and fire lanes, with routes planned around your site.
+  - article:
+    - heading "Anti-Icing & Pre-Treatment" [level=3]
+    - paragraph: Proactive brine and de-icing application before a storm arrives, helping prevent ice from fully bonding to pavement.
+  - article:
+    - heading "De-Icing & Salting" [level=3]
+    - paragraph: Post-storm granular and liquid de-icing on lots, drive lanes, ramps, and high-traffic zones as temperatures fluctuate.
+  - article:
+    - heading "Sidewalk, Walkway & Entrance Clearing" [level=3]
+    - paragraph: Hand crews and walk-behind equipment for entrances, crosswalks, ADA ramps, and pedestrian paths, coordinated with lot service.
+  - article:
+    - heading "Snow Hauling & Relocation" [level=3]
+    - paragraph: Snow relocated from critical areas to preserve parking, sightlines, loading zones, and fire lanes when on-site stacking is not enough.
+  - article:
+    - heading "Loading Dock & Truck Court Management" [level=3]
+    - paragraph: Specialized clearing around dock doors, aprons, and staging lanes so freight can keep moving.
+  - article:
+    - heading "24/7 Storm Monitoring & Emergency Response" [level=3]
+    - paragraph: We track the forecast and prepare crews for the response times set out in each site's agreement.
+  - heading "Why Large Properties Across the Carolinas Choose P1" [level=2]
+  - paragraph: Before winter arrives, we'll walk the site, identify priority areas, and explain when and how the crew will respond.
+  - paragraph: The plan covers lots, loading areas, entrances, walkways, and where to put cleared snow.
+  - img "Large pickup truck with a front-mounted snowplow clearing a distribution center loading dock"
+  - article:
+    - heading "Commercial and Industrial Focus" [level=3]
+    - paragraph: We plan crews and equipment around large parking lots, truck courts, and industrial yards.
+  - article:
+    - heading "Large-Site Operating Capacity" [level=3]
+    - paragraph: P1's land-management background supports coordinated snow clearing and relocation across acreage, truck courts, and broad paved areas.
+  - article:
+    - heading "Year-Round Property Perspective" [level=3]
+    - paragraph: Existing knowledge of a site's drainage, grades, curbs, landscape edges, and stacking constraints can support faster, safer execution.
+  - article:
+    - heading "Planning Before the Season" [level=3]
+    - paragraph: A pre-season assessment maps plow routes, stacking zones, priority areas, and treatment triggers before weather arrives.
+  - article:
+    - heading "Liability-Aware Service" [level=3]
+    - paragraph: Clear service records showing when lots and walkways were treated.
+  - article:
+    - heading "One Plan and One Point of Contact" [level=3]
+    - paragraph: Plowing, ice treatment, walkway care, and hauling planned under one seasonal agreement.
+  - paragraph: Seasonal readiness
+  - heading "How Our Seasonal Service Works" [level=2]
+  - list:
+    - generic: "01"
+    - heading "Site Assessment" [level=3]
+    - paragraph: We walk the property, map priority zones, identify stacking and hauling needs, and flag high-liability areas.
+    - generic: "02"
+    - heading "Custom Seasonal Plan" [level=3]
+    - paragraph: You receive a written plan with response triggers, service standards, and priority-response commitments.
+    - generic: "03"
+    - heading "Pre-Season Staging" [level=3]
+    - paragraph: Equipment, materials, and crews are organized before the first freeze, with contract priority established in advance.
+    - generic: "04"
+    - heading "24/7 Storm Monitoring" [level=3]
+    - paragraph: We track forecasts and schedule pre-treatment and crews according to your plan.
+    - generic: "05"
+    - heading "Documented Service & Follow-Up" [level=3]
+    - paragraph: Visits are logged and timestamped to support operations and risk management.
+  - paragraph: Priority contracts are limited and fill before winter.
+  - link "Request Your Site Assessment":
+    - /url: /contact
+  - heading "Serving the Charlotte Region and Upstate South Carolina" [level=2]
+  - paragraph: P1 provides commercial and industrial snow and ice management across the greater Charlotte metro and the Upstate SC corridor.
+  - paragraph:
+    - strong: "North Carolina:"
+    - text: Charlotte, Huntersville, Concord, Gastonia, Monroe, Matthews, Mint Hill, Ballantyne, Pineville, Indian Trail, and surrounding industrial corridors.
+  - paragraph:
+    - strong: "South Carolina:"
+    - text: Rock Hill, Fort Mill, Indian Land, Lancaster, York, and the I-77 / I-85 industrial and distribution corridors through the Upstate.
+  - paragraph:
+    - text: Not sure whether your property is in range?
+    - link "Ask about current coverage":
+      - /url: /contact
+    - text: .
+  - link "Charlotte region":
+    - /url: /service-areas/charlotte-north-carolina
+  - link "Union County":
+    - /url: /service-areas/union-county-nc
+  - link "York County":
+    - /url: /service-areas/york-county-sc
+  - link "Lancaster County":
+    - /url: /service-areas/lancaster-county-sc
+  - heading "Managing a Data Center, Secure Facility, or Distribution Campus?" [level=2]
+  - paragraph: Connect winter readiness with the year-round perimeter, stormwater, grading, and access needs around the same facility.
+  - link "Explore secure facility exterior grounds management":
+    - /url: /commercial/data-centers-secure-facilities
+  - heading "Commercial Snow and Ice Management — Frequently Asked Questions" [level=2]
+  - generic "Do you provide residential snow removal?":
+    - generic: Do you provide residential snow removal?
+    - generic: +
+  - generic "Why does a region that barely gets snow need a commercial snow contractor?":
+    - generic: Why does a region that barely gets snow need a commercial snow contractor?
+    - generic: +
+  - generic "What size properties do you service?":
+    - generic: What size properties do you service?
+    - generic: +
+  - generic "What's the difference between snow plowing and snow removal (hauling)?":
+    - generic: What's the difference between snow plowing and snow removal (hauling)?
+    - generic: +
+  - generic "What is pre-treatment (anti-icing), and do I need it?":
+    - generic: What is pre-treatment (anti-icing), and do I need it?
+    - generic: +
+  - generic "How fast do you respond during a storm?":
+    - generic: How fast do you respond during a storm?
+    - generic: +
+  - generic "Are you insured?":
+    - generic: Are you insured?
+    - generic: +
+  - generic "When should I set up a contract?":
+    - generic: When should I set up a contract?
+    - generic: +
+  - region "Build a Year-Round Exterior Plan":
+    - paragraph: Explore More With P1
+    - heading "Build a Year-Round Exterior Plan" [level=2]
+    - paragraph: Plan winter work alongside year-round grounds care.
+    - navigation "Related Services and Resources":
+      - list:
+        - link "Commercial Landscaping Regular mowing, seasonal grounds care, and maintenance around your operations.":
+          - /url: /services/commercial-landscaping
+          - generic: Commercial Landscaping
+          - generic: Regular mowing, seasonal grounds care, and maintenance around your operations.
+        - link "Data Center and Secure Facility Grounds Grounds care planned around facility access and site rules.":
+          - /url: /commercial/data-centers-secure-facilities
+          - generic: Data Center and Secure Facility Grounds
+          - generic: Grounds care planned around facility access and site rules.
+    - navigation "Explore Service Areas":
+      - heading "Explore Service Areas" [level=3]
+      - paragraph: Local coverage across the Carolinas.
+      - list:
+        - link "Charlotte, NC":
+          - /url: /service-areas/charlotte-north-carolina
+          - text: Charlotte, NC
+        - link "York County, SC":
+          - /url: /service-areas/york-county-sc
+          - text: York County, SC
+  - heading "Protect Your Property Before the First Freeze" [level=2]
+  - paragraph: Let's walk your site and plan for the parking lots, entrances, and loading areas that need attention this winter.
+  - link "Request Your Free Site Assessment":
+    - /url: /contact
+  - link "Call P1":
+    - /url: tel:7042218928
+    - text: Call P1
+- contentinfo:
+  - link "P1 Land & Property Management":
+    - /url: /
+    - img "P1 Land & Property Management"
+  - paragraph: P1 Land & Property Management clears, grades, drains, seeds and maintains commercial, industrial and farm property of an acre or more across Upstate South Carolina and the Charlotte region. Licensed and insured in North and South Carolina.
+  - link "(704) 221-8928":
+    - /url: tel:+17042218928
+    - text: (704) 221-8928
+  - link "Find us on Google":
+    - /url: https://www.google.com/maps/place/P1+Land+Management/@34.8311425,-80.622017,17z/data=!3m1!4b1!4m6!3m5!1s0x8855cd2b88976525:0x49c378cdfdecac9a!8m2!3d34.8311381!4d-80.6194367!16s%2Fg%2F11nw0vxpb_?entry=ttu&g_ep=EgoyMDI2MDkxMy4wIKXMDSoASAFQAw%3D%3D
+  - link "Send a secure inquiry":
+    - /url: /contact
+  - heading "Services" [level=4]
+  - list:
+    - link "Commercial Landscaping":
+      - /url: /services/commercial-landscaping
+    - link "Commercial Snow & Ice":
+      - /url: /services/commercial-snow-ice-management
+    - link "Industrial & Agricultural":
+      - /url: /services/industrial-agricultural
+    - link "Land Clearing":
+      - /url: /services/land-clearing
+    - link "Grading & Site Prep":
+      - /url: /services/grading-site-preparation
+    - link "Drainage Solutions":
+      - /url: /services/drainage
+    - link "Turf & Seeding":
+      - /url: /services/turf-installation-seeding
+    - link "Tree Services":
+      - /url: /services/tree-services
+    - link "Pond & Waterway":
+      - /url: /services/pond-waterway-management
+    - link "Property Reconstruction":
+      - /url: /services/property-reconstruction
+    - link "All Services →":
+      - /url: /services
+  - heading "Service Areas" [level=4]
+  - list:
+    - listitem: Upstate South Carolina
+    - link "Greenville":
+      - /url: /service-areas/greenville-sc
+    - link "Spartanburg":
+      - /url: /service-areas/spartanburg-sc
+    - link "Anderson":
+      - /url: /service-areas/anderson-sc
+    - link "Lancaster County":
+      - /url: /service-areas/lancaster-county-sc
+    - link "York County":
+      - /url: /service-areas/york-county-sc
+    - listitem: Greater Charlotte NC
+    - link "Charlotte, NC":
+      - /url: /service-areas/charlotte-north-carolina
+    - link "Concord":
+      - /url: /service-areas/concord-nc
+    - link "Mooresville & Lake Norman":
+      - /url: /service-areas/mooresville-lake-norman-nc
+    - link "Gastonia":
+      - /url: /service-areas/gastonia-nc
+    - link "Union County":
+      - /url: /service-areas/union-county-nc
+    - link "All Areas →":
+      - /url: /service-areas
+  - heading "Company" [level=4]
+  - list:
+    - link "About Us":
+      - /url: /about
+    - link "Service Gallery":
+      - /url: /gallery
+    - link "Blog & Resources":
+      - /url: /blog
+    - link "Contact / Site Assessment":
+      - /url: /contact
+  - heading "Hours" [level=4]
+  - list:
+    - listitem: "Mon – Fri: 7 AM – 6 PM"
+    - listitem: "Saturday: By Appointment"
+    - listitem: "Sunday: Closed"
+    - link "Request a Site Visit":
+      - /url: /contact
+  - generic: © 2026 P1 Land & Property Management. Serving Upstate South Carolina & the Charlotte, NC region. All rights reserved.
+- navigation "Quick contact":
+  - link "Call P1 at (704) 221-8928":
+    - /url: tel:+17042218928
+    - generic: Call P1
+  - link "Request a Site Visit":
+    - /url: /contact

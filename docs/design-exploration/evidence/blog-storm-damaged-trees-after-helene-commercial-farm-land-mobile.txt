@@ -1,0 +1,151 @@
+- link "Skip to main content":
+  - /url: "#main-content"
+- banner:
+  - link "P1 Land & Property Management":
+    - /url: /
+    - img "P1 Land & Property Management"
+  - button "Open navigation":
+    - generic: Open navigation
+- main:
+  - article:
+    - link "Blog & Insights":
+      - /url: /blog
+    - 'heading "Two Years After Helene: Dealing with Storm-Damaged Trees on Commercial and Farm Land" [level=1]'
+    - paragraph:
+      - text: P1 Land Management ·
+      - time: October 1, 2026
+    - paragraph: Hurricane Helene came through the Upstate two years ago this week. Cleanup along roads and around buildings happened fast. The back acreage, the fence lines and the tree buffers around commercial sites are a different story. On a lot of properties, broken and leaning trees from that storm are still there.
+    - heading "How much damage there was" [level=2]
+    - paragraph: The SC Forestry Commission estimated Helene damaged about 234,000 acres of forestland in South Carolina, with timber losses of about $83 million. Spartanburg County was among the hardest hit counties. Most of the damage was classified as scattered or light, which is exactly why so much of it got left behind. A few snapped pines at the edge of a pasture or behind a warehouse don't demand attention the way a tree on a roof does.
+    - heading "Why damaged trees are still a problem" [level=2]
+    - list:
+      - strong: Insects.
+      - text: The Forestry Commission advised landowners to watch damaged stands for pest buildup. Stressed and broken pines attract bark beetles, which can then move into healthy trees nearby.
+      - strong: Fire.
+      - text: Dead limbs and downed trunks add dry fuel. The same guidance called for protecting damaged stands from wildfire.
+      - strong: Delayed failures.
+      - text: Trees with cracked trunks, torn roots or hung-up tops can come down in the next strong wind, often onto fences, roads or power lines.
+      - strong: Lost value.
+      - text: The Forestry Commission noted damaged pines hold their timber value for up to about nine months. At two years out, most storm-damaged timber has little sale value left, so cleanup is about safety and land use.
+    - heading "What to look for on your property" [level=2]
+    - paragraph: "Walk your tree lines, buffers and fence lines this fall, after the leaves drop if you can. Look for:"
+    - list:
+      - listitem: Trees leaning noticeably more than they used to, or with soil heaved up on one side of the base
+      - listitem: "Snapped tops and \"widowmakers\": broken limbs hung up in the canopy"
+      - listitem: Pines with brown or reddish needles, or small pitch tubes on the bark
+      - listitem: Downed trunks across fences, drainage ditches or access roads
+    - heading "Cleaning it up" [level=2]
+    - paragraph: For large acreage, the right approach depends on how you use the land. Along fence lines and field edges, forestry mulching can clear downed wood and brush in one pass and leave the ground usable. Near buildings, roads and power lines, trees usually need to be taken down in sections by a crew that knows how to handle storm-damaged wood, which can release unpredictably.
+    - paragraph: Late fall and winter are good times for this work. The leaves are down, visibility is better and the ground on dry stretches is firmer for equipment.
+    - paragraph:
+      - text: Learn more about our
+      - link "tree services":
+        - /url: /services/tree-services
+      - text: and
+      - link "land clearing and forestry mulching":
+        - /url: /services/land-clearing
+      - text: .
+    - heading "Talk to P1" [level=2]
+    - paragraph:
+      - text: P1 Land Management works on commercial, industrial and agricultural properties of an acre or more across Upstate South Carolina and greater Charlotte. Call
+      - link "(704) 221-8928":
+        - /url: tel:7042218928
+      - text: or
+      - link "request a free site assessment":
+        - /url: /contact
+      - text: .
+  - generic: P1 Land & Property Management
+  - heading "Let's Walk Your Property" [level=2]
+  - paragraph: Tell us where it is and what's going on. The site visit and written estimate are free.
+  - link "Request a Site Visit":
+    - /url: /contact
+    - text: Request a Site Visit
+  - link "Call (704) 221-8928":
+    - /url: tel:7042218928
+    - text: Call (704) 221-8928
+- contentinfo:
+  - link "P1 Land & Property Management":
+    - /url: /
+    - img "P1 Land & Property Management"
+  - paragraph: P1 Land & Property Management clears, grades, drains, seeds and maintains commercial, industrial and farm property of an acre or more across Upstate South Carolina and the Charlotte region. Licensed and insured in North and South Carolina.
+  - link "(704) 221-8928":
+    - /url: tel:+17042218928
+    - text: (704) 221-8928
+  - link "Find us on Google":
+    - /url: https://www.google.com/maps/place/P1+Land+Management/@34.8311425,-80.622017,17z/data=!3m1!4b1!4m6!3m5!1s0x8855cd2b88976525:0x49c378cdfdecac9a!8m2!3d34.8311381!4d-80.6194367!16s%2Fg%2F11nw0vxpb_?entry=ttu&g_ep=EgoyMDI2MDkxMy4wIKXMDSoASAFQAw%3D%3D
+  - link "Send a secure inquiry":
+    - /url: /contact
+  - heading "Services" [level=4]
+  - list:
+    - link "Commercial Landscaping":
+      - /url: /services/commercial-landscaping
+    - link "Commercial Snow & Ice":
+      - /url: /services/commercial-snow-ice-management
+    - link "Industrial & Agricultural":
+      - /url: /services/industrial-agricultural
+    - link "Land Clearing":
+      - /url: /services/land-clearing
+    - link "Grading & Site Prep":
+      - /url: /services/grading-site-preparation
+    - link "Drainage Solutions":
+      - /url: /services/drainage
+    - link "Turf & Seeding":
+      - /url: /services/turf-installation-seeding
+    - link "Tree Services":
+      - /url: /services/tree-services
+    - link "Pond & Waterway":
+      - /url: /services/pond-waterway-management
+    - link "Property Reconstruction":
+      - /url: /services/property-reconstruction
+    - link "All Services →":
+      - /url: /services
+  - heading "Service Areas" [level=4]
+  - list:
+    - listitem: Upstate South Carolina
+    - link "Greenville":
+      - /url: /service-areas/greenville-sc
+    - link "Spartanburg":
+      - /url: /service-areas/spartanburg-sc
+    - link "Anderson":
+      - /url: /service-areas/anderson-sc
+    - link "Lancaster County":
+      - /url: /service-areas/lancaster-county-sc
+    - link "York County":
+      - /url: /service-areas/york-county-sc
+    - listitem: Greater Charlotte NC
+    - link "Charlotte, NC":
+      - /url: /service-areas/charlotte-north-carolina
+    - link "Concord":
+      - /url: /service-areas/concord-nc
+    - link "Mooresville & Lake Norman":
+      - /url: /service-areas/mooresville-lake-norman-nc
+    - link "Gastonia":
+      - /url: /service-areas/gastonia-nc
+    - link "Union County":
+      - /url: /service-areas/union-county-nc
+    - link "All Areas →":
+      - /url: /service-areas
+  - heading "Company" [level=4]
+  - list:
+    - link "About Us":
+      - /url: /about
+    - link "Service Gallery":
+      - /url: /gallery
+    - link "Blog & Resources":
+      - /url: /blog
+    - link "Contact / Site Assessment":
+      - /url: /contact
+  - heading "Hours" [level=4]
+  - list:
+    - listitem: "Mon – Fri: 7 AM – 6 PM"
+    - listitem: "Saturday: By Appointment"
+    - listitem: "Sunday: Closed"
+    - link "Request a Site Visit":
+      - /url: /contact
+  - generic: © 2026 P1 Land & Property Management. Serving Upstate South Carolina & the Charlotte, NC region. All rights reserved.
+- navigation "Quick contact":
+  - link "Call P1 at (704) 221-8928":
+    - /url: tel:+17042218928
+    - generic: Call P1
+  - link "Request a Site Visit":
+    - /url: /contact

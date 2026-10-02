@@ -1,0 +1,292 @@
+- link "Skip to main content":
+  - /url: "#main-content"
+- banner:
+  - link "P1 Land & Property Management":
+    - /url: /
+    - img "P1 Land & Property Management"
+  - navigation "Main navigation":
+    - link "Home":
+      - /url: /
+    - link "About":
+      - /url: /about
+    - button "Services":
+      - text: Services
+    - link "Contact":
+      - /url: /contact
+  - link "(704) 221-8928":
+    - /url: tel:+17042218928
+    - text: (704) 221-8928
+  - link "Request a Site Visit":
+    - /url: /contact
+- main:
+  - img "Managed stormwater pond, service road, and perimeter grounds surrounding a modern data center campus"
+  - generic: Data Centers · Secure Facilities · Distribution Campuses
+  - heading "Exterior Grounds & Land Management For Data Centers, Secure Facilities & Distribution Campuses" [level=1]:
+    - text: Exterior Grounds & Land Management For
+    - emphasis: Data Centers, Secure Facilities & Distribution Campuses
+  - paragraph: P1 manages perimeter vegetation, stormwater ponds, buffers, service roads, and undeveloped acreage around large commercial and industrial campuses across Upstate South Carolina and the Charlotte region.
+  - link "Request a Site Assessment":
+    - /url: /contact
+  - link "Call (704) 221-8928":
+    - /url: tel:7042218928
+    - text: Call (704) 221-8928
+  - generic: Index of Work
+  - link "01 Commercial Landscaping":
+    - /url: /services/commercial-landscaping
+    - generic: "01"
+    - generic: Commercial Landscaping
+  - link "02 Commercial Snow & Ice":
+    - /url: /services/commercial-snow-ice-management
+    - generic: "02"
+    - generic: Commercial Snow & Ice
+  - link "03 Grading & Site Preparation":
+    - /url: /services/grading-site-preparation
+    - generic: "03"
+    - generic: Grading & Site Preparation
+  - link "04 Drainage Solutions":
+    - /url: /services/drainage
+    - generic: "04"
+    - generic: Drainage Solutions
+  - link "05 Land Clearing":
+    - /url: /services/land-clearing
+    - generic: "05"
+    - generic: Land Clearing
+  - region "Service commitments":
+    - text: Heavy-Equipment Land Management
+    - text: One Team for Exterior Care
+    - text: Works Within Your Site Protocols
+    - text: Commercial & Industrial Only
+  - paragraph: Outside the building envelope
+  - heading "Care for the Land Around Your Facility" [level=2]
+  - paragraph: A data center, controlled-access plant, or large distribution hub may have acres of perimeter buffer, stormwater ponds, graded slopes, service roads, tree lines, and undeveloped land beyond the building itself.
+  - paragraph: That ground needs to drain, remain accessible, and give your security team clear sightlines. Mowing is part of the job; so are the ponds, slopes, trees, and roads around it.
+  - paragraph: We bring the equipment and experience to handle that work, with a written plan for what needs doing and who will handle it.
+  - paragraph: Who we serve
+  - heading "Equipped for Large Commercial Campuses" [level=2]
+  - paragraph: For large, complex sites, the property outside the building is an operation in itself.
+  - article:
+    - heading "Data Centers & Mission-Critical Campuses" [level=3]
+    - paragraph: Perimeter buffers, stormwater ponds, security setbacks, utility-yard surrounds, and extensive maintained or undeveloped acreage.
+  - article:
+    - heading "Secure & Regulated Facilities" [level=3]
+    - paragraph: Utility, biopharmaceutical, manufacturing, and controlled-access sites where exterior work must follow defined access and documentation protocols.
+  - article:
+    - heading "Distribution, Logistics & Fulfillment Campuses" [level=3]
+    - paragraph: Truck-court surrounds, retention basins, swales, service roads, and graded acreage kept clear, draining, and stable.
+  - article:
+    - heading "Corporate & Industrial Parks" [level=3]
+    - paragraph: Grounds, drainage, and land care for multi-building properties, with one team to call.
+  - paragraph: We work with facility teams that need reliable grounds care around deliveries, staff access, and daily operations.
+  - paragraph: One Property Plan
+  - heading "Care for the Grounds Around Your Building" [level=2]
+  - paragraph: Plan grounds care, drainage, access, and repairs together, so one job supports the next.
+  - article:
+    - heading "Perimeter & Security-Aware Vegetation" [level=3]
+    - paragraph: Buffer areas, tree lines, fence lines, and setbacks kept controlled so vegetation does not obstruct cameras, lighting, fencing, or patrol sightlines.
+    - link "Commercial grounds management":
+      - /url: /services/commercial-landscaping
+  - article:
+    - heading "Stormwater Ponds & SCM Maintenance" [level=3]
+    - paragraph: Detention and retention ponds, basins, swales, embankments, and inlet or outlet areas maintained to support function and inspection readiness.
+    - link "Stormwater pond maintenance":
+      - /url: /services/pond-waterway-management
+  - article:
+    - heading "Grading, Erosion & Slope Stabilization" [level=3]
+    - paragraph: Washouts corrected, grades re-established, and slopes or pond embankments stabilized to protect pavement, drainage systems, and structures.
+    - link "Grading and site preparation":
+      - /url: /services/grading-site-preparation
+  - article:
+    - heading "Land Clearing, Buffers & Overgrowth" [level=3]
+    - paragraph: Selective clearing and forestry mulching to manage encroachment, preserve useful buffers, and keep undeveloped acreage controlled.
+    - link "Land clearing services":
+      - /url: /services/land-clearing
+  - article:
+    - heading "Service Roads & Exterior Access" [level=3]
+    - paragraph: Gravel access roads, service drives, drainage crossings, and exterior graded areas maintained so operational teams can reach the site.
+    - link "Drainage solutions":
+      - /url: /services/drainage
+  - article:
+    - heading "Storm & Corrective Response" [level=3]
+    - paragraph: Storm debris removal and repairs to washed-out ground, with timing and availability confirmed in your service plan.
+    - link "Corrective property work":
+      - /url: /services/property-reconstruction
+  - article:
+    - heading "Recurring Site Management" [level=3]
+    - paragraph: Regular exterior maintenance with clear priorities, site checks, and updates for your team.
+    - link "Commercial site management":
+      - /url: /commercial
+  - heading "Keeping Ponds and Drainage Working" [level=2]
+  - paragraph: Detention and retention ponds, swales, embankments, and outlet areas need ongoing attention to stay functional and ready for required inspections. Sediment, overgrowth, eroded banks, and blocked drainage paths can become both operational and compliance concerns.
+  - paragraph: P1 maintains accessible stormwater features, corrects exterior erosion, and documents the land and grounds work performed so it can support your site's own records.
+  - paragraph: P1 is a land and grounds contractor, not the facility's compliance authority. Inspection, engineering, and regulatory responsibilities are confirmed with the owner and appropriate professionals.
+  - img "Compact excavator maintaining vegetation beside a commercial stormwater pond and outlet structure"
+  - heading "Grounds Care Around Your Site Rules" [level=2]
+  - paragraph: We'll work with your site team on access, work hours, safety rules, and the records you need before the crew arrives.
+  - paragraph: We handle exterior land and grounds. Security clearances, uptime requirements, and emergency response need to be addressed separately in writing before we make a commitment.
+  - link "Discuss Your Property":
+    - /url: /contact
+  - img "Compact land-management equipment controlling vegetation along a fenced commercial service road"
+  - paragraph: Built for the land around the facility
+  - heading "Why Complex Campuses Choose P1" [level=2]
+  - article:
+    - heading "Heavy-Equipment Land Capability" [level=3]
+    - paragraph: We match the equipment to the acreage, slopes, pond banks, and overgrowth that need attention.
+  - article:
+    - heading "One Team for Exterior Care" [level=3]
+    - paragraph: Plan grounds care, drainage, ponds, access roads, and repairs with one point of contact.
+  - article:
+    - heading "Regional Land Knowledge" [level=3]
+    - paragraph: P1 works across Upstate South Carolina and the Charlotte region, with practical experience of local terrain, vegetation, water, and seasonal conditions.
+  - article:
+    - heading "Your Protocols Shape the Plan" [level=3]
+    - paragraph: Access, work windows, safety expectations, communication, and documentation are agreed with your facility team before work begins.
+  - heading "Serving Complex Campuses Across Upstate SC and Greater Charlotte" [level=2]
+  - paragraph: P1 serves large commercial and industrial properties throughout Greenville, Spartanburg, Anderson, Charlotte, Concord, Mooresville, Lake Norman, Gastonia, and the Union, Lancaster, and York County corridors.
+  - paragraph: Our coverage includes the I-85 and I-77 industrial and logistics corridors where regional data centers, secure facilities, and distribution campuses are concentrated.
+  - link "Charlotte region":
+    - /url: /service-areas/charlotte-north-carolina
+  - link "Union County":
+    - /url: /service-areas/union-county-nc
+  - link "York County":
+    - /url: /service-areas/york-county-sc
+  - link "Lancaster County":
+    - /url: /service-areas/lancaster-county-sc
+  - paragraph:
+    - text: Seasonal planning matters too. Review
+    - link "commercial snow and ice management":
+      - /url: /services/commercial-snow-ice-management
+    - text: for large campuses.
+  - heading "Data Center & Secure Facility Grounds — Frequently Asked Questions" [level=2]
+  - generic "What exactly does P1 manage at a data center or secure facility?":
+    - generic: What exactly does P1 manage at a data center or secure facility?
+    - generic: +
+  - generic "Do you need security clearance or access to secure areas?":
+    - generic: Do you need security clearance or access to secure areas?
+    - generic: +
+  - generic "Can you maintain our stormwater detention or retention ponds?":
+    - generic: Can you maintain our stormwater detention or retention ponds?
+    - generic: +
+  - generic "How does grounds work relate to site security?":
+    - generic: How does grounds work relate to site security?
+    - generic: +
+  - generic "Do you guarantee an emergency response time?":
+    - generic: Do you guarantee an emergency response time?
+    - generic: +
+  - generic "What size and type of properties do you take on?":
+    - generic: What size and type of properties do you take on?
+    - generic: +
+  - generic "Can you handle the whole exterior instead of just one task?":
+    - generic: Can you handle the whole exterior instead of just one task?
+    - generic: +
+  - region "Connected Secure-Facility Services":
+    - paragraph: Explore More With P1
+    - heading "Connected Secure-Facility Services" [level=2]
+    - paragraph: Explore grounds care and repairs around your facility's access rules.
+    - navigation "Related Services and Resources":
+      - list:
+        - link "Commercial Landscaping Regular mowing, seasonal grounds care, and maintenance around your operations.":
+          - /url: /services/commercial-landscaping
+          - generic: Commercial Landscaping
+          - generic: Regular mowing, seasonal grounds care, and maintenance around your operations.
+        - link "Drainage Solutions Find the cause of standing water, runoff, and erosion.":
+          - /url: /services/drainage
+          - generic: Drainage Solutions
+          - generic: Find the cause of standing water, runoff, and erosion.
+        - link "Commercial Snow and Ice Management Plan snow clearing and ice treatment for your commercial site.":
+          - /url: /services/commercial-snow-ice-management
+          - generic: Commercial Snow and Ice Management
+          - generic: Plan snow clearing and ice treatment for your commercial site.
+    - navigation "Explore Service Areas":
+      - heading "Explore Service Areas" [level=3]
+      - paragraph: Local coverage across the Carolinas.
+      - list:
+        - link "Charlotte, NC":
+          - /url: /service-areas/charlotte-north-carolina
+          - text: Charlotte, NC
+  - heading "One Team to Call About Your Grounds" [level=2]
+  - paragraph: Tell us about your perimeter, ponds, roads, and any trouble spots. We'll help you plan the upkeep and repairs your facility needs.
+  - link "Request a Site Assessment":
+    - /url: /contact
+  - link "Call (704) 221-8928":
+    - /url: tel:7042218928
+    - text: Call (704) 221-8928
+- contentinfo:
+  - link "P1 Land & Property Management":
+    - /url: /
+    - img "P1 Land & Property Management"
+  - paragraph: P1 Land & Property Management clears, grades, drains, seeds and maintains commercial, industrial and farm property of an acre or more across Upstate South Carolina and the Charlotte region. Licensed and insured in North and South Carolina.
+  - link "(704) 221-8928":
+    - /url: tel:+17042218928
+    - text: (704) 221-8928
+  - link "Find us on Google":
+    - /url: https://www.google.com/maps/place/P1+Land+Management/@34.8311425,-80.622017,17z/data=!3m1!4b1!4m6!3m5!1s0x8855cd2b88976525:0x49c378cdfdecac9a!8m2!3d34.8311381!4d-80.6194367!16s%2Fg%2F11nw0vxpb_?entry=ttu&g_ep=EgoyMDI2MDkxMy4wIKXMDSoASAFQAw%3D%3D
+  - link "Send a secure inquiry":
+    - /url: /contact
+  - heading "Services" [level=4]
+  - list:
+    - link "Commercial Landscaping":
+      - /url: /services/commercial-landscaping
+    - link "Commercial Snow & Ice":
+      - /url: /services/commercial-snow-ice-management
+    - link "Industrial & Agricultural":
+      - /url: /services/industrial-agricultural
+    - link "Land Clearing":
+      - /url: /services/land-clearing
+    - link "Grading & Site Prep":
+      - /url: /services/grading-site-preparation
+    - link "Drainage Solutions":
+      - /url: /services/drainage
+    - link "Turf & Seeding":
+      - /url: /services/turf-installation-seeding
+    - link "Tree Services":
+      - /url: /services/tree-services
+    - link "Pond & Waterway":
+      - /url: /services/pond-waterway-management
+    - link "Property Reconstruction":
+      - /url: /services/property-reconstruction
+    - link "All Services →":
+      - /url: /services
+  - heading "Service Areas" [level=4]
+  - list:
+    - listitem: Upstate South Carolina
+    - link "Greenville":
+      - /url: /service-areas/greenville-sc
+    - link "Spartanburg":
+      - /url: /service-areas/spartanburg-sc
+    - link "Anderson":
+      - /url: /service-areas/anderson-sc
+    - link "Lancaster County":
+      - /url: /service-areas/lancaster-county-sc
+    - link "York County":
+      - /url: /service-areas/york-county-sc
+    - listitem: Greater Charlotte NC
+    - link "Charlotte, NC":
+      - /url: /service-areas/charlotte-north-carolina
+    - link "Concord":
+      - /url: /service-areas/concord-nc
+    - link "Mooresville & Lake Norman":
+      - /url: /service-areas/mooresville-lake-norman-nc
+    - link "Gastonia":
+      - /url: /service-areas/gastonia-nc
+    - link "Union County":
+      - /url: /service-areas/union-county-nc
+    - link "All Areas →":
+      - /url: /service-areas
+  - heading "Company" [level=4]
+  - list:
+    - link "About Us":
+      - /url: /about
+    - link "Service Gallery":
+      - /url: /gallery
+    - link "Blog & Resources":
+      - /url: /blog
+    - link "Contact / Site Assessment":
+      - /url: /contact
+  - heading "Hours" [level=4]
+  - list:
+    - listitem: "Mon – Fri: 7 AM – 6 PM"
+    - listitem: "Saturday: By Appointment"
+    - listitem: "Sunday: Closed"
+    - link "Request a Site Visit":
+      - /url: /contact
+  - generic: © 2026 P1 Land & Property Management. Serving Upstate South Carolina & the Charlotte, NC region. All rights reserved.

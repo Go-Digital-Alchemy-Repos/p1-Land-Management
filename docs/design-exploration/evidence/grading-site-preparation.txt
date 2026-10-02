@@ -1,0 +1,224 @@
+- link "Skip to main content":
+  - /url: "#main-content"
+- banner:
+  - link "P1 Land & Property Management":
+    - /url: /
+    - img "P1 Land & Property Management"
+  - navigation "Main navigation":
+    - link "Home":
+      - /url: /
+    - link "About":
+      - /url: /about
+    - button "Services":
+      - text: Services
+    - link "Contact":
+      - /url: /contact
+  - link "(704) 221-8928":
+    - /url: tel:+17042218928
+    - text: (704) 221-8928
+  - link "Request a Site Visit":
+    - /url: /contact
+- main:
+  - img "Bulldozer grading a dirt site"
+  - generic: Grading & Site Preparation
+  - heading "Fine Grading & Site Preparation In the Carolinas" [level=1]:
+    - text: Fine Grading & Site Preparation
+    - emphasis: In the Carolinas
+  - paragraph: Prepare your ground for construction, improve access, or correct an uneven grade. We handle grading and site preparation for large properties across Upstate SC and greater Charlotte.
+  - generic: Index of Work
+  - link "01 Grading & Site Preparation":
+    - /url: /services/grading-site-preparation
+    - generic: "01"
+    - generic: Grading & Site Preparation
+  - link "02 Commercial Landscaping":
+    - /url: /services/commercial-landscaping
+    - generic: "02"
+    - generic: Commercial Landscaping
+  - link "03 Commercial Snow & Ice":
+    - /url: /services/commercial-snow-ice-management
+    - generic: "03"
+    - generic: Commercial Snow & Ice
+  - link "04 Drainage Solutions":
+    - /url: /services/drainage
+    - generic: "04"
+    - generic: Drainage Solutions
+  - link "05 Land Clearing":
+    - /url: /services/land-clearing
+    - generic: "05"
+    - generic: Land Clearing
+  - heading "Get Your Land Level — And Keep It That Way" [level=2]
+  - paragraph: An uneven grade can leave water standing, wash soil away, or make turf harder to establish. We'll look at the problem with you and review the plans before shaping the ground.
+  - img "Illustrative image of a compact track loader grading soil at a commercial construction site"
+  - heading "Grading Services" [level=2]
+  - list:
+    - generic: Rough grading — initial leveling and shaping after land clearing
+    - generic: Fine grading — precision finish grade for drainage, turf, or construction
+    - generic: Regrading — correcting improper or failed grade on existing properties
+    - generic: Slope grading — creating or correcting slopes for water flow management
+    - generic: Pad preparation — building pads for structures, equipment storage, or hardscapes
+    - generic: Access road grading — shaping and grading roads, paths, and driveways on large properties
+    - generic: Agricultural field leveling — improving drainage and accessibility for farm use
+  - heading "Grading for Drainage" [level=2]
+  - paragraph: Water follows the slope of the land. When that slope sends runoff toward a building or low spot, regrading may be part of the repair. We consider water movement when shaping slopes, swales, and transitions.
+  - img "Graded swale channeling water across a property"
+  - heading "Grading for Turf Establishment" [level=2]
+  - paragraph: Good turf starts with well-prepared ground. We check the grade, drainage, and soil before planting, then explain the watering and care needed while the grass takes root.
+  - img "Freshly graded soil transitioning into new sod"
+  - heading "Grading for New Construction" [level=2]
+  - paragraph: Before foundations, pavement, or utilities go in, the ground needs to match the approved plans. We prepare pads, slopes, drainage routes, and sub-grade with your project team.
+  - img "Large commercial construction site on freshly graded land"
+  - heading "Equipment & Precision" [level=2]
+  - paragraph: We'll confirm equipment access, crew timing, and the required finish before starting the grading work.
+  - heading "Grading & Site Preparation FAQs" [level=2]
+  - generic "What's the difference between rough grading and fine grading?":
+    - generic: What's the difference between rough grading and fine grading?
+    - generic: +
+  - generic "Can regrading fix drainage problems on my property?":
+    - generic: Can regrading fix drainage problems on my property?
+    - generic: +
+  - generic "Does P1 grade sites for new construction?":
+    - generic: Does P1 grade sites for new construction?
+    - generic: +
+  - generic "Why does grading matter before installing turf?":
+    - generic: Why does grading matter before installing turf?
+    - generic: +
+  - paragraph:
+    - text: Call
+    - link "+1 (704) 221-8928":
+      - /url: tel:7042218928
+    - text: or
+    - link "request a free estimate online":
+      - /url: /contact
+    - text: to discuss your grading project.
+  - region "Services Connected to Grading":
+    - paragraph: Explore More With P1
+    - heading "Services Connected to Grading" [level=2]
+    - paragraph: Plan access, drainage, and new turf alongside grading.
+    - navigation "Related Services and Resources":
+      - list:
+        - link "Drainage Solutions Find the cause of standing water, runoff, and erosion.":
+          - /url: /services/drainage
+          - generic: Drainage Solutions
+          - generic: Find the cause of standing water, runoff, and erosion.
+        - link "Turf Installation and Seeding Plant sod or seed on properly prepared ground.":
+          - /url: /services/turf-installation-seeding
+          - generic: Turf Installation and Seeding
+          - generic: Plant sod or seed on properly prepared ground.
+        - link "Property Reconstruction Repair drainage, reshape damaged ground, and restore turf.":
+          - /url: /services/property-reconstruction
+          - generic: Property Reconstruction
+          - generic: Repair drainage, reshape damaged ground, and restore turf.
+    - navigation "Explore Service Areas":
+      - heading "Explore Service Areas" [level=3]
+      - paragraph: Local coverage across the Carolinas.
+      - list:
+        - link "All P1 Service Areas":
+          - /url: /service-areas
+          - text: All P1 Service Areas
+        - link "Site Prep in Greer":
+          - /url: /service-areas/greer-sc
+          - text: Site Prep in Greer
+        - link "Site Prep in Easley":
+          - /url: /service-areas/easley-sc
+          - text: Site Prep in Easley
+        - link "Site Prep in Huntersville":
+          - /url: /service-areas/huntersville-nc
+          - text: Site Prep in Huntersville
+        - link "Site Prep in Fort Mill":
+          - /url: /service-areas/fort-mill-sc
+          - text: Site Prep in Fort Mill
+        - link "Site Prep in Indian Land":
+          - /url: /service-areas/indian-land-sc
+          - text: Site Prep in Indian Land
+        - link "Site Prep in Indian Trail":
+          - /url: /service-areas/indian-trail-nc
+          - text: Site Prep in Indian Trail
+  - generic: P1 Land & Property Management
+  - heading "Let's Walk Your Property" [level=2]
+  - paragraph: Tell us where it is and what's going on. The site visit and written estimate are free.
+  - link "Request a Site Visit":
+    - /url: /contact
+    - text: Request a Site Visit
+  - link "Call (704) 221-8928":
+    - /url: tel:7042218928
+    - text: Call (704) 221-8928
+- contentinfo:
+  - link "P1 Land & Property Management":
+    - /url: /
+    - img "P1 Land & Property Management"
+  - paragraph: P1 Land & Property Management clears, grades, drains, seeds and maintains commercial, industrial and farm property of an acre or more across Upstate South Carolina and the Charlotte region. Licensed and insured in North and South Carolina.
+  - link "(704) 221-8928":
+    - /url: tel:+17042218928
+    - text: (704) 221-8928
+  - link "Find us on Google":
+    - /url: https://www.google.com/maps/place/P1+Land+Management/@34.8311425,-80.622017,17z/data=!3m1!4b1!4m6!3m5!1s0x8855cd2b88976525:0x49c378cdfdecac9a!8m2!3d34.8311381!4d-80.6194367!16s%2Fg%2F11nw0vxpb_?entry=ttu&g_ep=EgoyMDI2MDkxMy4wIKXMDSoASAFQAw%3D%3D
+  - link "Send a secure inquiry":
+    - /url: /contact
+  - heading "Services" [level=4]
+  - list:
+    - link "Commercial Landscaping":
+      - /url: /services/commercial-landscaping
+    - link "Commercial Snow & Ice":
+      - /url: /services/commercial-snow-ice-management
+    - link "Industrial & Agricultural":
+      - /url: /services/industrial-agricultural
+    - link "Land Clearing":
+      - /url: /services/land-clearing
+    - link "Grading & Site Prep":
+      - /url: /services/grading-site-preparation
+    - link "Drainage Solutions":
+      - /url: /services/drainage
+    - link "Turf & Seeding":
+      - /url: /services/turf-installation-seeding
+    - link "Tree Services":
+      - /url: /services/tree-services
+    - link "Pond & Waterway":
+      - /url: /services/pond-waterway-management
+    - link "Property Reconstruction":
+      - /url: /services/property-reconstruction
+    - link "All Services →":
+      - /url: /services
+  - heading "Service Areas" [level=4]
+  - list:
+    - listitem: Upstate South Carolina
+    - link "Greenville":
+      - /url: /service-areas/greenville-sc
+    - link "Spartanburg":
+      - /url: /service-areas/spartanburg-sc
+    - link "Anderson":
+      - /url: /service-areas/anderson-sc
+    - link "Lancaster County":
+      - /url: /service-areas/lancaster-county-sc
+    - link "York County":
+      - /url: /service-areas/york-county-sc
+    - listitem: Greater Charlotte NC
+    - link "Charlotte, NC":
+      - /url: /service-areas/charlotte-north-carolina
+    - link "Concord":
+      - /url: /service-areas/concord-nc
+    - link "Mooresville & Lake Norman":
+      - /url: /service-areas/mooresville-lake-norman-nc
+    - link "Gastonia":
+      - /url: /service-areas/gastonia-nc
+    - link "Union County":
+      - /url: /service-areas/union-county-nc
+    - link "All Areas →":
+      - /url: /service-areas
+  - heading "Company" [level=4]
+  - list:
+    - link "About Us":
+      - /url: /about
+    - link "Service Gallery":
+      - /url: /gallery
+    - link "Blog & Resources":
+      - /url: /blog
+    - link "Contact / Site Assessment":
+      - /url: /contact
+  - heading "Hours" [level=4]
+  - list:
+    - listitem: "Mon – Fri: 7 AM – 6 PM"
+    - listitem: "Saturday: By Appointment"
+    - listitem: "Sunday: Closed"
+    - link "Request a Site Visit":
+      - /url: /contact
+  - generic: © 2026 P1 Land & Property Management. Serving Upstate South Carolina & the Charlotte, NC region. All rights reserved.

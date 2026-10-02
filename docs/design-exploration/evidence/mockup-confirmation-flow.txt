@@ -1,0 +1,73 @@
+- generic: MOCKUP ONLY — NOT IMPLEMENTED · Recommended · Landworks + operational clarity
+- link "Review index":
+  - /url: ../index.html
+- text: ·
+- link "A":
+  - /url: ../a/confirmation.html
+- text: ·
+- link "B":
+  - /url: ../b/confirmation.html
+- text: ·
+- link "C":
+  - /url: ../c/confirmation.html
+- text: ·
+- link "Recommended":
+  - /url: ../r/confirmation.html
+- link "Skip to content":
+  - /url: "#main"
+- banner:
+  - link "P1 Land & Property Management":
+    - /url: home.html
+    - img "P1 Land & Property Management"
+  - generic "Menu"
+- main:
+  - generic: Design simulation / confirmation
+  - heading "Your inquiry has been received." [level=1]
+  - paragraph: This is a mock confirmation. Nothing was sent and no visit has been booked.
+  - link "Request a site visit →":
+    - /url: quote.html
+  - link "Explore capabilities →":
+    - /url: services.html
+  - generic: Properties of an acre or more
+  - generic: Upstate South Carolina + Greater Charlotte
+  - generic: Land · Water · Ongoing care
+  - heading "What happens next" [level=2]
+  - paragraph: P1 would review the location and requested scope, then contact you to discuss fit, availability and a site walk. A receipt reference belongs here only if the real system returns one.
+  - paragraph: Do not promise a response time until the owner confirms the operating commitment.
+  - link "Return to concept homepage →":
+    - /url: home.html
+- generic: Start with the property
+- heading "Let’s walk the ground." [level=2]
+- paragraph: Tell us where it is and what needs attention.
+- link "Request a site visit →":
+  - /url: quote.html
+- link "Call (704) 221-8928":
+  - /url: tel:+17042218928
+- contentinfo:
+  - img "P1"
+  - paragraph: Land, water and grounds care for working Carolina properties of an acre or more.
+  - paragraph: Design proposal. Illustrations do not document completed P1 work.
+  - heading "Explore" [level=3]
+  - link "Capabilities":
+    - /url: services.html
+  - link "Work & illustrations":
+    - /url: gallery.html
+  - link "Where we work":
+    - /url: service-areas.html
+  - link "Field notes":
+    - /url: blog.html
+  - heading "Company" [level=3]
+  - link "About P1":
+    - /url: about.html
+  - link "Customer feedback":
+    - /url: testimonials.html
+  - link "Discuss your property":
+    - /url: quote.html
+  - link "Review user journeys":
+    - /url: journeys.html
+  - link "Review states":
+    - /url: states.html
+- link "Call P1":
+  - /url: tel:+17042218928
+- link "Site visit →":
+  - /url: quote.html

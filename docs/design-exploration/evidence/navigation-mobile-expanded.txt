@@ -1,0 +1,498 @@
+- link:
+  - /url: "#main-content"
+  - text: Skip to main content
+- banner:
+  - link:
+    - /url: /
+  - button [expanded]:
+    - generic: Open navigation
+- main:
+  - region:
+    - generic: The Land Specialists
+    - heading [level=1]:
+      - text: First Impressions
+      - emphasis: Start at the Curb.
+    - paragraph: Commercial landscaping and exterior grounds maintenance that keep your property looking professional, welcoming, and well cared for.
+    - link:
+      - /url: /contact
+      - text: Get a Free Site Assessment
+    - link:
+      - /url: tel:7042218928
+      - text: Call (704) 221-8928
+    - button:
+    - button:
+      - text: "01"
+      - generic: Commercial grounds
+    - button:
+      - text: "02"
+      - generic: Fall lawn care
+    - button:
+      - text: "03"
+      - generic: Snow and ice planning
+    - button:
+    - button:
+  - region:
+    - generic: Nearly 30 Years of Experience
+    - generic: Upstate SC + Charlotte NC
+    - generic: 1-Acre Minimum
+    - generic: Large-Acreage Specialists
+  - region:
+    - paragraph: Customer feedback
+    - heading [level=2]: What Do Our Customers Think About Us?
+    - article:
+      - paragraph: "5.0"
+      - paragraph: Rating on Google
+      - paragraph: Based on 6 reviews
+      - paragraph: Reviews verified on Google September 21, 2026.
+      - link:
+        - /url: https://www.google.com/maps/place/P1+Land+Management/@34.8311425,-80.622017,17z/data=!3m1!4b1!4m6!3m5!1s0x8855cd2b88976525:0x49c378cdfdecac9a!8m2!3d34.8311381!4d-80.6194367!16s%2Fg%2F11nw0vxpb_?entry=ttu&g_ep=EgoyMDI2MDkxMy4wIKXMDSoASAFQAw%3D%3D
+        - text: View our Google profile
+    - article:
+      - generic: DS
+      - heading [level=3]: Dalton Spiker
+      - paragraph: Sep 2026
+      - blockquote: “Great guy to work with! Had a pond with a lot of growth and Duke and his crew cleaned it up fast!”
+      - link:
+        - /url: https://www.google.com/maps/place/P1+Land+Management/@34.8311425,-80.622017,17z/data=!3m1!4b1!4m6!3m5!1s0x8855cd2b88976525:0x49c378cdfdecac9a!8m2!3d34.8311381!4d-80.6194367!16s%2Fg%2F11nw0vxpb_?entry=ttu&g_ep=EgoyMDI2MDkxMy4wIKXMDSoASAFQAw%3D%3D
+        - text: View on Google
+    - article:
+      - generic: MW
+      - heading [level=3]: Mark Webster
+      - paragraph: Sep 2026
+      - blockquote: “P1 did a great job”
+      - link:
+        - /url: https://www.google.com/maps/place/P1+Land+Management/@34.8311425,-80.622017,17z/data=!3m1!4b1!4m6!3m5!1s0x8855cd2b88976525:0x49c378cdfdecac9a!8m2!3d34.8311381!4d-80.6194367!16s%2Fg%2F11nw0vxpb_?entry=ttu&g_ep=EgoyMDI2MDkxMy4wIKXMDSoASAFQAw%3D%3D
+        - text: View on Google
+    - article:
+      - generic: DS
+      - heading [level=3]: Duke Seiler
+      - paragraph: Sep 2026
+      - blockquote: “Does great drainage work. Property is dry even through the heaviest of rains”
+      - link:
+        - /url: https://www.google.com/maps/place/P1+Land+Management/@34.8311425,-80.622017,17z/data=!3m1!4b1!4m6!3m5!1s0x8855cd2b88976525:0x49c378cdfdecac9a!8m2!3d34.8311381!4d-80.6194367!16s%2Fg%2F11nw0vxpb_?entry=ttu&g_ep=EgoyMDI2MDkxMy4wIKXMDSoASAFQAw%3D%3D
+        - text: View on Google
+    - article:
+      - generic: KH
+      - heading [level=3]: KT Hope
+      - paragraph: Sep 2026
+      - blockquote: “P1 Land Management did an excellent job! They were professional, dependable, and great to work with from start to finish. The quality of their work really shows, and they took the time to make sure everything was done right. I highly recommend P1 Land Management to anyone looking for reliable, high-quality land management services!”
+      - link:
+        - /url: https://www.google.com/maps/place/P1+Land+Management/@34.8311425,-80.622017,17z/data=!3m1!4b1!4m6!3m5!1s0x8855cd2b88976525:0x49c378cdfdecac9a!8m2!3d34.8311381!4d-80.6194367!16s%2Fg%2F11nw0vxpb_?entry=ttu&g_ep=EgoyMDI2MDkxMy4wIKXMDSoASAFQAw%3D%3D
+        - text: View on Google
+    - article:
+      - generic: BN
+      - heading [level=3]: Brandon Nash
+      - paragraph: Sep 2026
+      - blockquote: “I would highly recommend the staff at P1! Not only is their work top notch, their communication is great as well. The young lady in the office is the best person to get the job done and handled efficiently. She is the glue that makes them the best!”
+      - link:
+        - /url: https://www.google.com/maps/place/P1+Land+Management/@34.8311425,-80.622017,17z/data=!3m1!4b1!4m6!3m5!1s0x8855cd2b88976525:0x49c378cdfdecac9a!8m2!3d34.8311381!4d-80.6194367!16s%2Fg%2F11nw0vxpb_?entry=ttu&g_ep=EgoyMDI2MDkxMy4wIKXMDSoASAFQAw%3D%3D
+        - text: View on Google
+  - generic: What We Do
+  - heading [level=2]: A Full Field of Capabilities, One Team to Call.
+  - paragraph: From regular mowing to drainage repairs and site preparation, we help you take care of the whole property.
+  - link:
+    - /url: /services/commercial-landscaping
+    - heading [level=3]: Commercial Landscaping
+    - paragraph: Regular mowing and seasonal care for large commercial grounds.
+    - text: Learn more
+  - link:
+    - /url: /services/commercial-snow-ice-management
+    - heading [level=3]: Commercial Snow & Ice
+    - paragraph: Seasonal plowing, anti-icing, and documented storm response for large commercial sites.
+    - text: Learn more
+  - link:
+    - /url: /services/industrial-agricultural
+    - heading [level=3]: Industrial & Agricultural Land
+    - paragraph: Pasture, fence-line, and grounds care for farms and industrial sites.
+    - text: Learn more
+  - link:
+    - /url: /services/land-clearing
+    - heading [level=3]: Land Clearing & Mulching
+    - paragraph: Selective clearing and forestry mulching that opens up acreage responsibly.
+    - text: Learn more
+  - link:
+    - /url: /services/grading-site-preparation
+    - heading [level=3]: Fine Grading & Site Prep
+    - paragraph: Shape the ground for construction, access, and drainage.
+    - text: Learn more
+  - link:
+    - /url: /services/drainage
+    - heading [level=3]: Drainage Solutions
+    - paragraph: French drains, swales, and pond work to manage water on your property.
+    - text: Learn more
+  - link:
+    - /url: /services/turf-installation-seeding
+    - heading [level=3]: Turf Installation & Seeding
+    - paragraph: Sod and seeding for commercial grounds, pastures, and other large sites.
+    - text: Learn more
+  - link:
+    - /url: /services/tree-services
+    - heading [level=3]: Tree & Brush Management
+    - paragraph: Tree trimming, removal, selective clearing, and stump grinding.
+    - text: Learn more
+  - link:
+    - /url: /services/pond-waterway-management
+    - heading [level=3]: Pond & Waterway Management
+    - paragraph: Design, excavation and long-term care of ponds and working waterways.
+    - text: Learn more
+  - link:
+    - /url: /services/property-reconstruction
+    - heading [level=3]: Property Reconstruction
+    - paragraph: Restore damaged ground with clearing, grading, drainage, and new turf.
+    - text: Learn more
+  - generic: Site Prep
+  - generic: Built around your plan
+  - generic: Feature · Site Prep
+  - heading [level=2]: Grading for New Construction
+  - paragraph: A good building site starts with the ground underneath it. We prepare pads and grades and plan drainage with your project team before construction begins.
+  - list:
+    - generic: Cut-and-fill planning for your site
+    - generic: Pad and sub-grade preparation
+    - generic: Drainage planned with your project team
+  - link:
+    - /url: /services/grading-site-preparation
+    - text: Explore site prep
+  - generic: Why P1
+  - heading [level=2]: The Difference Is in The Groundwork.
+  - paragraph: We look at how your land, water, trees, and turf work together, then plan the care each needs.
+  - text: Plan Your Project
+  - generic: "01"
+  - heading [level=3]: Equipment Matched to the Work
+  - paragraph: We check access and bring the equipment suited to your clearing, grading, or maintenance job.
+  - generic: "02"
+  - heading [level=3]: Large-Acreage Expertise
+  - paragraph: Crews and equipment for farms, industrial grounds, public sites, and commercial campuses.
+  - generic: "03"
+  - heading [level=3]: Drainage Planning
+  - paragraph: We look at where water collects and how it moves before recommending drainage work. We'll explain when an engineer or other specialist is needed.
+  - generic: "04"
+  - heading [level=3]: A Clear Plan Before We Start
+  - paragraph: Before work starts, you'll know what we're doing, who to contact, and when to expect the crew.
+  - heading [level=2]: Care for the Whole Property
+  - paragraph: Start with what needs attention now. We'll help you plan clearing, grading, drainage, and regular upkeep as your property needs change.
+  - link:
+    - /url: /contact
+    - text: Tell us about your project
+  - generic: Where We Work
+  - heading [level=2]: Serving Upstate SC and Greater Charlotte
+  - heading [level=3]: Upstate South Carolina
+  - paragraph:
+    - link:
+      - /url: /service-areas/greenville-sc
+      - text: Greenville
+    - text: ·
+    - link:
+      - /url: /service-areas/spartanburg-sc
+      - text: Spartanburg
+    - text: ·
+    - link:
+      - /url: /service-areas/anderson-sc
+      - text: Anderson
+    - text: ·
+    - link:
+      - /url: /service-areas/greer-sc
+      - text: Greer
+    - text: ·
+    - link:
+      - /url: /service-areas/simpsonville-sc
+      - text: Simpsonville
+    - text: ·
+    - link:
+      - /url: /service-areas/easley-sc
+      - text: Easley
+    - text: ·
+    - link:
+      - /url: /service-areas/gaffney-sc
+      - text: Gaffney
+    - text: ·
+    - link:
+      - /url: /service-areas/duncan-sc
+      - text: Duncan
+    - text: ·
+    - link:
+      - /url: /service-areas/inman-sc
+      - text: Inman
+    - text: ·
+    - link:
+      - /url: /service-areas/boiling-springs-sc
+      - text: Boiling Springs
+  - heading [level=3]: Greater Charlotte & SC Border
+  - paragraph:
+    - link:
+      - /url: /service-areas/charlotte-north-carolina
+      - text: Charlotte
+    - text: ·
+    - link:
+      - /url: /service-areas/concord-nc
+      - text: Concord
+    - text: ·
+    - link:
+      - /url: /service-areas/mooresville-lake-norman-nc
+      - text: Mooresville
+    - text: ·
+    - link:
+      - /url: /service-areas/mooresville-lake-norman-nc
+      - text: Lake Norman
+    - text: ·
+    - link:
+      - /url: /service-areas/gastonia-nc
+      - text: Gastonia
+    - text: ·
+    - link:
+      - /url: /service-areas/matthews-nc
+      - text: Matthews
+    - text: ·
+    - link:
+      - /url: /service-areas/waxhaw-nc
+      - text: Waxhaw
+    - text: ·
+    - link:
+      - /url: /service-areas/kannapolis-nc
+      - text: Kannapolis
+    - text: ·
+    - link:
+      - /url: /service-areas/huntersville-nc
+      - text: Huntersville
+    - text: ·
+    - link:
+      - /url: /service-areas/indian-trail-nc
+      - text: Indian Trail
+    - text: ·
+    - link:
+      - /url: /service-areas/monroe-nc
+      - text: Monroe
+    - text: ·
+    - link:
+      - /url: /service-areas/fort-mill-sc
+      - text: Fort Mill
+    - text: ·
+    - link:
+      - /url: /service-areas/rock-hill-sc
+      - text: Rock Hill
+    - text: ·
+    - link:
+      - /url: /service-areas/indian-land-sc
+      - text: Indian Land
+  - link:
+    - /url: /service-areas
+    - text: View all service areas
+  - generic: Common Questions
+  - heading [level=2]: Frequently Asked Questions.
+  - generic: What does P1 Land & Property Management do?
+  - generic: +
+  - generic: Is there a minimum property size for P1's services?
+  - generic: +
+  - generic: What areas does P1 Land & Property Management serve?
+  - generic: +
+  - generic: How do I get an estimate from P1?
+  - generic: +
+  - paragraph:
+    - text: Still have questions? Call
+    - link:
+      - /url: tel:7042218928
+      - text: +1 (704) 221-8928
+    - text: or
+    - link:
+      - /url: /contact
+      - text: request a free estimate online
+    - text: .
+  - heading [level=2]: Managing a Commercial or Industrial Property?
+  - paragraph: Talk through grounds care, drainage, clearing, and repairs with one team.
+  - link:
+    - /url: /commercial
+    - text: Explore Commercial Site Management
+  - link:
+    - /url: /commercial/data-centers-secure-facilities
+    - text: Data center & secure facility grounds
+  - generic: P1 Land & Property Management
+  - heading [level=2]: Let's Walk Your Property
+  - paragraph: Tell us where it is and what's going on. The site visit and written estimate are free.
+  - link:
+    - /url: /contact
+    - text: Request a Site Visit
+  - link:
+    - /url: tel:7042218928
+    - text: Call (704) 221-8928
+- contentinfo:
+  - link:
+    - /url: /
+  - paragraph: P1 Land & Property Management clears, grades, drains, seeds and maintains commercial, industrial and farm property of an acre or more across Upstate South Carolina and the Charlotte region. Licensed and insured in North and South Carolina.
+  - link:
+    - /url: tel:+17042218928
+    - text: (704) 221-8928
+  - link:
+    - /url: https://www.google.com/maps/place/P1+Land+Management/@34.8311425,-80.622017,17z/data=!3m1!4b1!4m6!3m5!1s0x8855cd2b88976525:0x49c378cdfdecac9a!8m2!3d34.8311381!4d-80.6194367!16s%2Fg%2F11nw0vxpb_?entry=ttu&g_ep=EgoyMDI2MDkxMy4wIKXMDSoASAFQAw%3D%3D
+    - text: Find us on Google
+  - link:
+    - /url: /contact
+    - text: Send a secure inquiry
+  - heading [level=4]: Services
+  - list:
+    - link:
+      - /url: /services/commercial-landscaping
+      - text: Commercial Landscaping
+    - link:
+      - /url: /services/commercial-snow-ice-management
+      - text: Commercial Snow & Ice
+    - link:
+      - /url: /services/industrial-agricultural
+      - text: Industrial & Agricultural
+    - link:
+      - /url: /services/land-clearing
+      - text: Land Clearing
+    - link:
+      - /url: /services/grading-site-preparation
+      - text: Grading & Site Prep
+    - link:
+      - /url: /services/drainage
+      - text: Drainage Solutions
+    - link:
+      - /url: /services/turf-installation-seeding
+      - text: Turf & Seeding
+    - link:
+      - /url: /services/tree-services
+      - text: Tree Services
+    - link:
+      - /url: /services/pond-waterway-management
+      - text: Pond & Waterway
+    - link:
+      - /url: /services/property-reconstruction
+      - text: Property Reconstruction
+    - link:
+      - /url: /services
+      - text: All Services →
+  - heading [level=4]: Service Areas
+  - list:
+    - listitem: Upstate South Carolina
+    - link:
+      - /url: /service-areas/greenville-sc
+      - text: Greenville
+    - link:
+      - /url: /service-areas/spartanburg-sc
+      - text: Spartanburg
+    - link:
+      - /url: /service-areas/anderson-sc
+      - text: Anderson
+    - link:
+      - /url: /service-areas/lancaster-county-sc
+      - text: Lancaster County
+    - link:
+      - /url: /service-areas/york-county-sc
+      - text: York County
+    - listitem: Greater Charlotte NC
+    - link:
+      - /url: /service-areas/charlotte-north-carolina
+      - text: Charlotte, NC
+    - link:
+      - /url: /service-areas/concord-nc
+      - text: Concord
+    - link:
+      - /url: /service-areas/mooresville-lake-norman-nc
+      - text: Mooresville & Lake Norman
+    - link:
+      - /url: /service-areas/gastonia-nc
+      - text: Gastonia
+    - link:
+      - /url: /service-areas/union-county-nc
+      - text: Union County
+    - link:
+      - /url: /service-areas
+      - text: All Areas →
+  - heading [level=4]: Company
+  - list:
+    - link:
+      - /url: /about
+      - text: About Us
+    - link:
+      - /url: /gallery
+      - text: Service Gallery
+    - link:
+      - /url: /blog
+      - text: Blog & Resources
+    - link:
+      - /url: /contact
+      - text: Contact / Site Assessment
+  - heading [level=4]: Hours
+  - list:
+    - listitem: "Mon – Fri: 7 AM – 6 PM"
+    - listitem: "Saturday: By Appointment"
+    - listitem: "Sunday: Closed"
+    - link:
+      - /url: /contact
+      - text: Request a Site Visit
+  - generic: © 2026 P1 Land & Property Management. Serving Upstate South Carolina & the Charlotte, NC region. All rights reserved.
+- navigation:
+  - link:
+    - /url: tel:+17042218928
+    - generic: Call P1
+  - link:
+    - /url: /contact
+    - text: Request a Site Visit
+- dialog "Navigation Menu":
+  - button "Close":
+    - generic: Close
+  - heading "Navigation Menu" [level=2]
+  - link "P1 Land & Property Management":
+    - /url: /
+    - img "P1 Land & Property Management"
+  - paragraph: P1 navigation
+  - paragraph: Land and property care, made simple.
+  - navigation "Mobile navigation":
+    - paragraph: Explore
+    - link "Home":
+      - /url: /
+      - generic: Home
+    - link "About P1":
+      - /url: /about
+      - generic: About P1
+    - link "Contact":
+      - /url: /contact
+      - generic: Contact
+    - paragraph: Services
+    - heading "Property services Land, landscape, drainage & more" [level=3]:
+      - button "Property services Land, landscape, drainage & more" [expanded] [active]:
+        - generic: Property services
+        - generic: Land, landscape, drainage & more
+    - region "Property services Land, landscape, drainage & more":
+      - link "Browse all services":
+        - /url: /services
+        - generic: Browse all services
+      - link "Commercial Site Management":
+        - /url: /commercial
+        - generic: Commercial Site Management
+      - link "Commercial Landscaping":
+        - /url: /services/commercial-landscaping
+        - generic: Commercial Landscaping
+      - link "Commercial Snow & Ice":
+        - /url: /services/commercial-snow-ice-management
+        - generic: Commercial Snow & Ice
+      - link "Industrial & Agricultural Land":
+        - /url: /services/industrial-agricultural
+        - generic: Industrial & Agricultural Land
+      - link "Land Clearing":
+        - /url: /services/land-clearing
+        - generic: Land Clearing
+      - link "Grading & Site Preparation":
+        - /url: /services/grading-site-preparation
+        - generic: Grading & Site Preparation
+      - link "Drainage Solutions":
+        - /url: /services/drainage
+        - generic: Drainage Solutions
+      - link "Turf Installation & Seeding":
+        - /url: /services/turf-installation-seeding
+        - generic: Turf Installation & Seeding
+      - link "Tree Services":
+        - /url: /services/tree-services
+        - generic: Tree Services
+      - link "Pond & Waterway Management":
+        - /url: /services/pond-waterway-management
+        - generic: Pond & Waterway Management
+      - link "Property Reconstruction":
+        - /url: /services/property-reconstruction
+        - generic: Property Reconstruction
+  - link "Call P1 at (704) 221-8928":
+    - /url: tel:+17042218928
+    - text: Call P1
+    - generic: (704) 221-8928
+  - link "Request a Site Visit":
+    - /url: /contact

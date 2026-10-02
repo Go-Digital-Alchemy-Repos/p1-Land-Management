@@ -1,0 +1,229 @@
+- link "Skip to main content":
+  - /url: "#main-content"
+- banner:
+  - link "P1 Land & Property Management":
+    - /url: /
+    - img "P1 Land & Property Management"
+  - navigation "Main navigation":
+    - link "Home":
+      - /url: /
+    - link "About":
+      - /url: /about
+    - button "Services":
+      - text: Services
+    - link "Contact":
+      - /url: /contact
+  - link "(704) 221-8928":
+    - /url: tel:+17042218928
+    - text: (704) 221-8928
+  - link "Request a Site Visit":
+    - /url: /contact
+- main:
+  - img "Excavator clearing brush in woods"
+  - generic: Land Clearing
+  - heading "Land Clearing For Large-Acreage Properties In Upstate SC and Charlotte NC" [level=1]:
+    - text: Land Clearing For
+    - emphasis: Large-Acreage Properties
+    - text: In Upstate SC and Charlotte NC
+  - paragraph: We clear overgrown acreage and prepare large tracts for their next use. We'll choose the equipment and method around your land, access, and plans.
+  - generic: Index of Work
+  - link "01 Land Clearing":
+    - /url: /services/land-clearing
+    - generic: "01"
+    - generic: Land Clearing
+  - link "02 Commercial Landscaping":
+    - /url: /services/commercial-landscaping
+    - generic: "02"
+    - generic: Commercial Landscaping
+  - link "03 Commercial Snow & Ice":
+    - /url: /services/commercial-snow-ice-management
+    - generic: "03"
+    - generic: Commercial Snow & Ice
+  - link "04 Grading & Site Preparation":
+    - /url: /services/grading-site-preparation
+    - generic: "04"
+    - generic: Grading & Site Preparation
+  - link "05 Drainage Solutions":
+    - /url: /services/drainage
+    - generic: "05"
+    - generic: Drainage Solutions
+  - heading "Professional Land Clearing That Prepares Your Property for What's Next" [level=2]
+  - paragraph: Preparing a construction site, opening pasture, or reclaiming overgrown ground starts with a plan for what stays and what goes. We'll walk the land with you before clearing begins.
+  - paragraph: We handle the full clearing process — trees, stumps, brush, vines, briars, and debris — using the right equipment for each site and each soil type. We serve commercial developers, farmers, industrial facilities, municipalities, institutions, and property managers across Upstate South Carolina and the greater Charlotte, North Carolina area.
+  - img "Land being cleared and prepared for its next use"
+  - heading "Land Clearing Services" [level=2]
+  - list:
+    - generic: Full tree clearing and removal — from single trees to dense stands
+    - generic: Brush and undergrowth clearing
+    - generic: Stump grinding and removal
+    - generic: Forestry mulching — grinds vegetation in place, protects topsoil, speeds regrowth
+    - generic: Selective clearing — preserve mature trees while removing unwanted vegetation
+    - generic: Fence line and right-of-way clearing
+    - generic: Pond and waterway access clearing
+    - generic: Post-clearing debris removal and site cleanup
+  - 'heading "Forestry Mulching: The Efficient Alternative" [level=2]'
+  - paragraph: For many sites, forestry mulching is the most efficient and cost-effective clearing method. A single machine grinds trees, brush, and stumps directly into mulch that stays on site — protecting the soil, reducing erosion, and eliminating the cost and mess of hauling debris. The mulch layer also decomposes naturally, improving soil health over time.
+  - paragraph: Forestry mulching is ideal for acreage where the goal is vegetation control rather than construction grading — pasture expansion, fence line management, and perimeter clearing all benefit from this method.
+  - img "Forestry mulcher grinding vegetation into mulch on site"
+  - heading "What Comes After Clearing" [level=2]
+  - paragraph: Clearing may be the first job, with grading, drainage, and seeding to follow. We can help you plan those stages and look after the grounds once they're established.
+  - heading "Service Area" [level=3]
+  - paragraph: P1 provides land clearing throughout Upstate South Carolina — including Greenville, Spartanburg, Anderson, Gaffney, Greer, and surrounding counties — and the greater Charlotte, NC region, including Concord, Mooresville, Lake Norman, Gastonia, and Mecklenburg County.
+  - heading "Land Clearing FAQs" [level=2]
+  - generic "How much does land clearing cost in Upstate SC and Charlotte NC?":
+    - generic: How much does land clearing cost in Upstate SC and Charlotte NC?
+    - generic: +
+  - generic "What is forestry mulching and when is it the better option?":
+    - generic: What is forestry mulching and when is it the better option?
+    - generic: +
+  - generic "Does P1 clear land for new construction?":
+    - generic: Does P1 clear land for new construction?
+    - generic: +
+  - generic "What size land clearing projects does P1 take on?":
+    - generic: What size land clearing projects does P1 take on?
+    - generic: +
+  - paragraph:
+    - text: Call
+    - link "+1 (704) 221-8928":
+      - /url: tel:7042218928
+    - text: or
+    - link "request a free estimate online":
+      - /url: /contact
+    - text: to discuss your clearing project.
+  - heading "Controlling Perimeter Acreage Around an Active Facility?" [level=2]
+  - paragraph: Connect selective clearing and buffer management with drainage, sightlines, service roads, and scheduled exterior care.
+  - link "Secure campus land and grounds management":
+    - /url: /commercial/data-centers-secure-facilities
+  - region "Services Connected to Land Clearing":
+    - paragraph: Explore More With P1
+    - heading "Services Connected to Land Clearing" [level=2]
+    - paragraph: Plan what happens before, during, and after vegetation removal.
+    - navigation "Related Services and Resources":
+      - list:
+        - link "Tree Services Manage trees, overgrowth, and selective clearing across large properties.":
+          - /url: /services/tree-services
+          - generic: Tree Services
+          - generic: Manage trees, overgrowth, and selective clearing across large properties.
+        - link "Grading and Site Preparation Shape grades, improve access, and prepare ground for its next use.":
+          - /url: /services/grading-site-preparation
+          - generic: Grading and Site Preparation
+          - generic: Shape grades, improve access, and prepare ground for its next use.
+        - link "Turf Installation and Seeding Plant sod or seed on properly prepared ground.":
+          - /url: /services/turf-installation-seeding
+          - generic: Turf Installation and Seeding
+          - generic: Plant sod or seed on properly prepared ground.
+        - link "Land Clearing Cost Factors Understand the site conditions that influence a clearing estimate.":
+          - /url: /blog/land-clearing-cost-per-acre-south-carolina
+          - generic: Land Clearing Cost Factors
+          - generic: Understand the site conditions that influence a clearing estimate.
+    - navigation "Explore Service Areas":
+      - heading "Explore Service Areas" [level=3]
+      - paragraph: Local coverage across the Carolinas.
+      - list:
+        - link "Land Clearing in Gaffney":
+          - /url: /service-areas/gaffney-sc
+          - text: Land Clearing in Gaffney
+        - link "Land Clearing in Greer":
+          - /url: /service-areas/greer-sc
+          - text: Land Clearing in Greer
+        - link "Land Clearing in Kannapolis":
+          - /url: /service-areas/kannapolis-nc
+          - text: Land Clearing in Kannapolis
+        - link "Land Clearing in Indian Trail":
+          - /url: /service-areas/indian-trail-nc
+          - text: Land Clearing in Indian Trail
+        - link "Land Clearing in Monroe":
+          - /url: /service-areas/monroe-nc
+          - text: Land Clearing in Monroe
+        - link "Land Clearing in Rock Hill":
+          - /url: /service-areas/rock-hill-sc
+          - text: Land Clearing in Rock Hill
+  - generic: P1 Land & Property Management
+  - heading "Let's Walk Your Property" [level=2]
+  - paragraph: Tell us where it is and what's going on. The site visit and written estimate are free.
+  - link "Request a Site Visit":
+    - /url: /contact
+    - text: Request a Site Visit
+  - link "Call (704) 221-8928":
+    - /url: tel:7042218928
+    - text: Call (704) 221-8928
+- contentinfo:
+  - link "P1 Land & Property Management":
+    - /url: /
+    - img "P1 Land & Property Management"
+  - paragraph: P1 Land & Property Management clears, grades, drains, seeds and maintains commercial, industrial and farm property of an acre or more across Upstate South Carolina and the Charlotte region. Licensed and insured in North and South Carolina.
+  - link "(704) 221-8928":
+    - /url: tel:+17042218928
+    - text: (704) 221-8928
+  - link "Find us on Google":
+    - /url: https://www.google.com/maps/place/P1+Land+Management/@34.8311425,-80.622017,17z/data=!3m1!4b1!4m6!3m5!1s0x8855cd2b88976525:0x49c378cdfdecac9a!8m2!3d34.8311381!4d-80.6194367!16s%2Fg%2F11nw0vxpb_?entry=ttu&g_ep=EgoyMDI2MDkxMy4wIKXMDSoASAFQAw%3D%3D
+  - link "Send a secure inquiry":
+    - /url: /contact
+  - heading "Services" [level=4]
+  - list:
+    - link "Commercial Landscaping":
+      - /url: /services/commercial-landscaping
+    - link "Commercial Snow & Ice":
+      - /url: /services/commercial-snow-ice-management
+    - link "Industrial & Agricultural":
+      - /url: /services/industrial-agricultural
+    - link "Land Clearing":
+      - /url: /services/land-clearing
+    - link "Grading & Site Prep":
+      - /url: /services/grading-site-preparation
+    - link "Drainage Solutions":
+      - /url: /services/drainage
+    - link "Turf & Seeding":
+      - /url: /services/turf-installation-seeding
+    - link "Tree Services":
+      - /url: /services/tree-services
+    - link "Pond & Waterway":
+      - /url: /services/pond-waterway-management
+    - link "Property Reconstruction":
+      - /url: /services/property-reconstruction
+    - link "All Services →":
+      - /url: /services
+  - heading "Service Areas" [level=4]
+  - list:
+    - listitem: Upstate South Carolina
+    - link "Greenville":
+      - /url: /service-areas/greenville-sc
+    - link "Spartanburg":
+      - /url: /service-areas/spartanburg-sc
+    - link "Anderson":
+      - /url: /service-areas/anderson-sc
+    - link "Lancaster County":
+      - /url: /service-areas/lancaster-county-sc
+    - link "York County":
+      - /url: /service-areas/york-county-sc
+    - listitem: Greater Charlotte NC
+    - link "Charlotte, NC":
+      - /url: /service-areas/charlotte-north-carolina
+    - link "Concord":
+      - /url: /service-areas/concord-nc
+    - link "Mooresville & Lake Norman":
+      - /url: /service-areas/mooresville-lake-norman-nc
+    - link "Gastonia":
+      - /url: /service-areas/gastonia-nc
+    - link "Union County":
+      - /url: /service-areas/union-county-nc
+    - link "All Areas →":
+      - /url: /service-areas
+  - heading "Company" [level=4]
+  - list:
+    - link "About Us":
+      - /url: /about
+    - link "Service Gallery":
+      - /url: /gallery
+    - link "Blog & Resources":
+      - /url: /blog
+    - link "Contact / Site Assessment":
+      - /url: /contact
+  - heading "Hours" [level=4]
+  - list:
+    - listitem: "Mon – Fri: 7 AM – 6 PM"
+    - listitem: "Saturday: By Appointment"
+    - listitem: "Sunday: Closed"
+    - link "Request a Site Visit":
+      - /url: /contact
+  - generic: © 2026 P1 Land & Property Management. Serving Upstate South Carolina & the Charlotte, NC region. All rights reserved.
